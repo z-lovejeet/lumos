@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique
+  name           String?
+  avatarUrl      String?
+  settings       Json            @default("{}")
+  semesters      Semester[]
+  gradeScales    GradeScale[]
+  markingSchemes MarkingScheme[]
+  careerPlans    CareerPlan[]
+  achievements   Achievement[]
+  notes          Note[]
+  chatMessages   ChatMessage[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([email])
+}
+
+model Semester {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  number       Int
+  name         String
+  status       String    @default("active") // active, completed
+  totalCredits Int       @default(0)
+  subjects     Subject[]
+  startDate    DateTime?
+  endDate      DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@unique([userId, number])
+  @@index([userId])
+}
+
+model Subject {
+  id              String         @id @default(cuid())
+  semesterId      String
+  semester        Semester       @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+  userId          String
+  name            String
+  code            String
+  credits         Int
+  category        String         // core, elective, lab, minor
+  facultyName     String?
+  markingSchemeId String?
+  markingScheme   MarkingScheme? @relation(fields: [markingSchemeId], references: [id])
+  difficulty      String         @default("medium") // easy, medium, hard
+  syllabusData    Json?
+  marks           Mark[]
+  attendance      Attendance[]
+  notes           Note[]
+  materials       StudyMaterial[]
+  createdAt       DateTime       @default(now())
+
+  @@index([semesterId])
+  @@index([userId])
+  @@index([userId, semesterId])
+}
+
+model MarkingScheme {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  components Json      // [{ name: "CA", maxMarks: 25, weight: 25, isOptional: false }]
+  isDefault  Boolean   @default(false)
+  subjects   Subject[]
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Mark {
+  id            String   @id @default(cuid())
+  subjectId     String
+  subject       Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  componentName String
+  maxMarks      Float
+  obtainedMarks Float?
+  examDate      DateTime?
+  createdAt     DateTime @default(now())
+
+  @@unique([subjectId, componentName])
+  @@index([subjectId])
+}
+
+model GradeScale {
+  id       String  @id @default(cuid())
+  userId   String
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name     String
+  grades   Json    // [{ grade: "O", minPercent: 90, point: 10 }]
+  isActive Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Attendance {
+  id        String   @id @default(cuid())
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  classDate DateTime
+  attended  Boolean
+  classType String   @default("lecture") // lecture, lab, tutorial
+  createdAt DateTime @default(now())
+
+  @@unique([subjectId, classDate, classType])
+  @@index([subjectId])
+  @@index([subjectId, classDate])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  subjectId String?
+  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  content   String   @db.Text
+  type      String   @default("note") // note, formula, important-topic, revision-checklist
+  tags      Json     @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subjectId])
+  @@index([userId])
+}
+
+model StudyMaterial {
+  id        String   @id @default(cuid())
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  type      String   // pdf, pyq, syllabus, reference
+  title     String
+  fileUrl   String
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([subjectId])
+}
+
+model CareerPlan {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // ms-abroad, internship, placement, tum
+  data      Json
+  progress  Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, type])
+}
+
+model Achievement {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementKey String
+  title          String
+  description    String
+  earnedAt       DateTime @default(now())
+
+  @@unique([userId, achievementKey])
+  @@index([userId])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   // user, assistant
+  content   String   @db.Text
+  source    String   @default("rule") // rule, llm-gemini, llm-groq
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([userId, createdAt])
+}
