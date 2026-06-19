@@ -10,8 +10,22 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
+### 1. Database & Authentication Setup
+1. Create a Supabase project at [supabase.com](https://supabase.com)
+2. Obtain your `DATABASE_URL` and `DIRECT_URL` from the database settings and add them to `.env.local`
+3. Obtain your `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` and add them to `.env.local`
+4. Run migrations: `npx prisma db push` (Requires DIRECT_URL)
+5. Seed database: `npm run db:seed`
+
+### 2. Configure OAuth Providers (Google & GitHub)
+You must enable Auth providers in your Supabase Dashboard:
+1. Go to **Authentication > Providers** in Supabase.
+2. Enable **Email** (turn off confirm email if testing locally).
+3. Enable **Google** and provide your Google OAuth Client ID and Secret (from Google Cloud Console).
+4. Enable **GitHub** and provide your GitHub OAuth Client ID and Secret (from GitHub Developer Settings).
+5. Ensure the Callback URL (`Site URL`) in Supabase Authentication -> URL Configuration is set to your production or localhost URL.
+
+### 3. Start Development Server file.
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

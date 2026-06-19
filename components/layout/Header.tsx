@@ -12,6 +12,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Menu } from 'lucide-react'
 
+import { MobileNav } from './MobileNav'
+
 export async function Header() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -22,10 +24,7 @@ export async function Header() {
 
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6 lg:h-[60px]">
-      <Button variant="outline" size="icon" className="shrink-0 md:hidden">
-        <Menu className="h-5 w-5" />
-        <span className="sr-only">Toggle navigation menu</span>
-      </Button>
+      <MobileNav />
       <div className="w-full flex-1">
         {/* Search or breadcrumbs can go here */}
       </div>
