@@ -16,7 +16,9 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    return redirect('/login?error=' + error.message)
+    console.error("Login Error Details:", error)
+    const errorMsg = error.message && error.message !== '{}' ? error.message : "Invalid login credentials or error occurred."
+    return redirect('/login?error=' + encodeURIComponent(errorMsg))
   }
 
   revalidatePath('/', 'layout')
@@ -41,7 +43,9 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp(data)
 
   if (error) {
-    return redirect('/register?error=' + error.message)
+    console.error("Signup Error Details:", error)
+    const errorMsg = error.message && error.message !== '{}' ? error.message : "Failed to create account. Please ensure your database is connected and trigger is working."
+    return redirect('/register?error=' + encodeURIComponent(errorMsg))
   }
 
   revalidatePath('/', 'layout')
