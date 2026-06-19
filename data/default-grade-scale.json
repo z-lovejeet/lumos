@@ -1,0 +1,37 @@
+[
+  {
+    "grade": "O",
+    "minPercent": 90,
+    "point": 10
+  },
+  {
+    "grade": "A+",
+    "minPercent": 80,
+    "point": 9
+  },
+  {
+    "grade": "A",
+    "minPercent": 70,
+    "point": 8
+  },
+  {
+    "grade": "B+",
+    "minPercent": 60,
+    "point": 7
+  },
+  {
+    "grade": "B",
+    "minPercent": 50,
+    "point": 6
+  },
+  {
+    "grade": "C",
+    "minPercent": 40,
+    "point": 5
+  },
+  {
+    "grade": "F",
+    "minPercent": 0,
+    "point": 0
+  }
+]

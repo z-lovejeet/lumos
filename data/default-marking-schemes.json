@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Theory Standard (100 Marks)",
+    "components": [
+      { "name": "CA", "maxMarks": 25, "weight": 25, "isOptional": false },
+      { "name": "MTE", "maxMarks": 20, "weight": 20, "isOptional": false },
+      { "name": "ETE", "maxMarks": 50, "weight": 50, "isOptional": false },
+      { "name": "Attendance", "maxMarks": 5, "weight": 5, "isOptional": false }
+    ],
+    "isDefault": true
+  },
+  {
+    "name": "Lab Standard (100 Marks)",
+    "components": [
+      { "name": "Continuous Evaluation", "maxMarks": 60, "weight": 60, "isOptional": false },
+      { "name": "Final Evaluation", "maxMarks": 40, "weight": 40, "isOptional": false }
+    ],
+    "isDefault": false
+  }
+]
