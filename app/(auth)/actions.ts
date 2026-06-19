@@ -68,6 +68,26 @@ export async function signInWithGoogle() {
   }
 }
 
+export async function signInWithGithub() {
+  const supabase = await createClient()
+  const origin = (await headers()).get('origin')
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'github',
+    options: {
+      redirectTo: `${origin}/auth/callback`,
+    },
+  })
+
+  if (error) {
+    return redirect('/login?error=' + error.message)
+  }
+
+  if (data.url) {
+    redirect(data.url)
+  }
+}
+
 export async function logout() {
   const supabase = await createClient()
   await supabase.auth.signOut()
