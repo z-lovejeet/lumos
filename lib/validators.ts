@@ -6,7 +6,6 @@ export const semesterSchema = z.object({
   name: z.string().min(1, "Semester name is required"),
   startDate: z.date(),
   endDate: z.date(),
-  isActive: z.boolean().default(false),
 })
 
 export type SemesterFormValues = z.infer<typeof semesterSchema>

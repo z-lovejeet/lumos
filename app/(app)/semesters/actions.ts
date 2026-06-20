@@ -36,19 +36,10 @@ export async function createSemester(formData: FormData) {
     name: formData.get('name'),
     startDate: new Date(formData.get('startDate') as string),
     endDate: new Date(formData.get('endDate') as string),
-    isActive: formData.get('isActive') === 'on',
   }
 
   try {
     const validatedData = semesterSchema.parse(rawData)
-
-    // If this is set to active, deactivate all others
-    if (validatedData.isActive) {
-      await prisma.semester.updateMany({
-        where: { userId: user.id, isActive: true },
-        data: { isActive: false }
-      })
-    }
 
     const count = await prisma.semester.count({ where: { userId: user.id } })
 
@@ -59,7 +50,6 @@ export async function createSemester(formData: FormData) {
         name: validatedData.name,
         startDate: validatedData.startDate,
         endDate: validatedData.endDate,
-        isActive: validatedData.isActive,
       }
     })
 
@@ -87,7 +77,6 @@ export async function updateSemester(id: string, formData: FormData) {
     name: formData.get('name'),
     startDate: new Date(formData.get('startDate') as string),
     endDate: new Date(formData.get('endDate') as string),
-    isActive: formData.get('isActive') === 'on',
   }
 
   try {
@@ -99,21 +88,16 @@ export async function updateSemester(id: string, formData: FormData) {
       return { success: false, error: 'Semester not found or unauthorized' }
     }
 
-    // If this is set to active, deactivate all others
-    if (validatedData.isActive && !existing.isActive) {
-      await prisma.semester.updateMany({
-        where: { userId: user.id, isActive: true },
-        data: { isActive: false }
-      })
+    if (!existing) {
+      return { error: 'Semester not found' }
     }
 
     const updated = await prisma.semester.update({
       where: { id },
       data: {
         name: validatedData.name,
-        startDate: validatedData.startDate,
-        endDate: validatedData.endDate,
-        isActive: validatedData.isActive,
+        startDate: new Date(validatedData.startDate),
+        endDate: new Date(validatedData.endDate),
       }
     })
 

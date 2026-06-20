@@ -56,7 +56,6 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
       name: semester?.name || '',
       startDate: semester ? new Date(semester.startDate) : new Date(),
       endDate: semester ? new Date(semester.endDate) : new Date(),
-      isActive: semester?.isActive || false,
     },
   })
 
@@ -66,7 +65,6 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
     formData.append('name', data.name)
     formData.append('startDate', data.startDate.toISOString())
     formData.append('endDate', data.endDate.toISOString())
-    if (data.isActive) formData.append('isActive', 'on')
 
     try {
       const res = isEdit && semester.id 
@@ -193,28 +191,7 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      Active Semester
-                    </FormLabel>
-                    <FormDescription>
-                      This will be your default semester across the app.
-                    </FormDescription>
-                  </div>
-                </FormItem>
-              )}
-            />
+
 
             {form.formState.errors.root && (
               <p className="text-[0.8rem] font-medium text-destructive">

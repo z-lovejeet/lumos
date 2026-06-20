@@ -37,13 +37,6 @@ export async function POST(req: Request) {
     const body = await req.json()
     const validatedData = semesterSchema.parse(body)
 
-    if (validatedData.isActive) {
-      await prisma.semester.updateMany({
-        where: { userId: user.id, isActive: true },
-        data: { isActive: false }
-      })
-    }
-
     const count = await prisma.semester.count({ where: { userId: user.id } })
 
     const newSemester = await prisma.semester.create({
@@ -53,7 +46,6 @@ export async function POST(req: Request) {
         name: validatedData.name,
         startDate: new Date(validatedData.startDate),
         endDate: new Date(validatedData.endDate),
-        isActive: validatedData.isActive,
       }
     })
 

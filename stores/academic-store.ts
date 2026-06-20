@@ -5,7 +5,7 @@ export interface Semester {
   name: string
   startDate: Date | null
   endDate: Date | null
-  isActive: boolean
+  status: string
 }
 
 export interface Subject {

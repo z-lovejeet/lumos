@@ -52,20 +52,12 @@ export async function PATCH(
       return NextResponse.json({ error: 'Semester not found' }, { status: 404 })
     }
 
-    if (validatedData.isActive && !existing.isActive) {
-      await prisma.semester.updateMany({
-        where: { userId: user.id, isActive: true },
-        data: { isActive: false }
-      })
-    }
-
     const updated = await prisma.semester.update({
       where: { id },
       data: {
         name: validatedData.name,
         startDate: new Date(validatedData.startDate),
         endDate: new Date(validatedData.endDate),
-        isActive: validatedData.isActive,
       }
     })
 

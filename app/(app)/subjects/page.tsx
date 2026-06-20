@@ -11,10 +11,9 @@ export const metadata = {
 
 export default async function SubjectsPage() {
   try {
-    const [subjectsRes, semestersRes, markingSchemesRes] = await Promise.all([
+    const [subjectsRes, semestersRes] = await Promise.all([
       getSubjects(),
-      getSemesters(),
-      getMarkingSchemes()
+      getSemesters()
     ])
     
     return (
@@ -25,7 +24,6 @@ export default async function SubjectsPage() {
         <SubjectClient 
           initialSubjects={subjectsRes.subjects} 
           initialSemesters={semestersRes.semesters}
-          initialMarkingSchemes={markingSchemesRes.schemes}
         />
       </div>
     )

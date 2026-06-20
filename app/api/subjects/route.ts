@@ -43,6 +43,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid semester' }, { status: 400 })
     }
 
+    let components: any[] = []
+    if (validatedData.markingSchemeId) {
+      const scheme = await prisma.markingScheme.findUnique({
+        where: { id: validatedData.markingSchemeId }
+      })
+      if (scheme && scheme.components) {
+        components = scheme.components as any[]
+      }
+    }
+
     const newSubject = await prisma.subject.create({
       data: {
         userId: user.id,
@@ -52,8 +62,14 @@ export async function POST(req: Request) {
         credits: validatedData.credits,
         category: validatedData.category,
         facultyName: validatedData.facultyName,
-        colorCode: validatedData.colorCode,
         markingSchemeId: validatedData.markingSchemeId,
+        marks: {
+          create: components.map((comp) => ({
+            componentName: comp.name,
+            maxMarks: comp.maxMarks,
+            obtainedMarks: null,
+          }))
+        }
       }
     })
 

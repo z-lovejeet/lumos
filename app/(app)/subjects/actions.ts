@@ -59,6 +59,16 @@ export async function createSubject(formData: FormData) {
       return { success: false, error: 'Invalid semester' }
     }
 
+    let components: any[] = []
+    if (validatedData.markingSchemeId) {
+      const scheme = await prisma.markingScheme.findUnique({
+        where: { id: validatedData.markingSchemeId }
+      })
+      if (scheme && scheme.components) {
+        components = scheme.components as any[]
+      }
+    }
+
     const newSubject = await prisma.subject.create({
       data: {
         userId: user.id,
@@ -68,8 +78,14 @@ export async function createSubject(formData: FormData) {
         credits: validatedData.credits,
         category: validatedData.category,
         facultyName: validatedData.facultyName,
-        colorCode: validatedData.colorCode,
         markingSchemeId: validatedData.markingSchemeId,
+        marks: {
+          create: components.map((comp) => ({
+            componentName: comp.name,
+            maxMarks: comp.maxMarks,
+            obtainedMarks: null,
+          }))
+        }
       }
     })
 
@@ -121,7 +137,6 @@ export async function updateSubject(id: string, formData: FormData) {
         credits: validatedData.credits,
         category: validatedData.category,
         facultyName: validatedData.facultyName,
-        colorCode: validatedData.colorCode,
         markingSchemeId: validatedData.markingSchemeId,
       }
     })

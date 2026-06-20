@@ -20,7 +20,7 @@ export default async function MarksPage() {
 
   // Fetch the active semester
   const activeSemester = await prisma.semester.findFirst({
-    where: { userId: user.id, isActive: true },
+    where: { userId: user.id, status: 'active' },
     include: {
       subjects: {
         include: {

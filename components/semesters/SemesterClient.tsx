@@ -69,18 +69,16 @@ export function SemesterClient({ initialSemesters }: SemesterClientProps) {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {semesters.map((semester) => (
-            <Card key={semester.id} className={semester.isActive ? "border-primary" : ""}>
+            <Card key={semester.id} className={semester.status === 'active' ? "border-primary" : ""}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xl font-bold">
                   {semester.name}
                 </CardTitle>
                 <DropdownMenu>
-                  <DropdownMenuTrigger render={
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  } />
+                  <DropdownMenuTrigger className="h-8 w-8 p-0 shrink-0 inline-flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground outline-none">
+                    <span className="sr-only">Open menu</span>
+                    <MoreVertical className="h-4 w-4" />
+                  </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <SemesterDialog 
                       semester={semester} 
@@ -110,10 +108,10 @@ export function SemesterClient({ initialSemesters }: SemesterClientProps) {
                 </div>
               </CardContent>
               <CardFooter>
-                {semester.isActive && (
+                {semester.status === 'active' && (
                   <Badge variant="default" className="w-full justify-center">Active Semester</Badge>
                 )}
-                {!semester.isActive && (
+                {semester.status !== 'active' && (
                   <Badge variant="secondary" className="w-full justify-center text-muted-foreground">Inactive</Badge>
                 )}
               </CardFooter>

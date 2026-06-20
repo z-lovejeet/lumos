@@ -60,9 +60,8 @@ export async function PATCH(
         name: validatedData.name,
         credits: validatedData.credits,
         category: validatedData.category,
-        facultyName: validatedData.facultyName,
-        colorCode: validatedData.colorCode,
-        markingSchemeId: validatedData.markingSchemeId,
+        facultyName: body.facultyName,
+        markingSchemeId: body.markingSchemeId,
       }
     })
 
