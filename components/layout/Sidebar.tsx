@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, BookOpen, Calculator, Target, CalendarDays, BrainCircuit, ScanLine, GraduationCap, Briefcase, Award, PenTool } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Calculator, Target, CalendarDays, BrainCircuit, ScanLine, GraduationCap, Briefcase, Award, PenTool, ListChecks } from 'lucide-react'
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -15,6 +15,7 @@ const navItems = [
   { name: 'Smart Scanner', href: '/scanner', icon: ScanLine },
   { name: 'Transcript', href: '/transcript', icon: GraduationCap },
   { name: 'Marks Entry', href: '/marks', icon: PenTool },
+  { name: 'Marking Schemes', href: '/marking-schemes', icon: ListChecks },
   { name: 'Career Center', href: '/career', icon: Briefcase },
   { name: 'Achievements', href: '/achievements', icon: Award },
 ]
