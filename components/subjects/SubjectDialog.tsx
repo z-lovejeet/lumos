@@ -122,7 +122,9 @@ export function SubjectDialog({ subject, semesters, markingSchemes = [], trigger
                   <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a semester" />
+                        <SelectValue placeholder="Select a semester">
+                          {field.value ? semesters.find(s => s.id === field.value)?.name : null}
+                        </SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -145,7 +147,9 @@ export function SubjectDialog({ subject, semesters, markingSchemes = [], trigger
                   <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a marking scheme" />
+                        <SelectValue placeholder="Select a marking scheme">
+                          {field.value ? markingSchemes.find(m => m.id === field.value)?.name : null}
+                        </SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -212,7 +216,9 @@ export function SubjectDialog({ subject, semesters, markingSchemes = [], trigger
                     <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
+                          <SelectValue placeholder="Select category">
+                            {field.value || null}
+                          </SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
