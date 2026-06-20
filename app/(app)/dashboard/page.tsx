@@ -22,7 +22,7 @@ export default async function DashboardPage() {
 
   // Fetch the active semester
   const activeSemester = await prisma.semester.findFirst({
-    where: { userId: user.id, isActive: true },
+    where: { userId: user.id, status: 'active' },
     include: {
       subjects: true
     }
