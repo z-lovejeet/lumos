@@ -6,6 +6,7 @@ import { CalendarDays, BookOpen, Calculator, Target, ArrowRight } from 'lucide-r
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
+import { SemesterClient } from '@/components/semesters/SemesterClient'
 
 export const metadata = {
   title: 'Dashboard - AcademiQ',
@@ -32,6 +33,11 @@ export default async function DashboardPage() {
   const totalSubjects = activeSemester?.subjects.length || 0
   const totalCredits = activeSemester?.subjects.reduce((sum, s) => sum + s.credits, 0) || 0
 
+  const allSemesters = await prisma.semester.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: 'desc' }
+  })
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -47,7 +53,7 @@ export default async function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center pt-4">
-            <Link href="/semesters">
+            <Link href="#semesters">
               <Button size="lg">
                 <CalendarDays className="mr-2 h-5 w-5" />
                 Set Up First Semester
@@ -169,6 +175,14 @@ export default async function DashboardPage() {
           </div>
         </>
       )}
+
+      <div id="semesters" className="mt-8 pt-8 border-t">
+        <div className="mb-4">
+          <h3 className="text-xl font-bold tracking-tight">Manage Semesters</h3>
+          <p className="text-sm text-muted-foreground">View, add, edit, or delete your academic semesters.</p>
+        </div>
+        <SemesterClient initialSemesters={allSemesters} />
+      </div>
     </div>
   )
 }

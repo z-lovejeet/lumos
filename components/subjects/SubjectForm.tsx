@@ -102,7 +102,7 @@ export function SubjectForm({ subject, semesters, markingSchemes = [], onSuccess
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Semester</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a semester" />
@@ -125,7 +125,7 @@ export function SubjectForm({ subject, semesters, markingSchemes = [], onSuccess
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Marking Scheme (Optional)</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a marking scheme" />
@@ -193,7 +193,7 @@ export function SubjectForm({ subject, semesters, markingSchemes = [], onSuccess
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
