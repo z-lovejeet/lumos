@@ -32,7 +32,6 @@ model Semester {
   number       Int
   name         String
   status       String    @default("active") // active, completed
-  isActive     Boolean   @default(true)
   totalCredits Int       @default(0)
   subjects     Subject[]
   startDate    DateTime?
