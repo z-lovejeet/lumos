@@ -90,7 +90,7 @@ export function SubjectClient({ initialSubjects, initialSemesters, initialMarkin
               <h3 className="text-lg font-semibold tracking-tight border-b pb-2">{semesterName}</h3>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {semSubjects.map((subject) => (
-                  <Card key={subject.id} className="overflow-hidden border-t-4" style={{ borderTopColor: subject.colorCode || '#3b82f6' }}>
+                  <Card key={subject.id} className="overflow-hidden border-t-4 border-t-blue-500">
                     <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                       <div className="space-y-1">
                         <CardTitle className="text-xl font-bold truncate pr-2">

@@ -134,7 +134,7 @@ export default async function DashboardPage() {
                     {activeSemester.subjects.map(subject => (
                       <div key={subject.id} className="flex items-center justify-between p-3 rounded-lg border">
                         <div className="flex items-center gap-3">
-                          <div className="w-2 h-10 rounded-full" style={{ backgroundColor: subject.colorCode || '#3b82f6' }} />
+                          <div className="w-2 h-10 rounded-full bg-blue-500" />
                           <div>
                             <p className="text-sm font-medium leading-none">{subject.code}</p>
                             <p className="text-sm text-muted-foreground">{subject.name}</p>

@@ -52,7 +52,6 @@ model Subject {
   credits         Float
   category        String         // core, elective, lab, minor
   facultyName     String?
-  colorCode       String?
   markingSchemeId String?
   markingScheme   MarkingScheme? @relation(fields: [markingSchemeId], references: [id])
   difficulty      String         @default("medium") // easy, medium, hard
