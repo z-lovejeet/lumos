@@ -87,7 +87,8 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={trigger || <Button>Add Semester</Button>} />
+      {/* @ts-ignore - Base UI nativeButton prop to prevent non-button errors */}
+      <DialogTrigger render={trigger || <Button>Add Semester</Button>} nativeButton={trigger ? false : true} />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Semester' : 'Add Semester'}</DialogTitle>

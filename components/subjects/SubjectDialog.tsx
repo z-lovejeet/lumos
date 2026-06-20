@@ -101,7 +101,8 @@ export function SubjectDialog({ subject, semesters, markingSchemes = [], trigger
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={trigger || <Button>Add Subject</Button>} />
+      {/* @ts-ignore - Base UI nativeButton prop to prevent non-button errors */}
+      <DialogTrigger render={trigger || <Button>Add Subject</Button>} nativeButton={trigger ? false : true} />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Subject' : 'Add Subject'}</DialogTitle>
