@@ -32,6 +32,7 @@ model Semester {
   number       Int
   name         String
   status       String    @default("active") // active, completed
+  isActive     Boolean   @default(true)
   totalCredits Int       @default(0)
   subjects     Subject[]
   startDate    DateTime?
@@ -49,9 +50,10 @@ model Subject {
   userId          String
   name            String
   code            String
-  credits         Int
+  credits         Float
   category        String         // core, elective, lab, minor
   facultyName     String?
+  colorCode       String?
   markingSchemeId String?
   markingScheme   MarkingScheme? @relation(fields: [markingSchemeId], references: [id])
   difficulty      String         @default("medium") // easy, medium, hard

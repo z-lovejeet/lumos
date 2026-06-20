@@ -44,9 +44,12 @@ export async function POST(req: Request) {
       })
     }
 
+    const count = await prisma.semester.count({ where: { userId: user.id } })
+
     const newSemester = await prisma.semester.create({
       data: {
         userId: user.id,
+        number: count + 1,
         name: validatedData.name,
         startDate: new Date(validatedData.startDate),
         endDate: new Date(validatedData.endDate),
