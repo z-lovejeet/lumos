@@ -8,6 +8,7 @@ import { useAcademicStore, type Semester } from '@/stores/academic-store'
 import { deleteSemester } from '@/app/(app)/semesters/actions'
 
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/shared/EmptyState'
 import {
   Card,
   CardContent,
@@ -56,13 +57,13 @@ export function SemesterClient({ initialSemesters }: SemesterClientProps) {
       </div>
 
       {semesters.length === 0 ? (
-        <div className="flex h-[400px] shrink-0 items-center justify-center rounded-md border border-dashed">
-          <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
-            <CalendarDays className="h-10 w-10 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold">No semesters added</h3>
-            <p className="mb-4 mt-2 text-sm text-muted-foreground">
-              You haven't added any academic semesters yet. Start by creating your first semester.
-            </p>
+        <div className="relative">
+          <EmptyState
+            icon={CalendarDays}
+            title="No semesters added"
+            description="You haven't added any academic semesters yet. Start by creating your first semester."
+          />
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
             <SemesterDialog />
           </div>
         </div>

@@ -8,6 +8,7 @@ import { deleteSubject } from '@/app/(app)/subjects/actions'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/shared/EmptyState'
 
 interface SubjectClientProps {
   initialSubjects: (Subject & { semester: { name: string } })[]
@@ -56,20 +57,13 @@ export function SubjectClient({ initialSubjects, initialSemesters }: SubjectClie
       </div>
 
       {initialSubjects.length === 0 ? (
-        <div className="flex h-[400px] shrink-0 items-center justify-center rounded-md border border-dashed">
-          <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
-            <BookOpen className="h-10 w-10 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold">No subjects added</h3>
-            <p className="mb-4 mt-2 text-sm text-muted-foreground">
-              You haven't added any subjects yet. Start by creating a subject for your semester.
-            </p>
-            {initialSemesters.length > 0 && (
-              <Button>
-                <Link href="/subjects/new">Add Subject</Link>
-              </Button>
-            )}
-          </div>
-        </div>
+        <EmptyState
+          icon={BookOpen}
+          title="No subjects added"
+          description="You haven't added any subjects yet. Start by creating a subject for your semester."
+          actionLabel={initialSemesters.length > 0 ? "Add Subject" : undefined}
+          actionHref={initialSemesters.length > 0 ? "/subjects/new" : undefined}
+        />
       ) : (
         <div className="space-y-8">
           {Object.entries(groupedSubjects).map(([semesterName, semSubjects]) => (
