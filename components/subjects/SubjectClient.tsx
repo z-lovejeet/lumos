@@ -25,9 +25,10 @@ import { Badge } from '@/components/ui/badge'
 interface SubjectClientProps {
   initialSubjects: (Subject & { semester: { name: string } })[]
   initialSemesters: Semester[]
+  initialMarkingSchemes: any[]
 }
 
-export function SubjectClient({ initialSubjects, initialSemesters }: SubjectClientProps) {
+export function SubjectClient({ initialSubjects, initialSemesters, initialMarkingSchemes }: SubjectClientProps) {
   const { subjects, setSubjects, semesters, setSemesters } = useAcademicStore()
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
 
@@ -67,7 +68,7 @@ export function SubjectClient({ initialSubjects, initialSemesters }: SubjectClie
         {semesters.length === 0 ? (
           <Button disabled>Add Subject (Requires Semester)</Button>
         ) : (
-          <SubjectDialog />
+          <SubjectDialog semesters={initialSemesters} markingSchemes={initialMarkingSchemes} />
         )}
       </div>
 
@@ -79,7 +80,7 @@ export function SubjectClient({ initialSubjects, initialSemesters }: SubjectClie
             <p className="mb-4 mt-2 text-sm text-muted-foreground">
               You haven't added any subjects yet. Start by creating a subject for your semester.
             </p>
-            {semesters.length > 0 && <SubjectDialog />}
+            {semesters.length > 0 && <SubjectDialog semesters={initialSemesters} markingSchemes={initialMarkingSchemes} />}
           </div>
         </div>
       ) : (
@@ -109,6 +110,8 @@ export function SubjectClient({ initialSubjects, initialSemesters }: SubjectClie
                         <DropdownMenuContent align="end">
                           <SubjectDialog 
                             subject={subject} 
+                            semesters={initialSemesters}
+                            markingSchemes={initialMarkingSchemes}
                             trigger={
                               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                                 <Pencil className="mr-2 h-4 w-4" />

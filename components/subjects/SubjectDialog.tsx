@@ -39,22 +39,25 @@ import {
 
 interface SubjectDialogProps {
   subject?: any
+  semesters: any[]
+  markingSchemes?: any[]
   trigger?: React.ReactNode
   onSuccess?: () => void
 }
 
 const CATEGORIES = ['Core', 'Elective', 'Lab', 'Project', 'General']
 
-export function SubjectDialog({ subject, trigger, onSuccess }: SubjectDialogProps) {
+export function SubjectDialog({ subject, semesters, markingSchemes = [], trigger, onSuccess }: SubjectDialogProps) {
   const [open, setOpen] = useState(false)
   const [isPending, setIsPending] = useState(false)
-  const { semesters, activeSemesterId } = useAcademicStore()
+  const { activeSemesterId } = useAcademicStore()
   const isEdit = !!subject
 
   const form = useForm<SubjectFormValues>({
     resolver: zodResolver(subjectSchema),
     defaultValues: {
       semesterId: subject?.semesterId || activeSemesterId || (semesters[0]?.id ?? ''),
+      markingSchemeId: subject?.markingSchemeId || '',
       code: subject?.code || '',
       name: subject?.name || '',
       credits: subject?.credits || 3,
@@ -68,6 +71,7 @@ export function SubjectDialog({ subject, trigger, onSuccess }: SubjectDialogProp
     setIsPending(true)
     const formData = new FormData()
     formData.append('semesterId', data.semesterId)
+    if (data.markingSchemeId) formData.append('markingSchemeId', data.markingSchemeId)
     formData.append('code', data.code)
     formData.append('name', data.name)
     formData.append('credits', data.credits.toString())
@@ -124,6 +128,29 @@ export function SubjectDialog({ subject, trigger, onSuccess }: SubjectDialogProp
                     <SelectContent>
                       {semesters.map(sem => (
                         <SelectItem key={sem.id} value={sem.id}>{sem.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="markingSchemeId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Marking Scheme (Optional)</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a marking scheme" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {markingSchemes.map(ms => (
+                        <SelectItem key={ms.id} value={ms.id}>{ms.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

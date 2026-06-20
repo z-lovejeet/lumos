@@ -1,5 +1,6 @@
 import { getSubjects } from './actions'
 import { getSemesters } from '@/app/(app)/semesters/actions'
+import { getMarkingSchemes } from '@/app/(app)/marking-schemes/actions'
 import { SubjectClient } from '@/components/subjects/SubjectClient'
 import { redirect } from 'next/navigation'
 
@@ -10,9 +11,10 @@ export const metadata = {
 
 export default async function SubjectsPage() {
   try {
-    const [subjectsRes, semestersRes] = await Promise.all([
+    const [subjectsRes, semestersRes, markingSchemesRes] = await Promise.all([
       getSubjects(),
-      getSemesters()
+      getSemesters(),
+      getMarkingSchemes()
     ])
     
     return (
@@ -22,7 +24,8 @@ export default async function SubjectsPage() {
         </div>
         <SubjectClient 
           initialSubjects={subjectsRes.subjects} 
-          initialSemesters={semestersRes.semesters} 
+          initialSemesters={semestersRes.semesters}
+          initialMarkingSchemes={markingSchemesRes.schemes}
         />
       </div>
     )

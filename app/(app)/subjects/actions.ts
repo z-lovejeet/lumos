@@ -44,6 +44,7 @@ export async function createSubject(formData: FormData) {
     category: formData.get('category'),
     facultyName: formData.get('facultyName') || undefined,
     colorCode: formData.get('colorCode') || undefined,
+    markingSchemeId: formData.get('markingSchemeId') || undefined,
   }
 
   try {
@@ -68,6 +69,7 @@ export async function createSubject(formData: FormData) {
         category: validatedData.category,
         facultyName: validatedData.facultyName,
         colorCode: validatedData.colorCode,
+        markingSchemeId: validatedData.markingSchemeId,
       }
     })
 
@@ -98,6 +100,7 @@ export async function updateSubject(id: string, formData: FormData) {
     category: formData.get('category'),
     facultyName: formData.get('facultyName') || undefined,
     colorCode: formData.get('colorCode') || undefined,
+    markingSchemeId: formData.get('markingSchemeId') || undefined,
   }
 
   try {
@@ -119,6 +122,7 @@ export async function updateSubject(id: string, formData: FormData) {
         category: validatedData.category,
         facultyName: validatedData.facultyName,
         colorCode: validatedData.colorCode,
+        markingSchemeId: validatedData.markingSchemeId,
       }
     })
 

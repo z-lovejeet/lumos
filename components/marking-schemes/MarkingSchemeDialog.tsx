@@ -34,6 +34,27 @@ interface MarkingSchemeDialogProps {
   onSuccess?: () => void
 }
 
+const PRESETS = {
+  theory: [
+    { name: 'CA', weight: 25, maxMarks: 100 },
+    { name: 'Mid', weight: 20, maxMarks: 100 },
+    { name: 'End', weight: 50, maxMarks: 100 },
+    { name: 'Att', weight: 5, maxMarks: 100 }
+  ],
+  lab: [
+    { name: 'Viva', weight: 20, maxMarks: 100 },
+    { name: 'Lab', weight: 40, maxMarks: 100 },
+    { name: 'Quiz', weight: 10, maxMarks: 100 },
+    { name: 'End', weight: 30, maxMarks: 100 }
+  ],
+  project: [
+    { name: 'Internal', weight: 30, maxMarks: 100 },
+    { name: 'External', weight: 40, maxMarks: 100 },
+    { name: 'Report', weight: 20, maxMarks: 100 },
+    { name: 'Presentation', weight: 10, maxMarks: 100 }
+  ]
+}
+
 export function MarkingSchemeDialog({ scheme, trigger, onSuccess }: MarkingSchemeDialogProps) {
   const [open, setOpen] = useState(false)
   const [isPending, setIsPending] = useState(false)
@@ -45,11 +66,7 @@ export function MarkingSchemeDialog({ scheme, trigger, onSuccess }: MarkingSchem
       name: scheme?.name || '',
       components: scheme?.components?.length > 0 
         ? scheme.components 
-        : [
-            { name: 'Midterm', weight: 30, maxMarks: 100 },
-            { name: 'Final', weight: 50, maxMarks: 100 },
-            { name: 'Assignment', weight: 20, maxMarks: 100 }
-          ],
+        : PRESETS.theory,
     },
   })
 
@@ -96,6 +113,25 @@ export function MarkingSchemeDialog({ scheme, trigger, onSuccess }: MarkingSchem
             Configure how a subject is graded. Total weight must equal 100%.
           </DialogDescription>
         </DialogHeader>
+        
+        {!isEdit && (
+          <div className="flex gap-2 mb-4">
+            <span className="text-sm font-medium pt-2 mr-2">Presets:</span>
+            <Button variant="outline" size="sm" onClick={() => {
+              form.setValue('name', 'Theory Scheme')
+              form.setValue('components', PRESETS.theory)
+            }}>Theory</Button>
+            <Button variant="outline" size="sm" onClick={() => {
+              form.setValue('name', 'Lab Scheme')
+              form.setValue('components', PRESETS.lab)
+            }}>Lab</Button>
+            <Button variant="outline" size="sm" onClick={() => {
+              form.setValue('name', 'Project Scheme')
+              form.setValue('components', PRESETS.project)
+            }}>Project</Button>
+          </div>
+        )}
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             
