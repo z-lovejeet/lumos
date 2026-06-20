@@ -1,5 +1,24 @@
 import { GET as getSubjects } from '../app/api/subjects/route';
-import { NextResponse } from 'next/server';
+
+jest.mock('next/server', () => ({
+  NextResponse: {
+    json: jest.fn().mockImplementation((body, init) => {
+      return {
+        status: init?.status || 200,
+        json: async () => body
+      };
+    })
+  }
+}));
+
+if (typeof global.Request === 'undefined') {
+  global.Request = class Request {
+    url: string;
+    constructor(input: string) {
+      this.url = input;
+    }
+  } as any;
+}
 
 // Mock the Supabase client
 jest.mock('@/lib/supabase/server', () => ({
