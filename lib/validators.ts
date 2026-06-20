@@ -49,3 +49,27 @@ export const subjectSchema = z.object({
 })
 
 export type SubjectFormValues = z.infer<typeof subjectSchema>
+
+// Grade Range Schema
+export const gradeRangeSchema = z.object({
+  id: z.string().optional(),
+  grade: z.string().min(1, "Grade label is required"), // e.g. "A+", "A"
+  minPercentage: z.number().min(0).max(100),
+  maxPercentage: z.number().min(0).max(100),
+  gpaValue: z.number().min(0).max(10), // e.g. 4.0 or 10.0 scale
+}).refine(data => data.minPercentage < data.maxPercentage, {
+  message: "Min percentage must be less than max percentage",
+  path: ["minPercentage"],
+})
+
+export type GradeRangeFormValues = z.infer<typeof gradeRangeSchema>
+
+// Grade Scale Schema
+export const gradeScaleSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, "Grade scale name is required"), // e.g. "10-Point CGPA"
+  ranges: z.array(gradeRangeSchema)
+    .min(2, "At least two grade ranges are required")
+})
+
+export type GradeScaleFormValues = z.infer<typeof gradeScaleSchema>
