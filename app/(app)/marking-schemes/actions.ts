@@ -46,17 +46,7 @@ export async function createMarkingScheme(formData: FormData) {
       data: {
         userId: user.id,
         name: validatedData.name,
-        components: {
-          create: validatedData.components.map((c, index) => ({
-            name: c.name,
-            weight: c.weight,
-            maxMarks: c.maxMarks,
-            order: index
-          }))
-        }
-      },
-      include: {
-        components: true
+        components: validatedData.components
       }
     })
 
@@ -91,27 +81,11 @@ export async function updateMarkingScheme(id: string, formData: FormData) {
       return { success: false, error: 'Scheme not found or unauthorized' }
     }
 
-    // Prisma doesn't have an easy "replace all children" for many-to-one,
-    // so we delete existing components and create new ones
-    await prisma.schemeComponent.deleteMany({
-      where: { schemeId: id }
-    })
-
     const updated = await prisma.markingScheme.update({
       where: { id },
       data: {
         name: validatedData.name,
-        components: {
-          create: validatedData.components.map((c, index) => ({
-            name: c.name,
-            weight: c.weight,
-            maxMarks: c.maxMarks,
-            order: index
-          }))
-        }
-      },
-      include: {
-        components: true
+        components: validatedData.components
       }
     })
 

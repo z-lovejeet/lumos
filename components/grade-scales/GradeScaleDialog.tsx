@@ -53,7 +53,7 @@ export function GradeScaleDialog({ scale, trigger, onSuccess }: GradeScaleDialog
     resolver: zodResolver(gradeScaleSchema),
     defaultValues: {
       name: scale?.name || '',
-      ranges: scale?.ranges?.length > 0 ? scale.ranges : DEFAULT_RANGES,
+      ranges: scale?.grades?.length > 0 ? scale.grades : DEFAULT_RANGES,
     },
   })
 

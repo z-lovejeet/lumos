@@ -106,8 +106,8 @@ export function GradeScaleClient({ initialScales }: GradeScaleClientProps) {
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {scale.ranges.map((range: any) => (
-                        <tr key={range.id} className="hover:bg-muted/50 transition-colors">
+                      {scale.grades.map((range: any) => (
+                        <tr key={range.id || range.grade} className="hover:bg-muted/50 transition-colors">
                           <td className="px-3 py-2 font-semibold">{range.grade}</td>
                           <td className="px-3 py-2">{range.minPercentage} - {range.maxPercentage}</td>
                           <td className="px-3 py-2 text-muted-foreground">{range.gpaValue}</td>

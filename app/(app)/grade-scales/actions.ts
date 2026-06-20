@@ -46,17 +46,7 @@ export async function createGradeScale(formData: FormData) {
       data: {
         userId: user.id,
         name: validatedData.name,
-        ranges: {
-          create: validatedData.ranges.map((r) => ({
-            grade: r.grade,
-            minPercentage: r.minPercentage,
-            maxPercentage: r.maxPercentage,
-            gpaValue: r.gpaValue,
-          }))
-        }
-      },
-      include: {
-        ranges: true
+        grades: validatedData.ranges
       }
     })
 
@@ -90,26 +80,11 @@ export async function updateGradeScale(id: string, formData: FormData) {
       return { success: false, error: 'Scale not found or unauthorized' }
     }
 
-    // Replace all children
-    await prisma.gradeRange.deleteMany({
-      where: { scaleId: id }
-    })
-
     const updated = await prisma.gradeScale.update({
       where: { id },
       data: {
         name: validatedData.name,
-        ranges: {
-          create: validatedData.ranges.map((r) => ({
-            grade: r.grade,
-            minPercentage: r.minPercentage,
-            maxPercentage: r.maxPercentage,
-            gpaValue: r.gpaValue,
-          }))
-        }
-      },
-      include: {
-        ranges: true
+        grades: validatedData.ranges
       }
     })
 
