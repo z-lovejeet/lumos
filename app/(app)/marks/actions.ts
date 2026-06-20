@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import prisma from '@/lib/prisma'
+import { z } from 'zod'
+import { markUpdateSchema } from '@/lib/validators'
 
 export async function upsertMarks(subjectId: string, marksData: { componentName: string, maxMarks: number, obtainedMarks: number | null, examDate: string | null }[]) {
   const supabase = await createClient()
@@ -11,6 +13,9 @@ export async function upsertMarks(subjectId: string, marksData: { componentName:
   if (!user) {
     throw new Error('Unauthorized')
   }
+
+  // Validate marksData
+  const validatedMarks = z.array(markUpdateSchema).parse(marksData)
 
   // Verify subject ownership
   const subject = await prisma.subject.findUnique({

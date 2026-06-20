@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import prisma from '@/lib/prisma'
 import { z } from 'zod'
+import { markUpdateSchema } from '@/lib/validators'
 
 export async function GET(
   req: Request,
@@ -34,13 +35,6 @@ export async function GET(
   }
 }
 
-const marksSchema = z.array(z.object({
-  componentName: z.string(),
-  maxMarks: z.number(),
-  obtainedMarks: z.number().nullable(),
-  examDate: z.string().optional().nullable()
-}))
-
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -63,7 +57,7 @@ export async function PUT(
     }
 
     const body = await req.json()
-    const marksData = marksSchema.parse(body.marks)
+    const marksData = z.array(markUpdateSchema).parse(body.marks)
 
     await prisma.$transaction(async (tx) => {
       for (const mark of marksData) {

@@ -72,3 +72,19 @@ export const gradeScaleSchema = z.object({
 })
 
 export type GradeScaleFormValues = z.infer<typeof gradeScaleSchema>
+
+// Marks Schema
+export const markUpdateSchema = z.object({
+  componentName: z.string().min(1, "Component name is required"),
+  maxMarks: z.number().min(1, "Max marks must be greater than 0"),
+  obtainedMarks: z.number().nullable(),
+  examDate: z.string().optional().nullable(),
+}).refine(data => data.obtainedMarks === null || data.obtainedMarks <= data.maxMarks, {
+  message: "Obtained marks cannot exceed max marks",
+  path: ["obtainedMarks"]
+}).refine(data => data.obtainedMarks === null || data.obtainedMarks >= 0, {
+  message: "Obtained marks cannot be negative",
+  path: ["obtainedMarks"]
+})
+
+export type MarkUpdateValues = z.infer<typeof markUpdateSchema>
