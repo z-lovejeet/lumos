@@ -75,12 +75,12 @@ export function SemesterClient({ initialSemesters }: SemesterClientProps) {
                   {semester.name}
                 </CardTitle>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger render={
                     <Button variant="ghost" className="h-8 w-8 p-0">
                       <span className="sr-only">Open menu</span>
                       <MoreVertical className="h-4 w-4" />
                     </Button>
-                  </DropdownMenuTrigger>
+                  } />
                   <DropdownMenuContent align="end">
                     <SemesterDialog 
                       semester={semester} 
@@ -104,7 +104,9 @@ export function SemesterClient({ initialSemesters }: SemesterClientProps) {
               </CardHeader>
               <CardContent>
                 <div className="text-sm text-muted-foreground mt-2">
-                  {format(new Date(semester.startDate), "MMM d, yyyy")} - {format(new Date(semester.endDate), "MMM d, yyyy")}
+                  {semester.startDate && format(new Date(semester.startDate), "MMM d, yyyy")} 
+                  {semester.startDate && semester.endDate && ' - '}
+                  {semester.endDate && format(new Date(semester.endDate), "MMM d, yyyy")}
                 </div>
               </CardContent>
               <CardFooter>

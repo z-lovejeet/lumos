@@ -5,8 +5,9 @@ import { z } from 'zod'
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -16,7 +17,7 @@ export async function GET(
 
   try {
     const subject = await prisma.subject.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!subject || subject.userId !== user.id) {
@@ -24,7 +25,7 @@ export async function GET(
     }
 
     const marks = await prisma.mark.findMany({
-      where: { subjectId: params.id }
+      where: { subjectId: id }
     })
 
     return NextResponse.json({ marks })
@@ -42,8 +43,9 @@ const marksSchema = z.array(z.object({
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -53,7 +55,7 @@ export async function PUT(
 
   try {
     const subject = await prisma.subject.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!subject || subject.userId !== user.id) {
@@ -68,7 +70,7 @@ export async function PUT(
         await tx.mark.upsert({
           where: {
             subjectId_componentName: {
-              subjectId: params.id,
+              subjectId: id,
               componentName: mark.componentName
             }
           },
@@ -78,7 +80,7 @@ export async function PUT(
             examDate: mark.examDate ? new Date(mark.examDate) : null,
           },
           create: {
-            subjectId: params.id,
+            subjectId: id,
             componentName: mark.componentName,
             maxMarks: mark.maxMarks,
             obtainedMarks: mark.obtainedMarks,

@@ -16,11 +16,6 @@ export async function getMarkingSchemes() {
 
   const schemes = await prisma.markingScheme.findMany({
     where: { userId: user.id },
-    include: {
-      components: {
-        orderBy: { order: 'asc' }
-      }
-    },
     orderBy: { createdAt: 'desc' }
   })
 
@@ -55,7 +50,7 @@ export async function createMarkingScheme(formData: FormData) {
     return { success: true, scheme: newScheme }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
+      return { success: false, error: error.issues[0].message }
     }
     return { success: false, error: 'Failed to create marking scheme' }
   }
@@ -94,7 +89,7 @@ export async function updateMarkingScheme(id: string, formData: FormData) {
     return { success: true, scheme: updated }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
+      return { success: false, error: error.issues[0].message }
     }
     return { success: false, error: 'Failed to update marking scheme' }
   }

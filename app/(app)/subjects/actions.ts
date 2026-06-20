@@ -78,7 +78,7 @@ export async function createSubject(formData: FormData) {
     return { success: true, subject: newSubject }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
+      return { success: false, error: error.issues[0].message }
     }
     return { success: false, error: 'Failed to create subject' }
   }
@@ -131,7 +131,7 @@ export async function updateSubject(id: string, formData: FormData) {
     return { success: true, subject: updated }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
+      return { success: false, error: error.issues[0].message }
     }
     return { success: false, error: 'Failed to update subject' }
   }

@@ -5,8 +5,9 @@ import { subjectSchema } from '@/lib/validators'
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -16,7 +17,7 @@ export async function GET(
 
   try {
     const subject = await prisma.subject.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { marks: true, attendance: true }
     })
 
@@ -32,8 +33,9 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -45,13 +47,13 @@ export async function PATCH(
     const body = await req.json()
     const validatedData = subjectSchema.parse(body)
 
-    const existing = await prisma.subject.findUnique({ where: { id: params.id } })
+    const existing = await prisma.subject.findUnique({ where: { id } })
     if (!existing || existing.userId !== user.id) {
       return NextResponse.json({ error: 'Subject not found' }, { status: 404 })
     }
 
     const updated = await prisma.subject.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         semesterId: validatedData.semesterId,
         code: validatedData.code,
@@ -72,8 +74,9 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -82,12 +85,12 @@ export async function DELETE(
   }
 
   try {
-    const existing = await prisma.subject.findUnique({ where: { id: params.id } })
+    const existing = await prisma.subject.findUnique({ where: { id } })
     if (!existing || existing.userId !== user.id) {
       return NextResponse.json({ error: 'Subject not found' }, { status: 404 })
     }
 
-    await prisma.subject.delete({ where: { id: params.id } })
+    await prisma.subject.delete({ where: { id } })
 
     return NextResponse.json({ success: true })
   } catch (error) {

@@ -5,8 +5,9 @@ import { semesterSchema } from '@/lib/validators'
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -16,7 +17,7 @@ export async function GET(
 
   try {
     const semester = await prisma.semester.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { subjects: true }
     })
 
@@ -32,8 +33,9 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -45,7 +47,7 @@ export async function PATCH(
     const body = await req.json()
     const validatedData = semesterSchema.parse(body)
 
-    const existing = await prisma.semester.findUnique({ where: { id: params.id } })
+    const existing = await prisma.semester.findUnique({ where: { id } })
     if (!existing || existing.userId !== user.id) {
       return NextResponse.json({ error: 'Semester not found' }, { status: 404 })
     }
@@ -58,7 +60,7 @@ export async function PATCH(
     }
 
     const updated = await prisma.semester.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: validatedData.name,
         startDate: new Date(validatedData.startDate),
@@ -75,8 +77,9 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -85,12 +88,12 @@ export async function DELETE(
   }
 
   try {
-    const existing = await prisma.semester.findUnique({ where: { id: params.id } })
+    const existing = await prisma.semester.findUnique({ where: { id } })
     if (!existing || existing.userId !== user.id) {
       return NextResponse.json({ error: 'Semester not found' }, { status: 404 })
     }
 
-    await prisma.semester.delete({ where: { id: params.id } })
+    await prisma.semester.delete({ where: { id } })
 
     return NextResponse.json({ success: true })
   } catch (error) {

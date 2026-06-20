@@ -30,28 +30,28 @@ import { Input } from '@/components/ui/input'
 
 interface MarkingSchemeDialogProps {
   scheme?: any
-  trigger?: React.ReactNode
+  trigger?: React.ReactElement
   onSuccess?: () => void
 }
 
 const PRESETS = {
   theory: [
-    { name: 'CA', weight: 25, maxMarks: 100 },
-    { name: 'Mid', weight: 20, maxMarks: 100 },
-    { name: 'End', weight: 50, maxMarks: 100 },
-    { name: 'Att', weight: 5, maxMarks: 100 }
+    { id: crypto.randomUUID(), name: 'CA', weight: 25, maxMarks: 100 },
+    { id: crypto.randomUUID(), name: 'Mid', weight: 20, maxMarks: 100 },
+    { id: crypto.randomUUID(), name: 'End', weight: 50, maxMarks: 100 },
+    { id: crypto.randomUUID(), name: 'Att', weight: 5, maxMarks: 100 }
   ],
   lab: [
-    { name: 'Viva', weight: 20, maxMarks: 100 },
-    { name: 'Lab', weight: 40, maxMarks: 100 },
-    { name: 'Quiz', weight: 10, maxMarks: 100 },
-    { name: 'End', weight: 30, maxMarks: 100 }
+    { id: crypto.randomUUID(), name: 'Viva', weight: 20, maxMarks: 100 },
+    { id: crypto.randomUUID(), name: 'Lab', weight: 40, maxMarks: 100 },
+    { id: crypto.randomUUID(), name: 'Quiz', weight: 10, maxMarks: 100 },
+    { id: crypto.randomUUID(), name: 'End', weight: 30, maxMarks: 100 }
   ],
   project: [
-    { name: 'Internal', weight: 30, maxMarks: 100 },
-    { name: 'External', weight: 40, maxMarks: 100 },
-    { name: 'Report', weight: 20, maxMarks: 100 },
-    { name: 'Presentation', weight: 10, maxMarks: 100 }
+    { id: crypto.randomUUID(), name: 'Internal', weight: 30, maxMarks: 100 },
+    { id: crypto.randomUUID(), name: 'External', weight: 40, maxMarks: 100 },
+    { id: crypto.randomUUID(), name: 'Report', weight: 20, maxMarks: 100 },
+    { id: crypto.randomUUID(), name: 'Presentation', weight: 10, maxMarks: 100 }
   ]
 }
 
@@ -103,9 +103,7 @@ export function MarkingSchemeDialog({ scheme, trigger, onSuccess }: MarkingSchem
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || <Button>Create Scheme</Button>}
-      </DialogTrigger>
+      <DialogTrigger render={trigger || <Button>Create Scheme</Button>} />
       <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Marking Scheme' : 'Create Marking Scheme'}</DialogTitle>
@@ -224,7 +222,7 @@ export function MarkingSchemeDialog({ scheme, trigger, onSuccess }: MarkingSchem
                 variant="outline"
                 size="sm"
                 className="mt-2"
-                onClick={() => append({ name: '', weight: 0, maxMarks: 100 })}
+                onClick={() => append({ id: crypto.randomUUID(), name: '', weight: 0, maxMarks: 100 })}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Component

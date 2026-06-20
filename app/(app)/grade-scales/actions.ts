@@ -16,11 +16,6 @@ export async function getGradeScales() {
 
   const scales = await prisma.gradeScale.findMany({
     where: { userId: user.id },
-    include: {
-      ranges: {
-        orderBy: { minPercentage: 'desc' }
-      }
-    },
     orderBy: { createdAt: 'desc' }
   })
 
@@ -54,7 +49,7 @@ export async function createGradeScale(formData: FormData) {
     return { success: true, scale: newScale }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
+      return { success: false, error: error.issues[0].message }
     }
     return { success: false, error: 'Failed to create grade scale' }
   }
@@ -92,7 +87,7 @@ export async function updateGradeScale(id: string, formData: FormData) {
     return { success: true, scale: updated }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
+      return { success: false, error: error.issues[0].message }
     }
     return { success: false, error: 'Failed to update grade scale' }
   }

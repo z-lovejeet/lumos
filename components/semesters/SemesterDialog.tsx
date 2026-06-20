@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon, Loader2 } from 'lucide-react'
@@ -40,7 +41,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 
 interface SemesterDialogProps {
   semester?: any // If provided, it's edit mode
-  trigger?: React.ReactNode
+  trigger?: React.ReactElement
   onSuccess?: () => void
 }
 
@@ -50,7 +51,7 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
   const isEdit = !!semester
 
   const form = useForm<SemesterFormValues>({
-    resolver: zodResolver(semesterSchema),
+    resolver: zodResolver(semesterSchema) as any,
     defaultValues: {
       name: semester?.name || '',
       startDate: semester ? new Date(semester.startDate) : new Date(),
@@ -59,7 +60,7 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
     },
   })
 
-  async function onSubmit(data: SemesterFormValues) {
+  async function onSubmit(data: z.infer<typeof semesterSchema>) {
     setIsPending(true)
     const formData = new FormData()
     formData.append('name', data.name)
@@ -88,9 +89,7 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || <Button>Add Semester</Button>}
-      </DialogTrigger>
+      <DialogTrigger render={trigger || <Button>Add Semester</Button>} />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Semester' : 'Add Semester'}</DialogTitle>
@@ -122,7 +121,7 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
                   <FormItem className="flex flex-col">
                     <FormLabel>Start Date</FormLabel>
                     <Popover>
-                      <PopoverTrigger asChild>
+                      <PopoverTrigger render={
                         <FormControl>
                           <Button
                             variant={"outline"}
@@ -139,14 +138,13 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
-                      </PopoverTrigger>
+                      } />
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(date) => date < new Date("1900-01-01")}
-                          initialFocus
                         />
                       </PopoverContent>
                     </Popover>
@@ -162,7 +160,7 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
                   <FormItem className="flex flex-col">
                     <FormLabel>End Date</FormLabel>
                     <Popover>
-                      <PopoverTrigger asChild>
+                      <PopoverTrigger render={
                         <FormControl>
                           <Button
                             variant={"outline"}
@@ -179,14 +177,13 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
-                      </PopoverTrigger>
+                      } />
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(date) => date < new Date("1900-01-01")}
-                          initialFocus
                         />
                       </PopoverContent>
                     </Popover>

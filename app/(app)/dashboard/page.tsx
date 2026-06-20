@@ -66,7 +66,9 @@ export default async function DashboardPage() {
               <CardContent>
                 <div className="text-2xl font-bold truncate">{activeSemester.name}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {format(new Date(activeSemester.startDate), "MMM d")} - {format(new Date(activeSemester.endDate), "MMM d, yyyy")}
+                  {activeSemester.startDate && format(new Date(activeSemester.startDate), "MMM d")} 
+                  {activeSemester.startDate && activeSemester.endDate && ' - '}
+                  {activeSemester.endDate && format(new Date(activeSemester.endDate), "MMM d, yyyy")}
                 </p>
               </CardContent>
             </Card>

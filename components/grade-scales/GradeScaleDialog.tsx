@@ -30,7 +30,7 @@ import { Input } from '@/components/ui/input'
 
 interface GradeScaleDialogProps {
   scale?: any
-  trigger?: React.ReactNode
+  trigger?: React.ReactElement
   onSuccess?: () => void
 }
 
@@ -88,9 +88,7 @@ export function GradeScaleDialog({ scale, trigger, onSuccess }: GradeScaleDialog
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || <Button>Create Scale</Button>}
-      </DialogTrigger>
+      <DialogTrigger render={trigger || <Button>Create Scale</Button>} />
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Grade Scale' : 'Create Grade Scale'}</DialogTitle>

@@ -3,8 +3,8 @@ import { create } from 'zustand'
 export interface Semester {
   id: string
   name: string
-  startDate: Date
-  endDate: Date
+  startDate: Date | null
+  endDate: Date | null
   isActive: boolean
 }
 

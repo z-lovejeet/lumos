@@ -28,12 +28,12 @@ export function MobileNav() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+      <SheetTrigger render={
         <Button variant="outline" size="icon" className="shrink-0 md:hidden">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
-      </SheetTrigger>
+      } />
       <SheetContent side="left" className="flex flex-col">
         <SheetTitle className="sr-only">Mobile Navigation</SheetTitle>
         <nav className="grid gap-2 text-lg font-medium">

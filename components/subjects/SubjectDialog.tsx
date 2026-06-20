@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 import { subjectSchema, type SubjectFormValues } from '@/lib/validators'
@@ -41,7 +42,7 @@ interface SubjectDialogProps {
   subject?: any
   semesters: any[]
   markingSchemes?: any[]
-  trigger?: React.ReactNode
+  trigger?: React.ReactElement
   onSuccess?: () => void
 }
 
@@ -67,7 +68,7 @@ export function SubjectDialog({ subject, semesters, markingSchemes = [], trigger
     },
   })
 
-  async function onSubmit(data: SubjectFormValues) {
+  async function onSubmit(data: z.infer<typeof subjectSchema>) {
     setIsPending(true)
     const formData = new FormData()
     formData.append('semesterId', data.semesterId)
@@ -100,9 +101,7 @@ export function SubjectDialog({ subject, semesters, markingSchemes = [], trigger
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || <Button>Add Subject</Button>}
-      </DialogTrigger>
+      <DialogTrigger render={trigger || <Button>Add Subject</Button>} />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Subject' : 'Add Subject'}</DialogTitle>

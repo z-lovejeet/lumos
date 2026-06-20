@@ -30,7 +30,7 @@ import { Input } from '@/components/ui/input'
 
 interface MarksDialogProps {
   subject: any
-  trigger?: React.ReactNode
+  trigger?: React.ReactElement
   onSuccess?: () => void
 }
 
@@ -110,9 +110,7 @@ export function MarksDialog({ subject, trigger, onSuccess }: MarksDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || <Button variant="outline" size="sm">Enter Marks</Button>}
-      </DialogTrigger>
+      <DialogTrigger render={trigger || <Button variant="outline" size="sm">Enter Marks</Button>} />
       <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Enter Marks: {subject.name}</DialogTitle>
