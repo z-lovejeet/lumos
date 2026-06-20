@@ -3,6 +3,8 @@
 import * as React from 'react'
 import { useState, useEffect, useCallback } from 'react'
 import { Subject, Mark, MarkingScheme } from '@prisma/client'
+import { calculateSubjectPercentage } from '@/lib/calculations/percentage'
+import { getGradeFromPercentage, GradeRange } from '@/lib/calculations/sgpa'
 import { Input } from '@/components/ui/input'
 import {
   Table,
@@ -31,6 +33,7 @@ interface MarksTableProps {
     marks: Mark[]
     markingScheme: MarkingScheme | null
   }
+  gradeScaleRanges?: GradeRange[]
 }
 
 interface ComponentMark {
@@ -41,7 +44,7 @@ interface ComponentMark {
   examDate: string | null
 }
 
-export function MarksTable({ subject }: MarksTableProps) {
+export function MarksTable({ subject, gradeScaleRanges = [] }: MarksTableProps) {
   const [marksState, setMarksState] = useState<ComponentMark[]>([])
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
@@ -112,11 +115,9 @@ export function MarksTable({ subject }: MarksTableProps) {
     )
   }
 
-  const totalWeightedObtained = marksState.reduce((acc, curr) => {
-    if (curr.obtainedMarks === null) return acc
-    const percentage = curr.obtainedMarks / curr.maxMarks
-    return acc + (percentage * curr.weight)
-  }, 0)
+  const components = subject.markingScheme.components as any[]
+  const totalWeightedObtained = calculateSubjectPercentage(marksState, components)
+  const predictedGrade = getGradeFromPercentage(totalWeightedObtained, gradeScaleRanges)
 
   return (
     <div className="space-y-4">
@@ -175,16 +176,19 @@ export function MarksTable({ subject }: MarksTableProps) {
         </Table>
       </div>
 
-      <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-muted/50 rounded-lg gap-4">
         <div>
           <p className="text-sm font-medium text-muted-foreground">Current Total</p>
-          <p className="text-2xl font-bold">{totalWeightedObtained.toFixed(1)}%</p>
+          <p className="text-3xl font-bold">{totalWeightedObtained.toFixed(1)}%</p>
         </div>
-        <div className="text-right">
-          <p className="text-sm font-medium text-muted-foreground">Status</p>
-          <Badge variant={totalWeightedObtained >= 40 ? "default" : "destructive"}>
-            {totalWeightedObtained >= 40 ? 'Passing' : 'Needs Improvement'}
-          </Badge>
+        <div className="sm:text-right">
+          <p className="text-sm font-medium text-muted-foreground">Predicted Grade</p>
+          <div className="flex items-center sm:justify-end gap-2 mt-1">
+            <span className="text-2xl font-bold text-primary">{predictedGrade}</span>
+            <Badge variant={totalWeightedObtained >= 40 ? "default" : "destructive"}>
+              {totalWeightedObtained >= 40 ? 'Passing' : 'Needs Improvement'}
+            </Badge>
+          </div>
         </div>
       </div>
     </div>

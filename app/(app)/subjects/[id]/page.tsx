@@ -5,18 +5,26 @@ import { SubjectForm } from '@/components/subjects/SubjectForm'
 import { MarksTable } from '@/components/subjects/MarksTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+import { SubjectOverview } from '@/components/subjects/SubjectOverview'
+import { AttendanceTab } from '@/components/subjects/AttendanceTab'
+import { NotesTab } from '@/components/subjects/NotesTab'
+import { PredictionTab } from '@/components/subjects/PredictionTab'
+import { PYQsTab } from '@/components/subjects/PYQsTab'
+import { calculateSubjectPercentage } from '@/lib/calculations/percentage'
+import { getGradeFromPercentage, GradeRange } from '@/lib/calculations/sgpa'
 
-export default async function SubjectDetailPage({ params }: { params: { id: string } }) {
+export default async function SubjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [subject, semesters, markingSchemes] = await Promise.all([
+  const [subject, semesters, markingSchemes, gradeScale] = await Promise.all([
     prisma.subject.findUnique({
-      where: { id: params.id, userId: user.id },
+      where: { id: id, userId: user.id },
       include: {
         marks: true,
         markingScheme: true,
@@ -29,6 +37,9 @@ export default async function SubjectDetailPage({ params }: { params: { id: stri
     prisma.markingScheme.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: 'desc' }
+    }),
+    prisma.gradeScale.findFirst({
+      where: { userId: user.id, isActive: true }
     })
   ])
 
@@ -36,23 +47,34 @@ export default async function SubjectDetailPage({ params }: { params: { id: stri
     return (
       <div className="container max-w-4xl py-6 text-center">
         <h2 className="text-2xl font-bold mb-4">Subject Not Found</h2>
-        <Button>
-          <Link href="/subjects">Back to Subjects</Link>
-        </Button>
+        <Link href="/subjects" className={buttonVariants()}>Back to Subjects</Link>
       </div>
     )
   }
 
+  // Calculate overview metrics
+  let percentage = 0;
+  let grade = 'N/A';
+
+  if (subject.markingScheme) {
+    // Component schema inside MarkingScheme is JSON
+    const components = subject.markingScheme.components as any[];
+    percentage = calculateSubjectPercentage(subject.marks, components);
+  }
+
+  if (gradeScale) {
+    const ranges = gradeScale.grades as any[] as GradeRange[];
+    grade = getGradeFromPercentage(percentage, ranges);
+  }
+
   return (
     <div className="container max-w-5xl py-6">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center">
-          <Button variant="ghost" size="sm" className="-ml-2 mr-4">
-            <Link href="/subjects" className="flex items-center">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Link>
-          </Button>
+          <Link href="/subjects" className={buttonVariants({ variant: "ghost", size: "sm", className: "-ml-2 mr-4 flex items-center" })}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Link>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{subject.code} - {subject.name}</h1>
             <p className="text-muted-foreground">
@@ -63,14 +85,21 @@ export default async function SubjectDetailPage({ params }: { params: { id: stri
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="mb-4">
+        <TabsList className="mb-4 flex flex-wrap h-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="marks">Marks</TabsTrigger>
-          <TabsTrigger value="attendance" disabled>Attendance</TabsTrigger>
-          <TabsTrigger value="notes" disabled>Notes</TabsTrigger>
+          <TabsTrigger value="attendance">Attendance</TabsTrigger>
+          <TabsTrigger value="notes">Notes</TabsTrigger>
+          <TabsTrigger value="pyqs">PYQs</TabsTrigger>
+          <TabsTrigger value="prediction">Prediction</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview">
+        <TabsContent value="overview" className="space-y-6">
+          <SubjectOverview 
+            subject={subject} 
+            percentage={percentage} 
+            grade={grade} 
+          />
           <Card>
             <CardHeader>
               <CardTitle>Edit Subject Details</CardTitle>
@@ -97,8 +126,35 @@ export default async function SubjectDetailPage({ params }: { params: { id: stri
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <MarksTable subject={subject} />
+              <MarksTable 
+                subject={subject} 
+                gradeScaleRanges={gradeScale ? (gradeScale.grades as any[]) : []} 
+              />
             </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="attendance">
+          <Card>
+            <AttendanceTab />
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="notes">
+          <Card>
+            <NotesTab />
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="pyqs">
+          <Card>
+            <PYQsTab />
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="prediction">
+          <Card>
+            <PredictionTab />
           </Card>
         </TabsContent>
       </Tabs>

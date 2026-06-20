@@ -18,7 +18,7 @@ export async function GET(
   try {
     const subject = await prisma.subject.findUnique({
       where: { id },
-      include: { marks: true, attendance: true }
+      include: { marks: true, attendance: true, notes: true, markingScheme: true }
     })
 
     if (!subject || subject.userId !== user.id) {
