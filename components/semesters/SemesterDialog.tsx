@@ -43,10 +43,16 @@ interface SemesterDialogProps {
   semester?: any // If provided, it's edit mode
   trigger?: React.ReactElement
   onSuccess?: () => void
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogProps) {
-  const [open, setOpen] = useState(false)
+export function SemesterDialog({ semester, trigger, onSuccess, open: externalOpen, onOpenChange: externalOnOpenChange }: SemesterDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isControlled = externalOpen !== undefined
+  const open = isControlled ? externalOpen : internalOpen
+  const setOpen = isControlled ? externalOnOpenChange! : setInternalOpen
+  
   const [isPending, setIsPending] = useState(false)
   const isEdit = !!semester
 
@@ -87,8 +93,11 @@ export function SemesterDialog({ semester, trigger, onSuccess }: SemesterDialogP
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {/* @ts-ignore - Base UI nativeButton prop to prevent non-button errors */}
-      <DialogTrigger render={trigger || <Button>Add Semester</Button>} nativeButton={trigger ? false : true} />
+      {trigger ? (
+        <DialogTrigger render={trigger} nativeButton={false} />
+      ) : !isControlled ? (
+        <DialogTrigger render={<Button>Add Semester</Button>} nativeButton={true} />
+      ) : null}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Semester' : 'Add Semester'}</DialogTitle>

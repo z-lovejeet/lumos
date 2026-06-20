@@ -32,6 +32,8 @@ interface MarkingSchemeDialogProps {
   scheme?: any
   trigger?: React.ReactElement
   onSuccess?: () => void
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 const PRESETS = {
@@ -55,8 +57,12 @@ const PRESETS = {
   ]
 }
 
-export function MarkingSchemeDialog({ scheme, trigger, onSuccess }: MarkingSchemeDialogProps) {
-  const [open, setOpen] = useState(false)
+export function MarkingSchemeDialog({ scheme, trigger, onSuccess, open: externalOpen, onOpenChange: externalOnOpenChange }: MarkingSchemeDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isControlled = externalOpen !== undefined
+  const open = isControlled ? externalOpen : internalOpen
+  const setOpen = isControlled ? externalOnOpenChange! : setInternalOpen
+
   const [isPending, setIsPending] = useState(false)
   const isEdit = !!scheme
 
@@ -103,8 +109,12 @@ export function MarkingSchemeDialog({ scheme, trigger, onSuccess }: MarkingSchem
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={trigger || <Button>Create Scheme</Button>} />
-      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+      {trigger ? (
+        <DialogTrigger render={trigger} nativeButton={false} />
+      ) : !isControlled ? (
+        <DialogTrigger render={<Button>Add Scheme</Button>} nativeButton={true} />
+      ) : null}
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Marking Scheme' : 'Create Marking Scheme'}</DialogTitle>
           <DialogDescription>

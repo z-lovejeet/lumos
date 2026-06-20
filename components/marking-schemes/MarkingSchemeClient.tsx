@@ -26,6 +26,7 @@ interface MarkingSchemeClientProps {
 export function MarkingSchemeClient({ initialSchemes }: MarkingSchemeClientProps) {
   const [schemes, setSchemes] = useState(initialSchemes)
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [editingScheme, setEditingScheme] = useState<any | null>(null)
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this marking scheme? Subjects using it will lose their grading structure.")) {
@@ -46,6 +47,20 @@ export function MarkingSchemeClient({ initialSchemes }: MarkingSchemeClientProps
       <div className="flex justify-end">
         <MarkingSchemeDialog onSuccess={() => window.location.reload()} />
       </div>
+
+      {editingScheme && (
+        <MarkingSchemeDialog 
+          scheme={editingScheme} 
+          open={true} 
+          onOpenChange={(open) => {
+            if (!open) setEditingScheme(null)
+          }} 
+          onSuccess={() => {
+            setEditingScheme(null)
+            window.location.reload()
+          }}
+        />
+      )}
 
       {schemes.length === 0 ? (
         <div className="flex h-[400px] shrink-0 items-center justify-center rounded-md border border-dashed">
@@ -74,16 +89,12 @@ export function MarkingSchemeClient({ initialSchemes }: MarkingSchemeClientProps
                     </Button>
                   } />
                   <DropdownMenuContent align="end">
-                    <MarkingSchemeDialog 
-                      scheme={scheme} 
-                      trigger={
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          <span>Edit</span>
-                        </DropdownMenuItem>
-                      } 
-                      onSuccess={() => window.location.reload()}
-                    />
+                    <DropdownMenuItem 
+                      onClick={() => setEditingScheme(scheme)}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      <span>Edit</span>
+                    </DropdownMenuItem>
                     <DropdownMenuItem 
                       className="text-destructive focus:text-destructive"
                       onClick={() => handleDelete(scheme.id)}

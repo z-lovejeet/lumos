@@ -32,6 +32,7 @@ interface SemesterClientProps {
 export function SemesterClient({ initialSemesters }: SemesterClientProps) {
   const { semesters, setSemesters } = useAcademicStore()
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [editingSemester, setEditingSemester] = useState<Semester | null>(null)
 
   useEffect(() => {
     setSemesters(initialSemesters)
@@ -55,6 +56,17 @@ export function SemesterClient({ initialSemesters }: SemesterClientProps) {
       <div className="flex justify-end">
         <SemesterDialog />
       </div>
+
+      {editingSemester && (
+        <SemesterDialog 
+          semester={editingSemester} 
+          open={true} 
+          onOpenChange={(open) => {
+            if (!open) setEditingSemester(null)
+          }} 
+          onSuccess={() => setEditingSemester(null)}
+        />
+      )}
 
       {semesters.length === 0 ? (
         <div className="relative">
@@ -81,15 +93,12 @@ export function SemesterClient({ initialSemesters }: SemesterClientProps) {
                     <MoreVertical className="h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <SemesterDialog 
-                      semester={semester} 
-                      trigger={
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          <span>Edit</span>
-                        </DropdownMenuItem>
-                      } 
-                    />
+                    <DropdownMenuItem 
+                      onClick={() => setEditingSemester(semester)}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      <span>Edit</span>
+                    </DropdownMenuItem>
                     <DropdownMenuItem 
                       className="text-destructive focus:text-destructive"
                       onClick={() => handleDelete(semester.id)}
