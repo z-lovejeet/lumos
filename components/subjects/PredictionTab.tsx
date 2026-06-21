@@ -1,14 +1,79 @@
-import { EmptyState } from "@/components/shared/EmptyState";
-import { TrendingUp } from "lucide-react";
+import { predictGrade } from '@/lib/predictions/grade-predictor';
+import { GradeRange } from '@/lib/calculations/sgpa';
+import { CalculationComponent } from '@/lib/calculations/percentage';
+import { Progress } from '@/components/ui/progress';
 
-export function PredictionTab() {
+export function PredictionTab({ subject, gradeScale }: { subject: any, gradeScale: any[] }) {
+  if (!subject.markingScheme) {
+    return (
+      <div className="p-6 text-center text-muted-foreground border rounded-lg m-6">
+        No marking scheme attached to this subject. Add a marking scheme to see predictions.
+      </div>
+    );
+  }
+
+  // Parse grade scale
+  const scaleRanges: GradeRange[] = gradeScale.map((g: any) => ({
+    grade: g.grade,
+    minPercentage: g.minPercent,
+    maxPercentage: 100,
+    gpaValue: g.point
+  }));
+  scaleRanges.sort((a, b) => b.minPercentage - a.minPercentage);
+  for (let i = 1; i < scaleRanges.length; i++) {
+    scaleRanges[i].maxPercentage = scaleRanges[i - 1].minPercentage - 0.01;
+  }
+  scaleRanges[0].maxPercentage = 100;
+
+  const components = subject.markingScheme.components as CalculationComponent[];
+  const prediction = predictGrade(subject.marks || [], components, scaleRanges);
+
   return (
-    <div className="p-6">
-      <EmptyState 
-        icon={TrendingUp}
-        title="Grade Prediction Coming Soon"
-        description="Advanced grade predictors and 'What-If' simulators will be available in Phase 5."
-      />
+    <div className="p-6 space-y-8">
+      <div>
+        <h3 className="text-xl font-bold mb-4">Grade Prediction</h3>
+        <p className="text-muted-foreground mb-6">
+          Based on your current performance and remaining assessments.
+        </p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-4 border rounded-xl p-6 bg-primary/5">
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Predicted Grade</span>
+            <span className="text-4xl font-black text-primary">{prediction.predictedGrade}</span>
+          </div>
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Predicted Percentage</span>
+              <span className="font-bold">{prediction.predictedPercentage.toFixed(1)}%</span>
+            </div>
+            <Progress value={prediction.predictedPercentage} className="h-2" />
+          </div>
+        </div>
+
+        <div className="space-y-4 border rounded-xl p-6">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-muted-foreground">Best Possible Grade</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                {prediction.bestPossibleGrade} ({prediction.bestPossiblePercentage.toFixed(0)}%)
+              </span>
+            </div>
+            <Progress value={prediction.bestPossiblePercentage} className="h-2 bg-emerald-100 dark:bg-emerald-950 [&>div]:bg-emerald-600 dark:[&>div]:bg-emerald-400" />
+          </div>
+
+          <div className="pt-4 border-t">
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-muted-foreground">Worst Possible Grade</span>
+              <span className="font-semibold text-destructive">
+                {prediction.worstPossibleGrade} ({prediction.worstPossiblePercentage.toFixed(0)}%)
+              </span>
+            </div>
+            <Progress value={prediction.worstPossiblePercentage} className="h-2 bg-destructive/20 [&>div]:bg-destructive" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

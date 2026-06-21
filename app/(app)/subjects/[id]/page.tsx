@@ -15,6 +15,7 @@ import { PredictionTab } from '@/components/subjects/PredictionTab'
 import { PYQsTab } from '@/components/subjects/PYQsTab'
 import { calculateSubjectPercentage } from '@/lib/calculations/percentage'
 import { getGradeFromPercentage, GradeRange } from '@/lib/calculations/sgpa'
+import defaultGradeScale from '@/data/default-grade-scale.json'
 
 export default async function SubjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -154,7 +155,10 @@ export default async function SubjectDetailPage({ params }: { params: Promise<{ 
 
         <TabsContent value="prediction">
           <Card>
-            <PredictionTab />
+            <PredictionTab 
+              subject={subject} 
+              gradeScale={gradeScale ? (gradeScale.grades as any[]) : defaultGradeScale} 
+            />
           </Card>
         </TabsContent>
       </Tabs>
