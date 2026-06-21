@@ -3,10 +3,11 @@
 import { useMemo } from 'react';
 import { GradeRange } from '@/lib/calculations/sgpa';
 import { CalculationComponent } from '@/lib/calculations/percentage';
-import { predictGrade } from '@/lib/predictions/grade-predictor';
+import { predictGrade, calculateRequiredMarks } from '@/lib/predictions/grade-predictor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { FeasibilityBadge } from '@/components/simulator/FeasibilityBadge';
 
 interface PredictionsClientProps {
   subjects: any[];
@@ -90,6 +91,39 @@ export function PredictionsClient({ subjects, gradeScale }: PredictionsClientPro
                   </div>
                 </div>
               </div>
+
+              {prediction.isFeasible && (
+                <div className="pt-2 border-t">
+                  <p className="text-muted-foreground text-xs mb-2">Targets (Remaining Weight: {
+                    ((subject.markingScheme?.components as CalculationComponent[])?.reduce((acc, c) => acc + c.weight, 0) || 0) 
+                    - (subject.marks?.reduce((acc: number, m: any) => acc + ((subject.markingScheme?.components as CalculationComponent[])?.find(c => c.name === m.componentName)?.weight || 0), 0) || 0)
+                  })</p>
+                  <div className="space-y-2">
+                    {scaleRanges.map(g => {
+                      const components = (subject.markingScheme?.components as CalculationComponent[]) || [];
+                      const req = calculateRequiredMarks(g.minPercentage, subject.marks || [], components);
+                      if (g.minPercentage < prediction.worstPossiblePercentage && g.grade !== prediction.worstPossibleGrade) return null;
+                      if (!req.isFeasible && g.minPercentage > prediction.bestPossiblePercentage) return null; // Don't show impossible ones beyond best
+                      
+                      return (
+                        <div key={g.grade} className="flex items-center justify-between text-xs">
+                          <span className="font-medium">{g.grade}</span>
+                          <div className="flex items-center gap-2">
+                            {req.marksNeededInRemaining <= 0 ? (
+                              <span className="text-emerald-600 dark:text-emerald-400">Achieved</span>
+                            ) : (
+                              <span className="text-muted-foreground">Need {req.marksNeededInRemaining.toFixed(1)}</span>
+                            )}
+                            {req.marksNeededInRemaining > 0 && (
+                              <FeasibilityBadge isFeasible={req.isFeasible} requiredScoreFraction={req.requiredScoreFraction} />
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
