@@ -45,3 +45,36 @@ export function getGPAValueFromPercentage(percentage: number, gradeScaleRanges: 
 
   return sortedRanges[sortedRanges.length - 1].gpaValue;
 }
+
+export interface SubjectForSGPA {
+  credits: number;
+  percentage?: number; // Optional if gpaValue is directly provided
+  gpaValue?: number;   // Override or direct GPA value
+}
+
+/**
+ * Calculates the SGPA for a list of subjects.
+ * Supports both pre-calculated percentages and direct GPA overrides.
+ */
+export function calculateSGPA(subjects: SubjectForSGPA[], gradeScaleRanges: GradeRange[]): number {
+  let totalCredits = 0;
+  let earnedPoints = 0;
+
+  for (const subject of subjects) {
+    if (subject.credits <= 0) continue;
+
+    let gpa = subject.gpaValue;
+    if (gpa === undefined && subject.percentage !== undefined) {
+      gpa = getGPAValueFromPercentage(subject.percentage, gradeScaleRanges);
+    }
+
+    // Only include subjects that have enough data to calculate a GPA
+    if (gpa !== undefined) {
+      totalCredits += subject.credits;
+      earnedPoints += gpa * subject.credits;
+    }
+  }
+
+  if (totalCredits === 0) return 0;
+  return Math.round((earnedPoints / totalCredits) * 100) / 100;
+}
