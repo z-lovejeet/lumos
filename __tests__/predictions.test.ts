@@ -34,12 +34,28 @@ describe('Grade Predictor', () => {
       expect(prediction.worstPossibleGrade).toBe('F');
     });
 
-    it('should predict correctly with no marks entered', () => {
+    it('should predict correctly with no marks entered (Edge Case)', () => {
       const marks: CalculationMark[] = [];
       const prediction = predictGrade(marks, components, mockGradeScale);
 
       expect(prediction.bestPossiblePercentage).toBe(100);
       expect(prediction.worstPossiblePercentage).toBe(0);
+    });
+
+    it('should predict correctly when all marks are entered (Edge Case)', () => {
+      const marks: CalculationMark[] = [
+        { id: 'm1', componentName: 'Midterm', obtainedMarks: 50, maxMarks: 50, subjectId: 's1' },
+        { id: 'm2', componentName: 'Final', obtainedMarks: 100, maxMarks: 100, subjectId: 's1' }
+      ];
+      const prediction = predictGrade(marks, components, mockGradeScale);
+
+      // Earned 100%. Therefore predicted, best, and worst should all be 100% / O grade.
+      expect(prediction.predictedPercentage).toBe(100);
+      expect(prediction.bestPossiblePercentage).toBe(100);
+      expect(prediction.worstPossiblePercentage).toBe(100);
+      expect(prediction.predictedGrade).toBe('O');
+      expect(prediction.bestPossibleGrade).toBe('O');
+      expect(prediction.worstPossibleGrade).toBe('O');
     });
   });
 
@@ -66,6 +82,20 @@ describe('Grade Predictor', () => {
       const req = calculateRequiredMarks(targetGrade.minPercentage, marks, components);
       
       expect(req.isFeasible).toBe(false);
+    });
+
+    it('should handle calculating required marks when all marks are already entered (Edge Case)', () => {
+      const marks: CalculationMark[] = [
+        { id: 'm1', componentName: 'Midterm', obtainedMarks: 50, maxMarks: 50, subjectId: 's1' },
+        { id: 'm2', componentName: 'Final', obtainedMarks: 100, maxMarks: 100, subjectId: 's1' }
+      ];
+      const targetGrade = mockGradeScale.find(g => g.grade === 'O')!; // 90%
+
+      const req = calculateRequiredMarks(targetGrade.minPercentage, marks, components);
+      
+      // They already have 100%. Marks needed in remaining should be <= 0.
+      expect(req.isFeasible).toBe(true);
+      expect(req.marksNeededInRemaining).toBeLessThanOrEqual(0);
     });
   });
 });

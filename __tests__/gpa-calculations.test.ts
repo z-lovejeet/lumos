@@ -41,6 +41,23 @@ describe('GPA Calculations', () => {
       const sgpa = calculateSGPA([], mockGradeScale);
       expect(sgpa).toBe(0);
     });
+
+    it('should calculate SGPA for a single subject correctly (Edge Case)', () => {
+      const subjects = [
+        { credits: 3, percentage: 95 } // O -> 10
+      ];
+      const sgpa = calculateSGPA(subjects, mockGradeScale);
+      expect(sgpa).toBe(10.0);
+    });
+    
+    it('should gracefully handle subjects with 0 credits (Edge Case)', () => {
+      const subjects = [
+        { credits: 0, percentage: 95 },
+        { credits: 3, percentage: 95 }
+      ];
+      const sgpa = calculateSGPA(subjects, mockGradeScale);
+      expect(sgpa).toBe(10.0);
+    });
   });
 
   describe('CGPA Calculator', () => {
