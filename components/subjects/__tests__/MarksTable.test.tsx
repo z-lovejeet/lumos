@@ -75,14 +75,18 @@ describe('MarksTable Component', () => {
 
     expect(screen.getByText('Saving...')).toBeInTheDocument();
 
-    act(() => {
+    await act(async () => {
       jest.advanceTimersByTime(1500);
     });
 
-    // Because fetch is a promise, we need to wait for the microtask queue to clear
-    await Promise.resolve();
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
 
-    expect(global.fetch).toHaveBeenCalledTimes(1);
+    // Advance the 2000ms timeout that resets status from 'saved' to 'idle'
+    await act(async () => {
+      jest.advanceTimersByTime(2000);
+    });
     
     jest.useRealTimers();
   });
