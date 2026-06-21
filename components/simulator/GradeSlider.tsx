@@ -38,7 +38,10 @@ export function GradeSlider({ subjectName, subjectCode, currentPercentage, grade
         min={0} 
         max={100} 
         step={1}
-        onValueChange={(vals) => onChange(vals[0])}
+        onValueChange={(vals) => {
+          const v = Array.isArray(vals) ? vals[0] : (vals as unknown as number);
+          onChange(v);
+        }}
       />
       
       <div className="flex justify-between text-xs text-muted-foreground">

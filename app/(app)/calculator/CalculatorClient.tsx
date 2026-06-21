@@ -147,6 +147,7 @@ export function CalculatorClient({ semesters, gradeScale }: CalculatorClientProp
                         <Select 
                           value={isOverridden ? manualOverrides[subject.id].toString() : "auto"}
                           onValueChange={(val) => {
+                            if (!val) return;
                             if (val === "auto") {
                               const newOverrides = { ...manualOverrides };
                               delete newOverrides[subject.id];
