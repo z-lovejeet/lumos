@@ -7,11 +7,13 @@ import { Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
-import { LayoutDashboard, BookOpen, Calculator, Target, CalendarDays, BrainCircuit, ScanLine, GraduationCap, Briefcase, Award } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Calculator, Target, CalendarDays, BrainCircuit, ScanLine, GraduationCap, Briefcase, Award, Activity, Scale } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Subjects', href: '/subjects', icon: BookOpen },
+  { name: 'Semester Health', href: '/health', icon: Activity },
+  { name: 'Compare Semesters', href: '/compare', icon: Scale },
   { name: 'Calculator', href: '/calculator', icon: Calculator },
   { name: 'Predictions', href: '/predictions', icon: Target },
   { name: 'What-If Strategy', href: '/what-if', icon: Target },

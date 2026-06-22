@@ -2,11 +2,20 @@ import { createClient } from '@/lib/supabase/server'
 import prisma from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { CalendarDays, BookOpen, Calculator, Target, ArrowRight } from 'lucide-react'
+import { CalendarDays } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { format } from 'date-fns'
-import { SemesterClient } from '@/components/semesters/SemesterClient'
+
+import { OverviewCards, DashboardMetrics } from '@/components/dashboard/OverviewCards'
+import { SGPATrendChart } from '@/components/charts/SGPATrendChart'
+import { CGPAProgressionChart } from '@/components/charts/CGPAProgressionChart'
+import { AttendanceHeatmap } from '@/components/charts/AttendanceHeatmap'
+import { SubjectComparisonChart } from '@/components/charts/SubjectComparisonChart'
+import { GradeDistributionPie } from '@/components/charts/GradeDistributionPie'
+import { CreditWeightedChart } from '@/components/charts/CreditWeightedChart'
+import { calculateSGPA, SubjectForSGPA } from '@/lib/calculations/sgpa'
+import { predictGrade } from '@/lib/predictions/grade-predictor'
+import { calculateCGPA } from '@/lib/calculations/cgpa'
 
 export const metadata = {
   title: 'Dashboard - AcademiQ',
@@ -21,30 +30,32 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
-  // Fetch the active semester
-  const activeSemester = await prisma.semester.findFirst({
-    where: { userId: user.id, status: 'active' },
-    include: {
-      subjects: true
-    }
-  })
-
-  const totalSemesters = await prisma.semester.count({ where: { userId: user.id } })
-  const totalSubjects = activeSemester?.subjects.length || 0
-  const totalCredits = activeSemester?.subjects.reduce((sum, s) => sum + s.credits, 0) || 0
-
+  // Fetch all semesters
   const allSemesters = await prisma.semester.findMany({
     where: { userId: user.id },
-    orderBy: { createdAt: 'desc' }
+    include: {
+      subjects: {
+        include: {
+          marks: true,
+          attendance: true,
+          markingScheme: true
+        }
+      }
+    },
+    orderBy: { createdAt: 'asc' }
   })
 
-  return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-      </div>
+  const gradeScaleRecord = await prisma.gradeScale.findFirst({
+    where: { userId: user.id, isActive: true }
+  })
+  const gradeScale = gradeScaleRecord ? (gradeScaleRecord.grades as any) : []
 
-      {!activeSemester ? (
+  const activeSemester = allSemesters.find(s => s.status === 'active')
+
+  if (!activeSemester) {
+    return (
+      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
         <Card className="border-dashed border-2 bg-muted/20">
           <CardHeader className="text-center pb-2">
             <CardTitle className="text-2xl">Welcome to AcademiQ!</CardTitle>
@@ -53,7 +64,7 @@ export default async function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center pt-4">
-            <Link href="#semesters">
+            <Link href="/semesters">
               <Button size="lg">
                 <CalendarDays className="mr-2 h-5 w-5" />
                 Set Up First Semester
@@ -61,127 +72,144 @@ export default async function DashboardPage() {
             </Link>
           </CardContent>
         </Card>
-      ) : (
-        <>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Semester</CardTitle>
-                <CalendarDays className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold truncate">{activeSemester.name}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {activeSemester.startDate && format(new Date(activeSemester.startDate), "MMM d")} 
-                  {activeSemester.startDate && activeSemester.endDate && ' - '}
-                  {activeSemester.endDate && format(new Date(activeSemester.endDate), "MMM d, yyyy")}
-                </p>
-              </CardContent>
-            </Card>
+      </div>
+    )
+  }
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Subjects</CardTitle>
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{totalSubjects}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Enrolled in current semester
-                </p>
-              </CardContent>
-            </Card>
+  // Calculations for active semester
+  let currentSgpaSubjects: SubjectForSGPA[] = []
+  let predictedSgpaSubjects: SubjectForSGPA[] = []
+  let attendanceTotal = 0
+  let attendanceAttended = 0
+  let weakestSub = { name: '', score: 101 }
+  let strongestSub = { name: '', score: -1 }
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Credits</CardTitle>
-                <Calculator className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{totalCredits}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Credits in active semester
-                </p>
-              </CardContent>
-            </Card>
+  const subjectComparisonData: any[] = []
+  const creditWeightedData: any[] = []
+  const gradeDistMap: Record<string, number> = {}
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Target GPA</CardTitle>
-                <Target className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">--</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Set up What-If Strategy
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+  activeSemester.subjects.forEach(sub => {
+    let earnedMarks = 0;
+    let totalMarks = 0;
+    sub.marks.forEach(m => {
+      earnedMarks += (m.obtainedMarks || 0)
+      totalMarks += m.maxMarks
+    })
+    
+    let currentPct = totalMarks > 0 ? (earnedMarks / totalMarks) * 100 : 0
+    currentSgpaSubjects.push({ credits: sub.credits, percentage: currentPct })
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Current Subjects</CardTitle>
-                <CardDescription>
-                  Your enrolled subjects for {activeSemester.name}.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {activeSemester.subjects.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-40 text-center space-y-3">
-                    <p className="text-sm text-muted-foreground">No subjects added to this semester yet.</p>
-                    <Link href="/subjects">
-                      <Button variant="outline" size="sm">Add Subjects</Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {activeSemester.subjects.map(subject => (
-                      <div key={subject.id} className="flex items-center justify-between p-3 rounded-lg border">
-                        <div className="flex items-center gap-3">
-                          <div className="w-2 h-10 rounded-full bg-blue-500" />
-                          <div>
-                            <p className="text-sm font-medium leading-none">{subject.code}</p>
-                            <p className="text-sm text-muted-foreground">{subject.name}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium">{subject.credits} CR</p>
-                          <Link href={`/subjects`} className="text-xs text-primary hover:underline flex items-center gap-1 mt-1 justify-end">
-                            View <ArrowRight className="h-3 w-3" />
-                          </Link>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+    let components = sub.markingScheme ? (sub.markingScheme.components as any) : []
+    const prediction = predictGrade(sub.marks.map(m => ({ componentName: m.componentName, obtainedMarks: m.obtainedMarks || 0, maxMarks: m.maxMarks })), components, gradeScale)
+    
+    predictedSgpaSubjects.push({ credits: sub.credits, percentage: prediction.predictedPercentage })
 
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Upcoming Assessments</CardTitle>
-                <CardDescription>
-                  Track your deadlines and exams.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col items-center justify-center h-40 text-center space-y-3">
-                  <p className="text-sm text-muted-foreground">Assessment tracking coming soon in marks entry.</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </>
-      )}
+    if (prediction.predictedPercentage < weakestSub.score) {
+      weakestSub = { name: sub.name, score: prediction.predictedPercentage }
+    }
+    if (prediction.predictedPercentage > strongestSub.score) {
+      strongestSub = { name: sub.name, score: prediction.predictedPercentage }
+    }
 
-      <div id="semesters" className="mt-8 pt-8 border-t">
-        <div className="mb-4">
-          <h3 className="text-xl font-bold tracking-tight">Manage Semesters</h3>
-          <p className="text-sm text-muted-foreground">View, add, edit, or delete your academic semesters.</p>
+    sub.attendance.forEach(a => {
+      attendanceTotal++
+      if (a.attended) attendanceAttended++
+    })
+
+    subjectComparisonData.push({
+      subject: sub.code,
+      percentage: Math.round(prediction.predictedPercentage)
+    })
+
+    creditWeightedData.push({
+      subject: sub.code,
+      credits: sub.credits,
+      percentage: Math.round(prediction.predictedPercentage)
+    })
+
+    const grade = prediction.predictedGrade || 'N/A'
+    gradeDistMap[grade] = (gradeDistMap[grade] || 0) + 1
+  })
+
+  const gradeDistData = Object.keys(gradeDistMap).map(k => ({ grade: k, count: gradeDistMap[k] }))
+
+  const currentSgpa = calculateSGPA(currentSgpaSubjects, gradeScale)
+  const predictedSgpa = calculateSGPA(predictedSgpaSubjects, gradeScale)
+  
+  const creditsCompleted = activeSemester.subjects.reduce((sum, s) => sum + s.credits, 0)
+  const attendancePercentage = attendanceTotal > 0 ? (attendanceAttended / attendanceTotal) * 100 : 100
+
+  // CGPA and Trend
+  const sgpaTrendData: any[] = []
+  const cgpaProgressionData: any[] = []
+  
+  let cgpaSemesters: any[] = []
+
+  allSemesters.forEach(sem => {
+    let semSgpaSubs: SubjectForSGPA[] = []
+    sem.subjects.forEach(sub => {
+      let components = sub.markingScheme ? (sub.markingScheme.components as any) : []
+      const prediction = predictGrade(sub.marks.map(m => ({ componentName: m.componentName, obtainedMarks: m.obtainedMarks || 0, maxMarks: m.maxMarks })), components, gradeScale)
+      semSgpaSubs.push({ credits: sub.credits, percentage: prediction.predictedPercentage })
+    })
+    const semSgpa = calculateSGPA(semSgpaSubs, gradeScale)
+    sgpaTrendData.push({ semester: sem.name, sgpa: semSgpa })
+    
+    cgpaSemesters.push({ sgpa: semSgpa, totalCredits: sem.subjects.reduce((sum, s) => sum + s.credits, 0) })
+    cgpaProgressionData.push({ semester: sem.name, cgpa: calculateCGPA(cgpaSemesters) })
+  })
+
+  const currentCgpa = cgpaSemesters.length > 0 ? calculateCGPA(cgpaSemesters) : 0
+
+  const metrics: DashboardMetrics = {
+    currentSgpa,
+    predictedSgpa,
+    cgpa: currentCgpa,
+    creditsCompleted,
+    attendancePercentage,
+    upcomingExamsCount: 0, // Mock for now
+    pendingAssignmentsCount: 0, // Mock for now
+    weakestSubject: weakestSub.name,
+    strongestSubject: strongestSub.name
+  }
+
+  // Attendance Heatmap Mock (Last 30 days)
+  const heatmapData = []
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date()
+    d.setDate(d.getDate() - i)
+    heatmapData.push({
+      date: d.toISOString().split('T')[0],
+      status: Math.random() > 0.8 ? 'missed' : Math.random() > 0.3 ? 'attended' : 'none' as any
+    })
+  }
+
+  return (
+    <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
+      <div className="flex items-center justify-between space-y-2">
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard Overview</h2>
+      </div>
+
+      <OverviewCards metrics={metrics} />
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-4 space-y-4">
+          <SGPATrendChart data={sgpaTrendData} />
+          <SubjectComparisonChart data={subjectComparisonData} />
         </div>
-        <SemesterClient initialSemesters={allSemesters} />
+        <div className="col-span-3 space-y-4">
+          <CGPAProgressionChart data={cgpaProgressionData} />
+          <GradeDistributionPie data={gradeDistData} />
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-4">
+          <AttendanceHeatmap data={heatmapData} />
+        </div>
+        <div className="col-span-3">
+          <CreditWeightedChart data={creditWeightedData} />
+        </div>
       </div>
     </div>
   )

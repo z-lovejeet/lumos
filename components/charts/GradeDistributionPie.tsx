@@ -54,7 +54,7 @@ export function GradeDistributionPie({ data }: GradeDistributionPieProps) {
                 paddingAngle={5}
                 dataKey="count"
                 nameKey="grade"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                 labelLine={false}
               >
                 {data.map((entry, index) => (
@@ -67,7 +67,7 @@ export function GradeDistributionPie({ data }: GradeDistributionPieProps) {
               <Tooltip 
                 contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--background))' }}
                 itemStyle={{ color: 'hsl(var(--foreground))' }}
-                formatter={(value: number) => [`${value} Subjects`, 'Count']}
+                formatter={(value: any) => [`${value} Subjects`, 'Count']}
               />
               <Legend wrapperStyle={{ fontSize: '12px' }} />
             </PieChart>

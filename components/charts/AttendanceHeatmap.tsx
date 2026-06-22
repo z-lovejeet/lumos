@@ -49,14 +49,12 @@ export function AttendanceHeatmap({ data }: AttendanceHeatmapProps) {
           <div className="flex flex-wrap gap-1 md:gap-1.5">
             {data.map((day, i) => (
               <Tooltip key={i}>
-                <TooltipTrigger asChild>
-                  <div 
-                    className={cn(
-                      "w-4 h-4 md:w-5 md:h-5 rounded-sm cursor-pointer transition-transform hover:scale-110",
-                      getBackgroundColor(day.status)
-                    )} 
-                  />
-                </TooltipTrigger>
+                <TooltipTrigger
+                  className={cn(
+                    "w-4 h-4 md:w-5 md:h-5 rounded-sm cursor-pointer transition-transform hover:scale-110",
+                    getBackgroundColor(day.status)
+                  )} 
+                />
                 <TooltipContent>
                   <p className="font-semibold">{format(parseISO(day.date), 'MMM d, yyyy')}</p>
                   <p className="text-xs text-muted-foreground capitalize">{day.status} {day.subjectName ? `- ${day.subjectName}` : ''}</p>

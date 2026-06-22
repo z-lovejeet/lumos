@@ -72,7 +72,7 @@ export function CreditWeightedChart({ data }: CreditWeightedChartProps) {
               <Tooltip 
                 cursor={{ strokeDasharray: '3 3' }}
                 contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--background))' }}
-                formatter={(value: any, name: string) => {
+                formatter={(value: any, name: any) => {
                   if (name === 'Performance') return [`${value}%`, name];
                   if (name === 'Credits') return [value, name];
                   return [value, name];

@@ -3,11 +3,13 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, BookOpen, Calculator, Target, CalendarDays, BrainCircuit, ScanLine, GraduationCap, Briefcase, Award, PenTool, ListChecks } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Calculator, Target, CalendarDays, BrainCircuit, ScanLine, GraduationCap, Briefcase, Award, PenTool, ListChecks, Activity, Scale } from 'lucide-react'
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Subjects', href: '/subjects', icon: BookOpen },
+  { name: 'Semester Health', href: '/health', icon: Activity },
+  { name: 'Compare Semesters', href: '/compare', icon: Scale },
   { name: 'Calculator', href: '/calculator', icon: Calculator },
   { name: 'Predictions', href: '/predictions', icon: Target },
   { name: 'What-If Strategy', href: '/what-if', icon: Target },
