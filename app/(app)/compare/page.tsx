@@ -18,22 +18,24 @@ export default async function ComparePage() {
     redirect('/login')
   }
 
-  const allSemesters = await prisma.semester.findMany({
-    where: { userId: user.id },
-    include: {
-      subjects: {
-        include: {
-          marks: true,
-          markingScheme: true
+  const [allSemesters, gradeScaleRecord] = await Promise.all([
+    prisma.semester.findMany({
+      where: { userId: user.id },
+      include: {
+        subjects: {
+          include: {
+            marks: true,
+            markingScheme: true
+          }
         }
-      }
-    },
-    orderBy: { createdAt: 'desc' }
-  })
+      },
+      orderBy: { createdAt: 'desc' }
+    }),
+    prisma.gradeScale.findFirst({
+      where: { userId: user.id, isActive: true }
+    })
+  ]);
 
-  const gradeScaleRecord = await prisma.gradeScale.findFirst({
-    where: { userId: user.id, isActive: true }
-  })
   const gradeScale = gradeScaleRecord ? (gradeScaleRecord.grades as any) : []
 
   if (allSemesters.length < 2) {

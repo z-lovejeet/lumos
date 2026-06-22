@@ -18,22 +18,24 @@ export default async function HealthPage() {
     redirect('/login')
   }
 
-  const activeSemester = await prisma.semester.findFirst({
-    where: { userId: user.id, status: 'active' },
-    include: {
-      subjects: {
-        include: {
-          marks: true,
-          attendance: true,
-          markingScheme: true
+  const [activeSemester, gradeScaleRecord] = await Promise.all([
+    prisma.semester.findFirst({
+      where: { userId: user.id, status: 'active' },
+      include: {
+        subjects: {
+          include: {
+            marks: true,
+            attendance: true,
+            markingScheme: true
+          }
         }
       }
-    }
-  })
+    }),
+    prisma.gradeScale.findFirst({
+      where: { userId: user.id, isActive: true }
+    })
+  ]);
 
-  const gradeScaleRecord = await prisma.gradeScale.findFirst({
-    where: { userId: user.id, isActive: true }
-  })
   const gradeScale = gradeScaleRecord ? (gradeScaleRecord.grades as any) : []
 
   if (!activeSemester) {
