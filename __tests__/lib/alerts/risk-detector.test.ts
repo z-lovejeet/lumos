@@ -6,8 +6,8 @@ describe('risk-detector', () => {
     const data: RiskDetectorData = {
       sgpaTrend: [9.0, 8.5],
       gradeScale: [
-        { grade: 'O', minPercent: 90, point: 10 },
-        { grade: 'F', minPercent: 0, point: 0 }
+        { grade: 'O', minPercentage: 90, maxPercentage: 100, gpaValue: 10 },
+        { grade: 'F', minPercentage: 0, maxPercentage: 39.99, gpaValue: 0 }
       ],
       subjects: [
         {
@@ -31,8 +31,8 @@ describe('risk-detector', () => {
     const data: RiskDetectorData = {
       sgpaTrend: [9.0, 8.5],
       gradeScale: [
-        { grade: 'O', minPercent: 90, point: 10 },
-        { grade: 'F', minPercent: 0, point: 0 }
+        { grade: 'O', minPercentage: 90, maxPercentage: 100, gpaValue: 10 },
+        { grade: 'F', minPercentage: 0, maxPercentage: 39.99, gpaValue: 0 }
       ],
       subjects: [
         {

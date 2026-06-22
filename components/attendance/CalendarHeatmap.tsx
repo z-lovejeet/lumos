@@ -88,19 +88,17 @@ export function CalendarHeatmap({ data, onDateClick }: CalendarHeatmapProps) {
               
               return (
                 <Tooltip key={i}>
-                  <TooltipTrigger asChild>
-                    <div 
-                      onClick={() => onDateClick && onDateClick(day)}
-                      className={cn(
-                        "aspect-square rounded-md flex items-center justify-center text-sm cursor-pointer transition-colors border border-transparent",
-                        !isCurrentMonth && "opacity-30",
-                        status === 'none' && "bg-muted/50 hover:border-border",
-                        status === 'attended' && "bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-medium hover:bg-emerald-500/30",
-                        status === 'missed' && "bg-destructive/20 text-destructive font-medium hover:bg-destructive/30"
-                      )}
-                    >
-                      {format(day, 'd')}
-                    </div>
+                  <TooltipTrigger
+                    onClick={() => onDateClick && onDateClick(day)}
+                    className={cn(
+                      "aspect-square rounded-md flex items-center justify-center text-sm cursor-pointer transition-colors border border-transparent",
+                      !isCurrentMonth && "opacity-30",
+                      status === 'none' && "bg-muted/50 hover:border-border",
+                      status === 'attended' && "bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-medium hover:bg-emerald-500/30",
+                      status === 'missed' && "bg-destructive/20 text-destructive font-medium hover:bg-destructive/30"
+                    )}
+                  >
+                    {format(day, 'd')}
                   </TooltipTrigger>
                   <TooltipContent>
                     <div className="space-y-1">

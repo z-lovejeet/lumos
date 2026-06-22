@@ -1,7 +1,7 @@
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export function AttendanceTab({ subjectId }: { subjectId?: string }) {
   return (
@@ -10,11 +10,8 @@ export function AttendanceTab({ subjectId }: { subjectId?: string }) {
         icon={Calendar}
         title="Attendance Tracker"
         description="Manage your attendance across all subjects in the global dashboard."
-        action={
-          <Button asChild>
-            <Link href="/attendance">Go to Attendance Dashboard</Link>
-          </Button>
-        }
+        actionLabel="Go to Attendance Dashboard"
+        actionHref="/attendance"
       />
     </div>
   );

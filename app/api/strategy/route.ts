@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '../../../lib/supabase/server';
-import prisma from '../../../lib/prisma';
-import { generateStrategy, StrategyEngineData } from '../../../lib/strategy/strategy-engine';
-import { detectRisks, RiskDetectorData } from '../../../lib/alerts/risk-detector';
-import { calculateStudyPriorities, StudyPriorityData } from '../../../lib/strategy/study-priority';
-import { calculateAttendancePercent } from '../../../lib/calculations/attendance';
-import { GradeRange } from '../../../lib/calculations/sgpa';
+import { createClient } from '@/lib/supabase/server';
+import prisma from '@/lib/prisma';
+import { generateStrategy, StrategyEngineData } from '@/lib/strategy/strategy-engine';
+import { detectRisks, RiskDetectorData } from '@/lib/alerts/risk-detector';
+import { calculateStudyPriorities, StudyPriorityData } from '@/lib/strategy/study-priority';
+import { calculateAttendancePercent } from '@/lib/calculations/attendance';
+import { GradeRange } from '@/lib/calculations/sgpa';
+import { predictGrade } from '@/lib/predictions/grade-predictor';
 
 export async function GET(request: Request) {
   try {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

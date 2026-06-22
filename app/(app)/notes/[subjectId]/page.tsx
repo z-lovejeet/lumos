@@ -6,7 +6,6 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Plus, ArrowLeft, Save, Trash2 } from 'lucide-react';
 
 interface Note {
@@ -156,10 +155,10 @@ export default function SubjectNotesPage() {
                 </div>
               </div>
               <div className="flex-1 p-0">
-                <Textarea 
+                <textarea 
                   value={activeNote.content}
                   onChange={e => setActiveNote({...activeNote, content: e.target.value})}
-                  className="w-full h-full p-4 border-0 rounded-none focus-visible:ring-0 resize-none font-mono text-sm"
+                  className="w-full h-full p-4 border-0 rounded-none focus-visible:ring-0 resize-none font-mono text-sm bg-transparent outline-none"
                   placeholder="Start typing your notes here..."
                 />
               </div>

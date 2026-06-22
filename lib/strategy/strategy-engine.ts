@@ -34,20 +34,20 @@ export interface StrategyEngineData {
 export function calculateSubjectROI(subject: StrategyEngineData['subjects'][0], gradeScale: GradeRange[]): SubjectROI | null {
   const prediction = predictGrade(subject.marks, subject.components, gradeScale);
   
-  if (prediction.predictedPercentage >= 100) return null;
+  if (prediction.predictedPercentage >= 100 || !prediction.isFeasible) return null;
 
   // Find next grade bracket
   const currentGradeObj = gradeScale.find(g => g.grade === prediction.predictedGrade);
   if (!currentGradeObj) return null;
 
   // Assume gradeScale is sorted descending by minPercent
-  const sortedScale = [...gradeScale].sort((a, b) => b.minPercent - a.minPercent);
+  const sortedScale = [...gradeScale].sort((a, b) => b.minPercentage - a.minPercentage);
   const currentIndex = sortedScale.findIndex(g => g.grade === prediction.predictedGrade);
   
   if (currentIndex <= 0) return null; // Already at top grade
 
   const nextGradeObj = sortedScale[currentIndex - 1];
-  const percentNeeded = nextGradeObj.minPercent;
+  const percentNeeded = nextGradeObj.minPercentage;
 
   // Marks needed to reach percentNeeded
   // We need to gain (percentNeeded - predictedPercentage) %
@@ -102,10 +102,10 @@ export function generateStrategy(data: StrategyEngineData): StrategyRecommendati
       let newPercent = pred.predictedPercentage;
       if (s.id === roi.subjectId) {
         // Assume they hit the next grade
-        const sortedScale = [...data.gradeScale].sort((x, y) => y.minPercent - x.minPercent);
+        const sortedScale = [...data.gradeScale].sort((x, y) => y.minPercentage - x.minPercentage);
         const currentIndex = sortedScale.findIndex(g => g.grade === pred.predictedGrade);
         if (currentIndex > 0) {
-          newPercent = sortedScale[currentIndex - 1].minPercent;
+          newPercent = sortedScale[currentIndex - 1].minPercentage;
         }
       }
       return { credits: s.credits, percentage: newPercent };

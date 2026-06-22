@@ -1,14 +1,14 @@
-import { createServerClient } from '../../../../lib/supabase/server';
-import prisma from '../../../../lib/prisma';
+import { createClient } from '@/lib/supabase/server';
+import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { Plus, BookOpen, Clock, Tag } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function NotesPage() {
-  const supabase = await createServerClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
@@ -59,13 +59,9 @@ export default async function NotesPage() {
               <CardTitle className="truncate">{sub.name}</CardTitle>
               <CardDescription>{sub.notes.length} notes</CardDescription>
             </CardHeader>
-            <CardFooter>
-              <Button asChild variant="secondary" className="w-full">
-                <Link href={`/notes/${sub.id}`}>
-                  View Notes
-                </Link>
-              </Button>
-            </CardFooter>
+              <Link href={`/notes/${sub.id}`} className={buttonVariants({ variant: "secondary", className: "w-full" })}>
+                View Notes
+              </Link>
           </Card>
         ))}
       </div>

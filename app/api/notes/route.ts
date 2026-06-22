@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '../../../lib/supabase/server';
-import prisma from '../../../lib/prisma';
+import { createClient } from '@/lib/supabase/server';
+import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
 const noteSchema = z.object({
@@ -13,7 +13,7 @@ const noteSchema = z.object({
 
 export async function GET(request: Request) {
   try {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error creating note:', error);
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid data', details: (error as any).errors }, { status: 400 });
     }
     return NextResponse.json({ error: 'Failed to create note' }, { status: 500 });
   }

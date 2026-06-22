@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '../../../../lib/supabase/server';
-import prisma from '../../../../lib/prisma';
+import { createClient } from '@/lib/supabase/server';
+import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
 // Zod schema for validation
@@ -15,7 +15,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -57,7 +57,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -110,7 +110,7 @@ export async function POST(
   } catch (error) {
     console.error('Error recording attendance:', error);
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid data', details: (error as any).errors }, { status: 400 });
     }
     return NextResponse.json({ error: 'Failed to record attendance' }, { status: 500 });
   }

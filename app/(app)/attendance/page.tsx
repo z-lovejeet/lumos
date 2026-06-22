@@ -1,15 +1,15 @@
-import { createServerClient } from '../../../../lib/supabase/server';
-import prisma from '../../../../lib/prisma';
+import { createClient } from '@/lib/supabase/server';
+import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { CalendarHeatmap } from '@/components/attendance/CalendarHeatmap';
 import { AttendanceStats } from '@/components/attendance/AttendanceStats';
 import { BufferCalc } from '@/components/attendance/BufferCalc';
-import { predictAttendanceBuffer } from '../../../../lib/calculations/attendance';
+import { predictAttendanceBuffer } from '@/lib/calculations/attendance';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default async function AttendancePage() {
-  const supabase = await createServerClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {

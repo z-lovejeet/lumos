@@ -5,9 +5,9 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Target, AlertCircle, BookOpen, ArrowUpRight } from 'lucide-react';
-import { StrategyRecommendation } from '../../../../lib/strategy/strategy-engine';
-import { StudyPriority } from '../../../../lib/strategy/study-priority';
-import { RiskAlert } from '../../../../lib/alerts/risk-detector';
+import { StrategyRecommendation } from '@/lib/strategy/strategy-engine';
+import { StudyPriority } from '@/lib/strategy/study-priority';
+import { RiskAlert } from '@/lib/alerts/risk-detector';
 
 export default function StrategyPage() {
   const [data, setData] = useState<{

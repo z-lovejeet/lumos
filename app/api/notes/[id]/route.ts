@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '../../../../lib/supabase/server';
-import prisma from '../../../../lib/prisma';
+import { createClient } from '@/lib/supabase/server';
+import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
 const noteSchema = z.object({
@@ -16,7 +16,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -51,7 +51,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -86,7 +86,7 @@ export async function PATCH(
   } catch (error) {
     console.error('Error updating note:', error);
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid data', details: (error as any).errors }, { status: 400 });
     }
     return NextResponse.json({ error: 'Failed to update note' }, { status: 500 });
   }
@@ -97,7 +97,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

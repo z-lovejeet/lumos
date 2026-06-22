@@ -5,10 +5,10 @@ describe('strategy-engine', () => {
   it('generates strategy prioritizing highest ROI subject', () => {
     const data: StrategyEngineData = {
       gradeScale: [
-        { grade: 'O', minPercent: 90, point: 10 },
-        { grade: 'A+', minPercent: 80, point: 9 },
-        { grade: 'A', minPercent: 70, point: 8 },
-        { grade: 'B', minPercent: 60, point: 7 }
+        { grade: 'O', minPercentage: 90, maxPercentage: 100, gpaValue: 10 },
+        { grade: 'A+', minPercentage: 80, maxPercentage: 89.99, gpaValue: 9 },
+        { grade: 'A', minPercentage: 70, maxPercentage: 79.99, gpaValue: 8 },
+        { grade: 'B', minPercentage: 60, maxPercentage: 69.99, gpaValue: 7 }
       ],
       subjects: [
         {
@@ -33,8 +33,9 @@ describe('strategy-engine', () => {
     };
 
     const recommendations = generateStrategy(data);
+
     expect(recommendations.length).toBeGreaterThan(0);
-    expect(recommendations[0].subjectName).toBe('Physics');
+    expect(recommendations[0].subjectName).toBe('Math');
     expect(recommendations[0].type).toBe('focus');
   });
 });
