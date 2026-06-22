@@ -1,13 +1,20 @@
 import { EmptyState } from "@/components/shared/EmptyState";
-import { FileText } from "lucide-react";
+import { BookOpen } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
-export function NotesTab() {
+export function NotesTab({ subjectId }: { subjectId?: string }) {
   return (
     <div className="p-6">
       <EmptyState 
-        icon={FileText}
-        title="Notes & Study Materials Coming Soon"
-        description="Rich text notes, formulas, and revision checklists will be available in Phase 7."
+        icon={BookOpen}
+        title="Subject Notes"
+        description="Write and organize notes, formulas, and checklists for this subject."
+        action={
+          <Button asChild>
+            <Link href={subjectId ? `/notes/${subjectId}` : "/notes"}>Open Notes Editor</Link>
+          </Button>
+        }
       />
     </div>
   );

@@ -137,13 +137,13 @@ export default async function SubjectDetailPage({ params }: { params: Promise<{ 
 
         <TabsContent value="attendance">
           <Card>
-            <AttendanceTab />
+            <AttendanceTab subjectId={subject.id} />
           </Card>
         </TabsContent>
 
         <TabsContent value="notes">
           <Card>
-            <NotesTab />
+            <NotesTab subjectId={subject.id} />
           </Card>
         </TabsContent>
 
