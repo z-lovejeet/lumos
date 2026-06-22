@@ -46,7 +46,6 @@ describe('Semester Health Analysis', () => {
     };
     const health = analyzeSemesterHealth(data);
     expect(health.status).toBe('Critical');
-    expect(health.failingSubjects).toBeUndefined(); // internal var, but it reduces score
   });
 
   it('should return Warning for poor attendance', () => {

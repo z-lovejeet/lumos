@@ -14,14 +14,14 @@ describe('Grade Predictor', () => {
   ];
 
   const components: CalculationComponent[] = [
-    { id: 'c1', name: 'Midterm', maxMarks: 50, weight: 40 },
-    { id: 'c2', name: 'Final', maxMarks: 100, weight: 60 }
+    { name: 'Midterm', maxMarks: 50, weight: 40 },
+    { name: 'Final', maxMarks: 100, weight: 60 }
   ];
 
   describe('predictGrade', () => {
     it('should predict correctly with partial marks', () => {
       const marks: CalculationMark[] = [
-        { id: 'm1', componentName: 'Midterm', obtainedMarks: 40, maxMarks: 50, subjectId: 's1' }
+        { componentName: 'Midterm', obtainedMarks: 40, maxMarks: 50 }
       ];
 
       const prediction = predictGrade(marks, components, mockGradeScale);
@@ -44,8 +44,8 @@ describe('Grade Predictor', () => {
 
     it('should predict correctly when all marks are entered (Edge Case)', () => {
       const marks: CalculationMark[] = [
-        { id: 'm1', componentName: 'Midterm', obtainedMarks: 50, maxMarks: 50, subjectId: 's1' },
-        { id: 'm2', componentName: 'Final', obtainedMarks: 100, maxMarks: 100, subjectId: 's1' }
+        { componentName: 'Midterm', obtainedMarks: 50, maxMarks: 50 },
+        { componentName: 'Final', obtainedMarks: 100, maxMarks: 100 }
       ];
       const prediction = predictGrade(marks, components, mockGradeScale);
 
@@ -62,7 +62,7 @@ describe('Grade Predictor', () => {
   describe('calculateRequiredMarks', () => {
     it('should calculate required marks correctly', () => {
       const marks: CalculationMark[] = [
-        { id: 'm1', componentName: 'Midterm', obtainedMarks: 40, maxMarks: 50, subjectId: 's1' }
+        { componentName: 'Midterm', obtainedMarks: 40, maxMarks: 50 }
       ];
       const targetGrade = mockGradeScale.find(g => g.grade === 'A+')!;
 
@@ -75,7 +75,7 @@ describe('Grade Predictor', () => {
 
     it('should return isPossible false if target is unreachable', () => {
       const marks: CalculationMark[] = [
-        { id: 'm1', componentName: 'Midterm', obtainedMarks: 0, maxMarks: 50, subjectId: 's1' }
+        { componentName: 'Midterm', obtainedMarks: 0, maxMarks: 50 }
       ];
       const targetGrade = mockGradeScale.find(g => g.grade === 'O')!;
 
@@ -86,8 +86,8 @@ describe('Grade Predictor', () => {
 
     it('should handle calculating required marks when all marks are already entered (Edge Case)', () => {
       const marks: CalculationMark[] = [
-        { id: 'm1', componentName: 'Midterm', obtainedMarks: 50, maxMarks: 50, subjectId: 's1' },
-        { id: 'm2', componentName: 'Final', obtainedMarks: 100, maxMarks: 100, subjectId: 's1' }
+        { componentName: 'Midterm', obtainedMarks: 50, maxMarks: 50 },
+        { componentName: 'Final', obtainedMarks: 100, maxMarks: 100 }
       ];
       const targetGrade = mockGradeScale.find(g => g.grade === 'O')!; // 90%
 

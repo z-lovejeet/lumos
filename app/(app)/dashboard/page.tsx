@@ -88,12 +88,32 @@ export default async function DashboardPage() {
   const creditWeightedData: any[] = []
   const gradeDistMap: Record<string, number> = {}
 
+  let upcomingExamsCount = 0;
+  let pendingAssignmentsCount = 0;
+  
+  // Create a map for the last 30 days attendance
+  const heatmapDataMap: Record<string, { total: number; attended: number }> = {};
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    heatmapDataMap[d.toISOString().split('T')[0]] = { total: 0, attended: 0 };
+  }
+
   activeSemester.subjects.forEach(sub => {
     let earnedMarks = 0;
     let totalMarks = 0;
     sub.marks.forEach(m => {
-      earnedMarks += (m.obtainedMarks || 0)
-      totalMarks += m.maxMarks
+      if (m.obtainedMarks !== null) {
+        earnedMarks += m.obtainedMarks;
+        totalMarks += m.maxMarks;
+      } else {
+        // Pending evaluation
+        if (m.examDate && new Date(m.examDate) >= new Date()) {
+          upcomingExamsCount++;
+        } else if (m.componentName.toLowerCase().includes('assignment') || m.componentName.toLowerCase().includes('project')) {
+          pendingAssignmentsCount++;
+        }
+      }
     })
     
     let currentPct = totalMarks > 0 ? (earnedMarks / totalMarks) * 100 : 0
@@ -114,6 +134,12 @@ export default async function DashboardPage() {
     sub.attendance.forEach(a => {
       attendanceTotal++
       if (a.attended) attendanceAttended++
+        
+      const dateStr = new Date(a.classDate).toISOString().split('T')[0];
+      if (heatmapDataMap[dateStr]) {
+        heatmapDataMap[dateStr].total++;
+        if (a.attended) heatmapDataMap[dateStr].attended++;
+      }
     })
 
     subjectComparisonData.push({
@@ -167,22 +193,21 @@ export default async function DashboardPage() {
     cgpa: currentCgpa,
     creditsCompleted,
     attendancePercentage,
-    upcomingExamsCount: 0, // Mock for now
-    pendingAssignmentsCount: 0, // Mock for now
+    upcomingExamsCount,
+    pendingAssignmentsCount,
     weakestSubject: weakestSub.name,
     strongestSubject: strongestSub.name
   }
 
-  // Attendance Heatmap Mock (Last 30 days)
-  const heatmapData = []
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date()
-    d.setDate(d.getDate() - i)
-    heatmapData.push({
-      date: d.toISOString().split('T')[0],
-      status: Math.random() > 0.8 ? 'missed' : Math.random() > 0.3 ? 'attended' : 'none' as any
-    })
-  }
+  // Finalize Heatmap Data
+  const heatmapData = Object.keys(heatmapDataMap).sort().map(date => {
+    const { total, attended } = heatmapDataMap[date];
+    let status: 'attended' | 'missed' | 'none' = 'none';
+    if (total > 0) {
+      status = (attended / total) >= 0.5 ? 'attended' : 'missed'; // If attended 50%+ of classes that day, green
+    }
+    return { date, status };
+  });
 
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
