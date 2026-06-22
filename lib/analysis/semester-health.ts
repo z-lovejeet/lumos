@@ -75,7 +75,7 @@ export function analyzeSemesterHealth(data: SemesterData): HealthAnalysis {
 
   // 2. Academic Performance Analysis
   let failingSubjects = 0;
-  let predictedSgpaSubjects: SubjectForSGPA[] = [];
+  const predictedSgpaSubjects: SubjectForSGPA[] = [];
 
   data.subjects.forEach(sub => {
     const prediction = predictGrade(sub.marks, sub.components, data.gradeScale);
@@ -84,7 +84,7 @@ export function analyzeSemesterHealth(data: SemesterData): HealthAnalysis {
       percentage: prediction.predictedPercentage
     });
 
-    if (prediction.predictedGrade === 'F' || prediction.worstPossibleGrade === 'F' && prediction.predictedPercentage < 50) {
+    if (prediction.predictedGrade === 'F' || (prediction.worstPossibleGrade === 'F' && prediction.predictedPercentage < 50)) {
       failingSubjects++;
       riskFactors.push(`High risk of failing ${sub.name}.`);
     } else if (prediction.bestPossiblePercentage < 60) {

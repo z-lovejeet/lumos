@@ -1,5 +1,5 @@
-import { SubjectForSGPA, calculateSGPA, GradeRange } from '../calculations/sgpa';
-import { calculateCGPA, calculateCGPAWithBacklogs } from '../calculations/cgpa';
+import { calculateSGPA, GradeRange } from '../calculations/sgpa';
+import { calculateCGPA } from '../calculations/cgpa';
 
 export interface CreditImpactAnalysis {
   originalSgpa: number;
