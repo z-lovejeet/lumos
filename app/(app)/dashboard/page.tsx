@@ -30,24 +30,25 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
-  // Fetch all semesters
-  const allSemesters = await prisma.semester.findMany({
-    where: { userId: user.id },
-    include: {
-      subjects: {
-        include: {
-          marks: true,
-          attendance: true,
-          markingScheme: true
+  // Fetch all semesters and grade scale in parallel
+  const [allSemesters, gradeScaleRecord] = await Promise.all([
+    prisma.semester.findMany({
+      where: { userId: user.id },
+      include: {
+        subjects: {
+          include: {
+            marks: true,
+            attendance: true,
+            markingScheme: true
+          }
         }
-      }
-    },
-    orderBy: { createdAt: 'asc' }
-  })
-
-  const gradeScaleRecord = await prisma.gradeScale.findFirst({
-    where: { userId: user.id, isActive: true }
-  })
+      },
+      orderBy: { createdAt: 'asc' }
+    }),
+    prisma.gradeScale.findFirst({
+      where: { userId: user.id, isActive: true }
+    })
+  ]);
   const gradeScale = gradeScaleRecord ? (gradeScaleRecord.grades as any) : []
 
   const activeSemester = allSemesters.find(s => s.status === 'active')
