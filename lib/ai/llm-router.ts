@@ -1,12 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import Groq from 'groq-sdk';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
-
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const groq = new Groq({ apiKey: GROQ_API_KEY });
-
 export interface LLMResponse {
   content: string;
   provider: 'gemini' | 'groq' | 'error';
@@ -16,10 +10,14 @@ export interface LLMResponse {
  * Queries an LLM, attempting Gemini first, and failing over to Groq if it fails or is rate-limited.
  */
 export async function queryLLM(systemPrompt: string, userMessage: string): Promise<LLMResponse> {
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+  const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
+
   // Try Gemini first
   try {
     if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not configured');
     
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     
     const result = await model.generateContent({
@@ -40,6 +38,7 @@ export async function queryLLM(systemPrompt: string, userMessage: string): Promi
     try {
       if (!GROQ_API_KEY) throw new Error('GROQ_API_KEY not configured');
       
+      const groq = new Groq({ apiKey: GROQ_API_KEY });
       const chatCompletion = await groq.chat.completions.create({
         messages: [
           { role: 'system', content: systemPrompt },
