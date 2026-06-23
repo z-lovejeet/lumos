@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { CalendarDays } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { AlertCircle } from 'lucide-react'
 
 import { OverviewCards, DashboardMetrics } from '@/components/dashboard/OverviewCards'
 import { SGPATrendChart } from '@/components/charts/SGPATrendChart'
@@ -16,6 +18,7 @@ import { CreditWeightedChart } from '@/components/charts/CreditWeightedChart'
 import { calculateSGPA, SubjectForSGPA } from '@/lib/calculations/sgpa'
 import { predictGrade } from '@/lib/predictions/grade-predictor'
 import { calculateCGPA } from '@/lib/calculations/cgpa'
+import { detectRisks, RiskDetectorData } from '@/lib/alerts/risk-detector'
 
 export const metadata = {
   title: 'Dashboard - AcademiQ',
@@ -210,6 +213,19 @@ export default async function DashboardPage() {
     return { date, status };
   });
 
+  const riskData: RiskDetectorData = {
+    subjects: activeSemester.subjects.map(s => ({
+      id: s.id,
+      name: s.name,
+      attendancePercent: s.attendance.length > 0 ? (s.attendance.filter(a => a.attended).length / s.attendance.length) * 100 : 100,
+      marks: s.marks as any[],
+      components: s.markingScheme ? s.markingScheme.components as any[] : []
+    })),
+    gradeScale: gradeScale,
+    sgpaTrend: sgpaTrendData.map(d => d.sgpa).reverse()
+  };
+  const risks = detectRisks(riskData);
+
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -217,6 +233,32 @@ export default async function DashboardPage() {
       </div>
 
       <OverviewCards metrics={metrics} />
+
+      {risks.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold tracking-tight flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-destructive" /> 
+            Active Risks
+          </h3>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {risks.map(risk => (
+              <Card key={risk.id} className={risk.severity === 'critical' ? 'border-destructive bg-destructive/5' : 'border-amber-500/50 bg-amber-500/5'}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex justify-between items-center">
+                    {risk.type === 'attendance' ? 'Attendance Risk' : risk.type === 'trend' ? 'Trend Risk' : 'Academic Risk'}
+                    <Badge variant={risk.severity === 'critical' ? 'destructive' : 'outline'} className={risk.severity === 'warning' ? 'text-amber-500 border-amber-500' : ''}>
+                      {risk.severity}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm font-medium">{risk.message}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <div className="col-span-4 space-y-4">

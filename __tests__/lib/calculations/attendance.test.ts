@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+
 import { calculateAttendancePercent, predictAttendanceBuffer, calculateAttendanceMarks } from '../../../lib/calculations/attendance';
 
 describe('attendance calculations', () => {
@@ -10,6 +10,13 @@ describe('attendance calculations', () => {
   it('predicts attendance buffer safely above target', () => {
     const result = predictAttendanceBuffer(18, 20, 75);
     expect(result.canMiss).toBe(4);
+    expect(result.needToAttend).toBe(0);
+    expect(result.status).toBe('safe');
+  });
+
+  it('predicts attendance buffer correctly for zero total classes (edge case)', () => {
+    const result = predictAttendanceBuffer(0, 0, 75);
+    expect(result.canMiss).toBe(0);
     expect(result.needToAttend).toBe(0);
     expect(result.status).toBe('safe');
   });

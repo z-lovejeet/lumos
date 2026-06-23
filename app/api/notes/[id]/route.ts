@@ -71,6 +71,16 @@ export async function PATCH(
     const body = await request.json();
     const validatedData = noteSchema.parse(body);
 
+    if (validatedData.subjectId) {
+      // Verify the new subject belongs to the user
+      const subject = await prisma.subject.findFirst({
+        where: { id: validatedData.subjectId, userId: user.id }
+      });
+      if (!subject) {
+        return NextResponse.json({ error: 'Subject not found' }, { status: 404 });
+      }
+    }
+
     const note = await prisma.note.update({
       where: { id },
       data: {
