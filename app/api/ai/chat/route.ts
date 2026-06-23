@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import prisma from '@/lib/prisma';
 import { handleChatMessage } from '@/lib/ai/academic-chatbot';
 import { generateStrategy, StrategyEngineData } from '@/lib/strategy/strategy-engine';
@@ -10,7 +10,7 @@ const RATE_LIMIT_HOURLY = 50;
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: authData, error: authError } = await supabase.auth.getUser();
     
     if (authError || !authData?.user) {
@@ -42,8 +42,7 @@ export async function POST(request: Request) {
       include: {
         subjects: {
           include: {
-            marks: true,
-            components: true // wait, components are on MarkingScheme usually?
+            marks: true
           }
         }
       },
@@ -75,11 +74,11 @@ export async function POST(request: Request) {
     
     if (activeSemester) {
       // Calculate current SGPA
-      const subjectsWithMarks = activeSemester.subjects.map(sub => {
-        const scheme = markingSchemes.find(m => m.id === sub.markingSchemeId);
+      const subjectsWithMarks = activeSemester.subjects.map((sub: any) => {
+        const scheme = markingSchemes.find((m: any) => m.id === sub.markingSchemeId);
         return {
           credits: sub.credits,
-          marks: sub.marks.map(m => ({
+          marks: sub.marks.map((m: any) => ({
             componentName: m.componentName,
             obtainedMarks: m.obtainedMarks,
             maxMarks: m.maxMarks
@@ -90,13 +89,13 @@ export async function POST(request: Request) {
       currentSgpa = calculateSGPA(subjectsWithMarks, parsedGradeScale);
 
       // Populate strategy data
-      strategyData.subjects = activeSemester.subjects.map(sub => {
-        const scheme = markingSchemes.find(m => m.id === sub.markingSchemeId);
+      strategyData.subjects = activeSemester.subjects.map((sub: any) => {
+        const scheme = markingSchemes.find((m: any) => m.id === sub.markingSchemeId);
         return {
           id: sub.id,
           name: sub.name,
           credits: sub.credits,
-          marks: sub.marks.map(m => ({
+          marks: sub.marks.map((m: any) => ({
             ...m,
             examDate: m.examDate || null // ensure null instead of undefined
           })),
@@ -106,12 +105,12 @@ export async function POST(request: Request) {
     }
 
     // Calculate trend (last few SGPAs)
-    const sgpaTrend = semesters.map(sem => {
-       const subs = sem.subjects.map(sub => {
-        const scheme = markingSchemes.find(m => m.id === sub.markingSchemeId);
+    const sgpaTrend = semesters.map((sem: any) => {
+       const subs = sem.subjects.map((sub: any) => {
+        const scheme = markingSchemes.find((m: any) => m.id === sub.markingSchemeId);
         return {
           credits: sub.credits,
-          marks: sub.marks.map(m => ({
+          marks: sub.marks.map((m: any) => ({
             componentName: m.componentName,
             obtainedMarks: m.obtainedMarks,
             maxMarks: m.maxMarks
@@ -181,7 +180,7 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const supabase = await createServerClient();
+    const supabase = await createClient();
     const { data: authData, error: authError } = await supabase.auth.getUser();
     
     if (authError || !authData?.user) {

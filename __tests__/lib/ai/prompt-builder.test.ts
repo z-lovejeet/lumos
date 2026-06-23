@@ -15,11 +15,11 @@ describe('Prompt Builder', () => {
           name: 'Computer Networks',
           credits: 3,
           marks: [
-            { id: 'm1', subjectId: 's1', componentName: 'Midterm', obtainedMarks: 20, maxMarks: 50, examDate: null, createdAt: new Date() }
+            { componentName: 'Midterm', obtainedMarks: 20, maxMarks: 50 }
           ],
           components: [
-            { name: 'Midterm', maxMarks: 50, weight: 50, isOptional: false },
-            { name: 'Final', maxMarks: 50, weight: 50, isOptional: false }
+            { name: 'Midterm', maxMarks: 50, weight: 50 },
+            { name: 'Final', maxMarks: 50, weight: 50 }
           ]
         }
       ]

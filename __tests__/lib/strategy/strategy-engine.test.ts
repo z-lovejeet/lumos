@@ -15,20 +15,24 @@ describe('strategy-engine', () => {
           id: 'sub1',
           name: 'Math',
           credits: 2,
-          marks: [{ id: 'm0', subjectId: 'sub1', componentName: 'Midterm', maxMarks: 100, obtainedMarks: 40, examDate: null, createdAt: new Date() }],
+          marks: [
+            { componentName: 'Midterm', obtainedMarks: 45, maxMarks: 50 }
+          ],
           components: [
-            { name: 'Midterm', maxMarks: 100, weight: 50, isOptional: false },
-            { name: 'Final', maxMarks: 100, weight: 50, isOptional: false }
+            { name: 'Midterm', maxMarks: 50, weight: 50 },
+            { name: 'Final', maxMarks: 50, weight: 50 }
           ]
         },
         {
           id: 'sub2',
           name: 'Physics',
           credits: 4,
-          marks: [{ id: 'm1', subjectId: 'sub2', componentName: 'Midterm', maxMarks: 100, obtainedMarks: 80, examDate: null, createdAt: new Date() }],
+          marks: [
+            { componentName: 'Midterm', obtainedMarks: 20, maxMarks: 50 }
+          ],
           components: [
-            { name: 'Midterm', maxMarks: 100, weight: 50, isOptional: false },
-            { name: 'Final', maxMarks: 100, weight: 50, isOptional: false }
+            { name: 'Midterm', maxMarks: 50, weight: 50 },
+            { name: 'Final', maxMarks: 50, weight: 50 }
           ]
         }
       ]
@@ -46,23 +50,28 @@ describe('strategy-engine', () => {
       gradeScale: [
         { grade: 'O', minPercentage: 90, maxPercentage: 100, gpaValue: 10 },
         { grade: 'A+', minPercentage: 80, maxPercentage: 89.99, gpaValue: 9 },
-        { grade: 'A', minPercentage: 70, maxPercentage: 79.99, gpaValue: 8 }
+        { grade: 'A', minPercentage: 70, maxPercentage: 79.99, gpaValue: 8 },
+        { grade: 'F', minPercentage: 0, maxPercentage: 69.99, gpaValue: 0 }
       ],
       subjects: [
         {
           id: 'sub1', name: 'Low Credit Math', credits: 2, 
-          marks: [{ id: 'm3', subjectId: 'sub1', componentName: 'Midterm', maxMarks: 100, obtainedMarks: 40, examDate: null, createdAt: new Date() }], 
+          marks: [
+            { componentName: 'Midterm', obtainedMarks: 20, maxMarks: 50 }
+          ],
           components: [
-            { name: 'Midterm', maxMarks: 100, weight: 50, isOptional: false },
-            { name: 'Final', maxMarks: 100, weight: 50, isOptional: false }
+            { name: 'Midterm', maxMarks: 50, weight: 50 },
+            { name: 'Final', maxMarks: 50, weight: 50 }
           ]
         },
         {
           id: 'sub2', name: 'High Credit Physics', credits: 4, 
-          marks: [{ id: 'm4', subjectId: 'sub2', componentName: 'Midterm', maxMarks: 100, obtainedMarks: 80, examDate: null, createdAt: new Date() }], 
+          marks: [
+            { componentName: 'Midterm', obtainedMarks: 20, maxMarks: 50 }
+          ],
           components: [
-            { name: 'Midterm', maxMarks: 100, weight: 50, isOptional: false },
-            { name: 'Final', maxMarks: 100, weight: 50, isOptional: false }
+            { name: 'Midterm', maxMarks: 50, weight: 50 },
+            { name: 'Final', maxMarks: 50, weight: 50 }
           ]
         }
       ]

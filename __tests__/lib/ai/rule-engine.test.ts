@@ -15,7 +15,7 @@ describe('Rule Engine', () => {
           name: 'Data Structures',
           credits: 4,
           marks: [],
-          components: [{ name: 'Final', maxMarks: 100, weight: 100, isOptional: false }]
+          components: [{ name: 'Final', maxMarks: 100, weight: 100 }]
         }
       ]
     }

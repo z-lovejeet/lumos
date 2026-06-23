@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageBubble } from "./MessageBubble";
 import { SuggestedQueries } from "./SuggestedQueries";
-import { Send, Loader2, RefreshCcw } from "lucide-react";
+import { Send, Loader2, RefreshCcw, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 

@@ -14,8 +14,13 @@ describe('risk-detector', () => {
           id: 's1',
           name: 'Math',
           attendancePercent: 70, // Critical
-          marks: [{ id: 'm1', subjectId: 's1', componentName: 'CA', maxMarks: 100, obtainedMarks: 95, examDate: null, createdAt: new Date() }],
-          components: [{ name: 'CA', maxMarks: 100, weight: 100, isOptional: false }]
+          marks: [
+            { componentName: 'Midterm', obtainedMarks: 45, maxMarks: 50 }
+          ],
+          components: [
+            { name: 'Midterm', maxMarks: 50, weight: 50 },
+            { name: 'Final', maxMarks: 50, weight: 50 }
+          ]
         }
       ]
     };
@@ -61,12 +66,16 @@ describe('risk-detector', () => {
           id: 's1',
           name: 'Math',
           attendancePercent: 85,
-          marks: [{ id: 'm1', subjectId: 's1', componentName: 'CA', maxMarks: 100, obtainedMarks: 10, examDate: null, createdAt: new Date() }],
-          components: [{ name: 'CA', maxMarks: 100, weight: 100, isOptional: false }]
+          marks: [
+            { componentName: 'Midterm', obtainedMarks: 15, maxMarks: 50 }
+          ],
+          components: [
+            { name: 'Midterm', maxMarks: 50, weight: 50 },
+            { name: 'Final', maxMarks: 50, weight: 50 }
+          ]
         }
       ]
     };
-
     const alerts = detectRisks(data);
     const academicAlerts = alerts.filter(a => a.type === 'academic');
     expect(academicAlerts.length).toBeGreaterThan(0);

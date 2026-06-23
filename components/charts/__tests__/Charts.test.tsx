@@ -12,13 +12,13 @@ global.ResizeObserver = class ResizeObserver {
 
 describe('Chart Components', () => {
   const dummySemesters = [
-    { name: 'Semester 1', sgpa: 8.5 },
-    { name: 'Semester 2', sgpa: 9.0 }
+    { semester: 'Sem 1', sgpa: 8.5 },
+    { semester: 'Sem 2', sgpa: 9.0 }
   ];
 
   const dummyCgpa = [
-    { name: 'Semester 1', cgpa: 8.5 },
-    { name: 'Semester 2', cgpa: 8.75 }
+    { semester: 'Sem 1', cgpa: 8.5 },
+    { semester: 'Sem 2', cgpa: 8.75 }
   ];
 
   const dummyAttendance: any = [
