@@ -130,6 +130,102 @@ const rules: Rule[] = [
       
       return `For **${subject.name}**, please check your Attendance dashboard for the exact buffer. (Rule engine requires full attendance records to compute the buffer directly).`;
     }
+  },
+  {
+    name: 'Highest Subject',
+    patterns: [
+      /highest scoring subject/i,
+      /best performing subject/i,
+      /which subject am i doing best in/i
+    ],
+    handler: (query, context) => {
+      let highestSub = null;
+      let highestPercent = -1;
+      
+      for (const sub of context.strategyData.subjects) {
+        let obtained = 0;
+        let max = 0;
+        for (const m of sub.marks) {
+          if (m.obtainedMarks !== null) {
+            obtained += m.obtainedMarks;
+            max += m.maxMarks;
+          }
+        }
+        if (max > 0) {
+          const percent = (obtained / max) * 100;
+          if (percent > highestPercent) {
+            highestPercent = percent;
+            highestSub = sub.name;
+          }
+        }
+      }
+      
+      if (!highestSub) return "You haven't entered enough marks yet to determine your highest subject.";
+      return `Your highest performing subject is **${highestSub}** at ${highestPercent.toFixed(1)}%. Great job!`;
+    }
+  },
+  {
+    name: 'Lowest Subject',
+    patterns: [
+      /lowest scoring subject/i,
+      /worst performing subject/i,
+      /which subject am i doing worst in/i
+    ],
+    handler: (query, context) => {
+      let lowestSub = null;
+      let lowestPercent = 101;
+      
+      for (const sub of context.strategyData.subjects) {
+        let obtained = 0;
+        let max = 0;
+        for (const m of sub.marks) {
+          if (m.obtainedMarks !== null) {
+            obtained += m.obtainedMarks;
+            max += m.maxMarks;
+          }
+        }
+        if (max > 0) {
+          const percent = (obtained / max) * 100;
+          if (percent < lowestPercent) {
+            lowestPercent = percent;
+            lowestSub = sub.name;
+          }
+        }
+      }
+      
+      if (!lowestSub) return "You haven't entered enough marks yet to determine your lowest subject.";
+      return `Your lowest performing subject right now is **${lowestSub}** at ${lowestPercent.toFixed(1)}%. Ask me "Best subject to improve" for a strategy on how to bring this up.`;
+    }
+  },
+  {
+    name: 'Total Credits',
+    patterns: [
+      /how many credits/i,
+      /total credits/i
+    ],
+    handler: (query, context) => {
+      const total = context.strategyData.subjects.reduce((sum, s) => sum + s.credits, 0);
+      return `You are currently enrolled in **${total} credits** this semester.`;
+    }
+  },
+  {
+    name: 'Passing Status',
+    patterns: [
+      /am i passing/i,
+      /will i pass/i
+    ],
+    handler: (query, context) => {
+      const alerts = detectRisks({
+        sgpaTrend: context.sgpaTrend,
+        gradeScale: context.strategyData.gradeScale,
+        subjects: context.strategyData.subjects.map(s => ({ ...s, attendancePercent: 100 }))
+      });
+      const critical = alerts.filter(a => a.severity === 'critical');
+      if (critical.length > 0) {
+        return `You have some risks to address before you can safely pass: ${critical[0].message}`;
+      }
+      return "Based on your current trajectory, yes, you are passing! Keep up the good work.";
+    }
   }
 ];
 

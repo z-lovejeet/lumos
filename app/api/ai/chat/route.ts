@@ -5,6 +5,7 @@ import { handleChatMessage } from '@/lib/ai/academic-chatbot';
 import { generateStrategy, StrategyEngineData } from '@/lib/strategy/strategy-engine';
 import { calculateSGPA } from '@/lib/calculations/sgpa';
 import { RuleEngineContext } from '@/lib/ai/rule-engine';
+import { Prisma } from '@prisma/client';
 
 const RATE_LIMIT_HOURLY = 50;
 
@@ -19,11 +20,14 @@ export async function POST(request: Request) {
     
     const userId = authData.user.id;
     const body = await request.json();
-    const { message } = body;
+    let { message } = body;
 
     if (!message || typeof message !== 'string') {
-      return NextResponse.json({ error: 'Invalid message' }, { status: 400 });
+      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
+
+    // SANITIZATION: Prevent massively long prompts
+    message = message.trim().slice(0, 1000);
 
     // 1. Check Rate Limit (Count LLM calls in the last hour)
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
@@ -63,7 +67,11 @@ export async function POST(request: Request) {
       where: { userId }
     });
 
-    const activeSemester = semesters.find(s => s.status === 'active') || semesters[semesters.length - 1];
+    type SemesterWithSubjects = Prisma.SemesterGetPayload<{
+      include: { subjects: { include: { marks: true } } }
+    }>;
+
+    const activeSemester = semesters.find((s: SemesterWithSubjects) => s.status === 'active') || semesters[semesters.length - 1];
     
     let strategyData: StrategyEngineData = {
       gradeScale: parsedGradeScale,
@@ -74,11 +82,11 @@ export async function POST(request: Request) {
     
     if (activeSemester) {
       // Calculate current SGPA
-      const subjectsWithMarks = activeSemester.subjects.map((sub: any) => {
-        const scheme = markingSchemes.find((m: any) => m.id === sub.markingSchemeId);
+      const subjectsWithMarks = activeSemester.subjects.map((sub) => {
+        const scheme = markingSchemes.find((m) => m.id === sub.markingSchemeId);
         return {
           credits: sub.credits,
-          marks: sub.marks.map((m: any) => ({
+          marks: sub.marks.map((m) => ({
             componentName: m.componentName,
             obtainedMarks: m.obtainedMarks,
             maxMarks: m.maxMarks
@@ -86,16 +94,16 @@ export async function POST(request: Request) {
           components: scheme ? (scheme.components as any) : []
         };
       });
-      currentSgpa = calculateSGPA(subjectsWithMarks, parsedGradeScale);
+      currentSgpa = calculateSGPA(subjectsWithMarks, parsedGradeScale as any);
 
       // Populate strategy data
-      strategyData.subjects = activeSemester.subjects.map((sub: any) => {
-        const scheme = markingSchemes.find((m: any) => m.id === sub.markingSchemeId);
+      strategyData.subjects = activeSemester.subjects.map((sub) => {
+        const scheme = markingSchemes.find((m) => m.id === sub.markingSchemeId);
         return {
           id: sub.id,
           name: sub.name,
           credits: sub.credits,
-          marks: sub.marks.map((m: any) => ({
+          marks: sub.marks.map((m) => ({
             ...m,
             examDate: m.examDate || null // ensure null instead of undefined
           })),
@@ -105,20 +113,20 @@ export async function POST(request: Request) {
     }
 
     // Calculate trend (last few SGPAs)
-    const sgpaTrend = semesters.map((sem: any) => {
-       const subs = sem.subjects.map((sub: any) => {
-        const scheme = markingSchemes.find((m: any) => m.id === sub.markingSchemeId);
+    const sgpaTrend = semesters.map((sem) => {
+       const subs = sem.subjects.map((sub) => {
+        const scheme = markingSchemes.find((m) => m.id === sub.markingSchemeId);
         return {
           credits: sub.credits,
-          marks: sub.marks.map((m: any) => ({
+          marks: sub.marks.map((m) => ({
             componentName: m.componentName,
             obtainedMarks: m.obtainedMarks,
             maxMarks: m.maxMarks
           })),
-          components: scheme ? (scheme.components as any) : []
+          components: scheme ? (scheme.components as Prisma.JsonArray) : []
         };
       });
-      return calculateSGPA(subs, parsedGradeScale);
+      return calculateSGPA(subs, parsedGradeScale as any);
     });
 
     const context: RuleEngineContext = {

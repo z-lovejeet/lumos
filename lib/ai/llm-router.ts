@@ -18,7 +18,7 @@ export async function queryLLM(systemPrompt: string, userMessage: string): Promi
     if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not configured');
     
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     
     const result = await model.generateContent({
       contents: [
@@ -44,7 +44,7 @@ export async function queryLLM(systemPrompt: string, userMessage: string): Promi
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
         ],
-        model: 'llama3-8b-8192',
+        model: 'llama-3.1-8b-instant',
         temperature: 0.5,
         max_tokens: 512,
       });

@@ -14,8 +14,13 @@ describe('Rule Engine', () => {
           id: 's1',
           name: 'Data Structures',
           credits: 4,
-          marks: [],
-          components: [{ name: 'Final', maxMarks: 100, weight: 100 }]
+          marks: [
+            { id: 'm1', componentName: 'Midterm', obtainedMarks: 40, maxMarks: 50 }
+          ],
+          components: [
+            { name: 'Midterm', maxMarks: 50, weight: 50 },
+            { name: 'Final', maxMarks: 50, weight: 50 }
+          ]
         }
       ]
     }
@@ -75,5 +80,35 @@ describe('Rule Engine', () => {
     const match = processWithRules("who is the president?", mockContext);
     expect(match.matched).toBe(false);
     expect(match.response).toBeNull();
+  });
+
+  it('matches highest subject query', () => {
+    const queries = ["highest scoring subject", "which subject am i doing best in"];
+    queries.forEach(q => {
+      const match = processWithRules(q, mockContext);
+      expect(match.matched).toBe(true);
+      expect(match.response).toContain('Data Structures');
+    });
+  });
+
+  it('matches lowest subject query', () => {
+    const queries = ["lowest scoring subject", "worst performing subject"];
+    queries.forEach(q => {
+      const match = processWithRules(q, mockContext);
+      expect(match.matched).toBe(true);
+      expect(match.response).toContain('Data Structures');
+    });
+  });
+
+  it('matches total credits query', () => {
+    const match = processWithRules("how many credits am i taking?", mockContext);
+    expect(match.matched).toBe(true);
+    expect(match.response).toContain('4 credits');
+  });
+
+  it('matches passing status query', () => {
+    const match = processWithRules("will i pass this semester?", mockContext);
+    expect(match.matched).toBe(true);
+    expect(match.response).toContain('yes, you are passing');
   });
 });
