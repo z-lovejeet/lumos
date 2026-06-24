@@ -34,7 +34,7 @@ export function SubjectComparisonChart({ data }: SubjectComparisonChartProps) {
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted" />
               <XAxis 
@@ -56,13 +56,13 @@ export function SubjectComparisonChart({ data }: SubjectComparisonChartProps) {
               <Tooltip 
                 contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--background))' }}
                 itemStyle={{ color: 'hsl(var(--foreground))' }}
-                cursor={{ fill: 'hsl(var(--muted))' }}
+                cursor={{ fill: 'var(--chart-4)', opacity: 0.2 }}
               />
               <Legend wrapperStyle={{ fontSize: '12px' }} />
               <Bar 
                 name="Your Score"
                 dataKey="percentage" 
-                fill="hsl(var(--primary))" 
+                fill="var(--chart-1)" 
                 radius={[4, 4, 0, 0]} 
                 maxBarSize={50}
               />
@@ -70,7 +70,7 @@ export function SubjectComparisonChart({ data }: SubjectComparisonChartProps) {
                 <Bar 
                   name="Class Average"
                   dataKey="classAverage" 
-                  fill="hsl(var(--muted-foreground))" 
+                  fill="var(--chart-4)" 
                   radius={[4, 4, 0, 0]} 
                   maxBarSize={50}
                 />

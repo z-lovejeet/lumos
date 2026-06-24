@@ -33,7 +33,7 @@ export function SGPATrendChart({ data }: SGPATrendChartProps) {
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+          <ResponsiveContainer width="100%" height={300}>
             <LineChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted" />
               <XAxis 
@@ -58,10 +58,10 @@ export function SGPATrendChart({ data }: SGPATrendChartProps) {
               <Line 
                 type="monotone" 
                 dataKey="sgpa" 
-                stroke="hsl(var(--primary))" 
+                stroke="var(--chart-3)" 
                 strokeWidth={3} 
                 activeDot={{ r: 6 }} 
-                dot={{ r: 4, fill: 'hsl(var(--background))', strokeWidth: 2 }}
+                dot={{ r: 4, fill: "var(--chart-3)" }}
               />
             </LineChart>
           </ResponsiveContainer>

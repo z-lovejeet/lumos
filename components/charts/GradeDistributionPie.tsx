@@ -12,12 +12,11 @@ interface GradeDistributionPieProps {
 }
 
 const DEFAULT_COLORS = [
-  'hsl(var(--primary))',
-  '#10b981', // emerald-500
-  '#f59e0b', // amber-500
-  '#ef4444', // red-500
-  '#8b5cf6', // violet-500
-  '#06b6d4', // cyan-500
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
 ];
 
 export function GradeDistributionPie({ data }: GradeDistributionPieProps) {
@@ -43,7 +42,7 @@ export function GradeDistributionPie({ data }: GradeDistributionPieProps) {
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
                 data={data}
