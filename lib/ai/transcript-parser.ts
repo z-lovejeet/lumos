@@ -29,7 +29,7 @@ export async function parseTranscriptText(text: string): Promise<ParsedTranscrip
   const lines = text.split('\n');
   let regexSuccessCount = 0;
   for (const line of lines) {
-    const lineMatch = line.match(/^([A-Za-z\s]+)\s+(\d)\s+([O|S|A|B|C|D|E|F][+]?)$/i);
+    const lineMatch = line.match(/^([A-Za-z0-9\-\s]+)\s+(\d)\s+([O|S|A|B|C|D|E|F][+]?)$/i);
     if (lineMatch) {
       subjects.push({
         name: lineMatch[1].trim(),
