@@ -9,6 +9,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
     }
 
+    if (questions.length > 100) {
+      return NextResponse.json({ error: 'Maximum 100 questions allowed per request to prevent overload.' }, { status: 400 });
+    }
+
     const result = await analyzePYQWeightage(questions as QuestionData[]);
     return NextResponse.json({ success: true, data: result });
   } catch (error: any) {
