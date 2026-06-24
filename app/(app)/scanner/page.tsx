@@ -54,11 +54,23 @@ export default function ScannerPage() {
   };
 
   const handleConfirmSave = async (semester: number) => {
-    // Phase 9 DB integration (mocked until Phase 10 backend integration)
-    alert(`Saved ${finalData?.length} subjects to Semester ${semester}!`);
-    setIsConfirmOpen(false);
-    setScannedData(null);
-    setFinalData(null);
+    try {
+      const res = await fetch('/api/ai/bulk-import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ semester, subjects: finalData })
+      });
+      
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error);
+      
+      alert(`Successfully saved ${result.count} subjects to Semester ${semester}!`);
+      setIsConfirmOpen(false);
+      setScannedData(null);
+      setFinalData(null);
+    } catch (err: any) {
+      alert('Failed to save to database: ' + err.message);
+    }
   };
 
   return (

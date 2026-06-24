@@ -59,11 +59,23 @@ export default function TranscriptPage() {
   };
 
   const handleConfirmSave = async (semester: number) => {
-    // In Phase 9: Mocked DB save
-    alert(`Saved ${data?.subjects?.length} subjects to Semester ${semester}!`);
-    setIsConfirmOpen(false);
-    setData(null);
-    setFile(null);
+    try {
+      const res = await fetch('/api/ai/bulk-import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ semester, subjects: data?.subjects || [] })
+      });
+      
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error);
+      
+      alert(`Successfully saved ${result.count} subjects to Semester ${semester}!`);
+      setIsConfirmOpen(false);
+      setData(null);
+      setFile(null);
+    } catch (err: any) {
+      alert('Failed to save to database: ' + err.message);
+    }
   };
 
   return (
