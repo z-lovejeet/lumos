@@ -5,12 +5,14 @@ import { Upload, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { ParsedTranscript, ParsedSubject } from '@/lib/ai/transcript-parser';
+import { ConfirmDialog } from '@/components/scanner/ConfirmDialog';
 
 export default function TranscriptPage() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [data, setData] = useState<ParsedTranscript | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -52,9 +54,16 @@ export default function TranscriptPage() {
     }
   };
 
-  const handleSave = async () => {
-    // In Phase 9: Bulk insert marks from OCR/transcript import
-    alert("Saving data to database... (To be implemented in DB route)");
+  const handleSave = () => {
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmSave = async (semester: number) => {
+    // In Phase 9: Mocked DB save
+    alert(`Saved ${data?.subjects?.length} subjects to Semester ${semester}!`);
+    setIsConfirmOpen(false);
+    setData(null);
+    setFile(null);
   };
 
   return (
@@ -165,6 +174,15 @@ export default function TranscriptPage() {
             </Button>
           </CardFooter>
         </Card>
+      )}
+
+      {isConfirmOpen && data && (
+        <ConfirmDialog
+          isOpen={isConfirmOpen}
+          onClose={() => setIsConfirmOpen(false)}
+          onConfirm={handleConfirmSave}
+          subjectCount={data.subjects.length}
+        />
       )}
     </div>
   );

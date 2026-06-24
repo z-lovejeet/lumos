@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { OCRUploader } from '@/components/scanner/OCRUploader';
 import { ExtractedMarksTable } from '@/components/scanner/ExtractedMarksTable';
+import { ConfirmDialog } from '@/components/scanner/ConfirmDialog';
 import { ParsedSubject } from '@/lib/ai/transcript-parser';
 import { ScanLine, AlertCircle } from 'lucide-react';
 
@@ -10,6 +11,9 @@ export default function ScannerPage() {
   const [scannedData, setScannedData] = useState<ParsedSubject[] | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
+  
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [finalData, setFinalData] = useState<ParsedSubject[] | null>(null);
 
   const handleScanComplete = async (rawText: string) => {
     setIsProcessing(true);
@@ -45,9 +49,16 @@ export default function ScannerPage() {
   };
 
   const handleSave = (finalSubjects: ParsedSubject[]) => {
-    // Phase 9 DB integration
-    alert('Saving extracted marks to database...');
-    setScannedData(null); // reset
+    setFinalData(finalSubjects);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmSave = async (semester: number) => {
+    // Phase 9 DB integration (mocked until Phase 10 backend integration)
+    alert(`Saved ${finalData?.length} subjects to Semester ${semester}!`);
+    setIsConfirmOpen(false);
+    setScannedData(null);
+    setFinalData(null);
   };
 
   return (
@@ -92,6 +103,15 @@ export default function ScannerPage() {
             onCancel={() => setScannedData(null)}
           />
         </div>
+      )}
+
+      {isConfirmOpen && finalData && (
+        <ConfirmDialog
+          isOpen={isConfirmOpen}
+          onClose={() => setIsConfirmOpen(false)}
+          onConfirm={handleConfirmSave}
+          subjectCount={finalData.length}
+        />
       )}
     </div>
   );
