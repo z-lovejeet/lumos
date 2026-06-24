@@ -16,7 +16,18 @@ export default function TranscriptPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      
+      if (selectedFile.type !== 'application/pdf') {
+        setError('Only PDF files are supported for transcripts.');
+        return;
+      }
+      if (selectedFile.size > 10 * 1024 * 1024) {
+        setError('PDF file must be under 10MB.');
+        return;
+      }
+
+      setFile(selectedFile);
       setError('');
       setData(null);
     }
