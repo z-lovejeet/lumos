@@ -1,25 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-
-export interface QuestionData {
-  text: string;
-  marks?: number;
-  year?: number;
-}
-
-export interface TaggedQuestion extends QuestionData {
-  topics: string[];
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-}
-
-export interface PYQAnalysisResult {
-  questions: TaggedQuestion[];
-  frequency: Record<string, number>;
-  importanceRanking: { topic: string; score: number }[];
-}
-
 export async function analyzePYQWeightage(questions: QuestionData[]): Promise<PYQAnalysisResult> {
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
   if (!GEMINI_API_KEY) {
     throw new Error('GEMINI_API_KEY is missing');
   }
