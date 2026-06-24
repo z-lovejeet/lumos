@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { OCRUploader } from '@/components/scanner/OCRUploader';
 import { ExtractedMarksTable } from '@/components/scanner/ExtractedMarksTable';
-import { ParsedSubject, parseTranscriptText } from '@/lib/ai/transcript-parser';
+import { ParsedSubject } from '@/lib/ai/transcript-parser';
 import { ScanLine, AlertCircle } from 'lucide-react';
 
 export default function ScannerPage() {
@@ -16,8 +16,21 @@ export default function ScannerPage() {
     setError('');
     
     try {
-      // Use the same regex + LLM fallback parser for OCR text
-      const parsed = await parseTranscriptText(rawText);
+      const response = await fetch('/api/ai/parse', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: rawText }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to process OCR text');
+      }
+
+      const parsed = result.data;
       if (parsed.subjects.length === 0) {
         setError('No subjects or marks could be detected from the image. Please try a clearer photo.');
         setScannedData([]);
