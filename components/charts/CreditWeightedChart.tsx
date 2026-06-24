@@ -39,7 +39,7 @@ export function CreditWeightedChart({ data }: CreditWeightedChartProps) {
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: -20 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted" />
               <XAxis 
