@@ -1,0 +1,24 @@
+{
+  "program": "MSc Informatics",
+  "university": "Technical University of Munich",
+  "requirements": [
+    {
+      "id": "req-1",
+      "category": "Mathematics",
+      "requiredCredits": 20,
+      "description": "Calculus, Linear Algebra, Discrete Mathematics, Probability & Statistics"
+    },
+    {
+      "id": "req-2",
+      "category": "Computer Science",
+      "requiredCredits": 40,
+      "description": "Algorithms, Data Structures, Software Engineering, Database Systems, Computer Architecture"
+    },
+    {
+      "id": "req-3",
+      "category": "Theoretical Informatics",
+      "requiredCredits": 10,
+      "description": "Automata Theory, Computability, Complexity Theory"
+    }
+  ]
+}

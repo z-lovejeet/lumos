@@ -32,6 +32,11 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { data, progress } = body;
 
+    // Security check: ensure data is an object and not excessively large (max ~100KB)
+    if (typeof data !== 'object' || Array.isArray(data) || JSON.stringify(data).length > 100000) {
+      return NextResponse.json({ error: 'Invalid or excessively large payload' }, { status: 400 });
+    }
+
     const existing = await prisma.careerPlan.findFirst({
       where: { userId: user.id, type: 'internship' }
     });

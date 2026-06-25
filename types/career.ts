@@ -34,7 +34,7 @@ export interface CareerPlan {
   id: string;
   userId: string;
   type: 'ms-abroad' | 'internship' | 'placement' | 'tum';
-  data: MSAbroadProfile | InternshipPlan | TUMProfile | any;
+  data: MSAbroadProfile | InternshipPlan | TUMProfile | Record<string, unknown>;
   progress: number;
   createdAt: string;
   updatedAt: string;

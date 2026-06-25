@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChecklistTracker, ChecklistItem } from "@/components/career/ChecklistTracker";
 import { UniversityFitCard } from "@/components/career/UniversityFitCard";
 import { CurriculumMapResult } from "@/lib/career/curriculum-mapper";
+import tumReqs from "@/data/tum-requirements.json";
 
 export default function TUMPlannerPage() {
   const [items, setItems] = useState<ChecklistItem[]>([
@@ -18,12 +19,35 @@ export default function TUMPlannerPage() {
     setItems(items.map(item => item.id === id ? { ...item, isComplete } : item));
   };
 
-  // Dummy curriculum mapping
-  const mockMapping: CurriculumMapResult[] = [
-    { category: 'Mathematics', requiredCredits: 20, completedCredits: 24, isMet: true, matchedSubjects: ['Calculus', 'Linear Algebra'] },
-    { category: 'Computer Science', requiredCredits: 40, completedCredits: 35, isMet: false, matchedSubjects: ['Algorithms', 'Data Structures'] },
-    { category: 'Theoretical Informatics', requiredCredits: 10, completedCredits: 0, isMet: false, matchedSubjects: [] },
-  ];
+  // Mock curriculum mapping based on imported requirements JSON
+  const mockMapping: CurriculumMapResult[] = tumReqs.requirements.map(req => {
+    // Simulating completed credits based on category
+    let completedCredits = 0;
+    let matchedSubjects: string[] = [];
+    let isMet = false;
+
+    if (req.category === "Mathematics") {
+      completedCredits = 24;
+      matchedSubjects = ['Calculus', 'Linear Algebra'];
+      isMet = completedCredits >= req.requiredCredits;
+    } else if (req.category === "Computer Science") {
+      completedCredits = 35;
+      matchedSubjects = ['Algorithms', 'Data Structures'];
+      isMet = completedCredits >= req.requiredCredits;
+    } else if (req.category === "Theoretical Informatics") {
+      completedCredits = 0;
+      matchedSubjects = [];
+      isMet = completedCredits >= req.requiredCredits;
+    }
+
+    return {
+      category: req.category,
+      requiredCredits: req.requiredCredits,
+      completedCredits,
+      isMet,
+      matchedSubjects
+    };
+  });
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
