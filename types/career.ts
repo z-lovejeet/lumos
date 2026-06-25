@@ -44,6 +44,7 @@ export interface MSReadinessScore {
   academics: number;      // based on CGPA
   testScores: number;     // based on GRE/IELTS
   experience: number;     // work exp, papers
+  applications: number;   // application completion
   overall: number;        // weighted average
   missingFactors: string[];
 }

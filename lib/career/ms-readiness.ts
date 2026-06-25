@@ -3,11 +3,12 @@ import { MSAbroadProfile, MSReadinessScore } from '@/types/career';
 /**
  * Calculates a readiness score for MS Abroad applications based on various factors.
  * Weights:
- * - Academics (CGPA): 40%
- * - Test Scores (GRE/IELTS): 30%
- * - Experience (Research/Work): 30%
+ * - Academics (CGPA): 30%
+ * - Test Scores (GRE/IELTS): 25%
+ * - Experience (Research/Work): 25%
+ * - Applications (Motivation/LOR/SOP): 20%
  */
-export function analyzeMSReadiness(cgpa: number, profile: MSAbroadProfile): MSReadinessScore {
+export function analyzeMSReadiness(cgpa: number, profile: MSAbroadProfile, applicationProgress: number = 0): MSReadinessScore {
   const missingFactors: string[] = [];
 
   // 1. Academics Score (out of 100)
@@ -59,12 +60,13 @@ export function analyzeMSReadiness(cgpa: number, profile: MSAbroadProfile): MSRe
   experienceScore = papersPercent + workExpPercent;
 
   // Calculate Overall
-  const overall = (academicsScore * 0.4) + (testScoresScore * 0.3) + (experienceScore * 0.3);
+  const overall = (academicsScore * 0.3) + (testScoresScore * 0.25) + (experienceScore * 0.25) + (applicationProgress * 0.2);
 
   return {
     academics: Math.round(academicsScore),
     testScores: Math.round(testScoresScore),
     experience: Math.round(experienceScore),
+    applications: Math.round(applicationProgress),
     overall: Math.round(overall),
     missingFactors
   };

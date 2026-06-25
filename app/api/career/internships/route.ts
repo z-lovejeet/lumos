@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     const { data, progress } = body;
 
     // Security check: ensure data is an object and not excessively large (max ~100KB)
-    if (typeof data !== 'object' || Array.isArray(data) || JSON.stringify(data).length > 100000) {
+    if (!data || typeof data !== 'object' || Array.isArray(data) || JSON.stringify(data).length > 100000) {
       return NextResponse.json({ error: 'Invalid or excessively large payload' }, { status: 400 });
     }
 
@@ -60,5 +60,47 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     return NextResponse.json({ error: 'Failed to save internship plan' }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const { data, progress } = body;
+
+    // Security check
+    if (!data || typeof data !== 'object' || Array.isArray(data) || JSON.stringify(data).length > 100000) {
+      return NextResponse.json({ error: 'Invalid or excessively large payload' }, { status: 400 });
+    }
+
+    const existing = await prisma.careerPlan.findFirst({
+      where: { userId: user.id, type: 'internship' }
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: 'Plan not found' }, { status: 404 });
+    }
+
+    // Merge existing data with new data (shallow merge)
+    const mergedData = { ...(existing.data as object), ...data };
+
+    const updated = await prisma.careerPlan.update({
+      where: { id: existing.id },
+      data: {
+        data: mergedData,
+        progress: progress !== undefined ? progress : existing.progress
+      }
+    });
+
+    return NextResponse.json({ plan: updated });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to update internship plan' }, { status: 500 });
   }
 }

@@ -68,6 +68,22 @@ export default function InternshipsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Your Applications</CardTitle>
+          {apps.length > 0 && (
+            <div className="mt-4 space-y-2">
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>Application Success Rate (Interviewing/Offered)</span>
+                <span>
+                  {Math.round((apps.filter(a => a.status === 'interviewing' || a.status === 'offered').length / apps.length) * 100)}%
+                </span>
+              </div>
+              <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-green-500 transition-all" 
+                  style={{ width: `${(apps.filter(a => a.status === 'interviewing' || a.status === 'offered').length / apps.length) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <Table>

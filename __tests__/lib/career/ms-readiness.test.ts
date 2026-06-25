@@ -12,10 +12,11 @@ describe('MS Readiness Scoring', () => {
       workExperienceMonths: 25
     };
     
-    const score = analyzeMSReadiness(9.5, perfectProfile);
+    const score = analyzeMSReadiness(9.5, perfectProfile, 100);
     expect(score.academics).toBe(100);
     expect(score.testScores).toBe(100);
     expect(score.experience).toBe(100);
+    expect(score.applications).toBe(100);
     expect(score.overall).toBe(100);
     expect(score.missingFactors).toHaveLength(0);
   });
@@ -26,11 +27,12 @@ describe('MS Readiness Scoring', () => {
       targetTerm: 'Winter 2026'
     };
     
-    const score = analyzeMSReadiness(7.5, poorProfile);
+    const score = analyzeMSReadiness(7.5, poorProfile, 0);
     expect(score.academics).toBe(50); // (7.5-6)/3 * 100 = 50
     expect(score.testScores).toBe(0);
     expect(score.experience).toBe(0);
-    expect(score.overall).toBe(20); // 50 * 0.4
+    expect(score.applications).toBe(0);
+    expect(score.overall).toBe(15); // 50 * 0.3 = 15
     expect(score.missingFactors).toContain('GRE Score');
     expect(score.missingFactors).toContain('TOEFL/IELTS Score');
     expect(score.missingFactors).toContain('Research Papers');

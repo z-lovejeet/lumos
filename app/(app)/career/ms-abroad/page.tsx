@@ -20,6 +20,7 @@ export default function MSAbroadPage() {
 
   const [score, setScore] = useState<MSReadinessScore | null>(null);
   const [cgpa, setCgpa] = useState<number>(8.5); // Ideally fetched from DB
+  const [appProgress, setAppProgress] = useState<number>(20);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -35,7 +36,7 @@ export default function MSAbroadPage() {
     try {
       // dynamic import for client-side
       const { analyzeMSReadiness } = await import('@/lib/career/ms-readiness');
-      setScore(analyzeMSReadiness(cgpa, profile));
+      setScore(analyzeMSReadiness(cgpa, profile, appProgress));
     } catch (e) {
       console.error(e);
     }
@@ -102,6 +103,15 @@ export default function MSAbroadPage() {
                 value={cgpa} 
                 onChange={e => setCgpa(Number(e.target.value))} 
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Application Progress (%)</Label>
+              <Input 
+                type="number" step="5" max="100" min="0"
+                value={appProgress} 
+                onChange={e => setAppProgress(Number(e.target.value))} 
+              />
+              <p className="text-xs text-muted-foreground">SOP, LORs, Resumes prepared</p>
             </div>
           </div>
           <Button onClick={handleSave} className="w-full" disabled={loading}>

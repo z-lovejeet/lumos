@@ -12,9 +12,8 @@ export function ReadinessRadar({ score }: ReadinessRadarProps) {
     { subject: 'Academics (CGPA)', A: score.academics, fullMark: 100 },
     { subject: 'Test Scores', A: score.testScores, fullMark: 100 },
     { subject: 'Experience', A: score.experience, fullMark: 100 },
-    // Adding dummy points to make a nice radar shape
+    { subject: 'Applications', A: score.applications || 0, fullMark: 100 },
     { subject: 'Profile Fit', A: score.overall, fullMark: 100 },
-    { subject: 'Motivation', A: 80, fullMark: 100 },
   ];
 
   return (

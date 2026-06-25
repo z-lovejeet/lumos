@@ -1,5 +1,21 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+export interface QuestionData {
+  text: string;
+}
+
+export interface TaggedQuestion {
+  text: string;
+  topics: string[];
+  difficulty: string;
+}
+
+export interface PYQAnalysisResult {
+  questions: TaggedQuestion[];
+  frequency: Record<string, number>;
+  importanceRanking: { topic: string; score: number }[];
+}
+
 export async function analyzePYQWeightage(questions: QuestionData[]): Promise<PYQAnalysisResult> {
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
   if (!GEMINI_API_KEY) {

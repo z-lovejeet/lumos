@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Subject, Mark, MarkingScheme } from '@prisma/client'
 import { calculateSubjectPercentage } from '@/lib/calculations/percentage'
 import { getGradeFromPercentage, GradeRange } from '@/lib/calculations/sgpa'
@@ -87,7 +87,7 @@ export function MarksTable({ subject, gradeScaleRanges = [] }: MarksTableProps) 
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedSave = useCallback(debounce(saveMarks, 1000), [subject.id])
+  const debouncedSave = useMemo(() => debounce(saveMarks, 1000), [subject.id])
 
   const handleMarkChange = (index: number, value: string) => {
     const numValue = value === '' ? null : parseFloat(value)

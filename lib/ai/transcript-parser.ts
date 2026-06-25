@@ -22,7 +22,7 @@ export async function parseTranscriptText(text: string): Promise<ParsedTranscrip
   
   // Try Regex First for SGPA
   const sgpaMatch = text.match(/SGPA[\s:]*([0-9.]+)/i);
-  let sgpa = sgpaMatch ? parseFloat(sgpaMatch[1]) : undefined;
+  const sgpa = sgpaMatch ? parseFloat(sgpaMatch[1]) : undefined;
 
   // Try Regex First for Subjects
   // Matches simple formats like "Data Structures 4 A"
