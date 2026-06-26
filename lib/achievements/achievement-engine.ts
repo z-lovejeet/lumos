@@ -15,6 +15,11 @@ export const ACHIEVEMENT_DEFINITIONS = [
     description: 'Maintained 100% attendance in a subject.',
   },
   {
+    key: '7-day-streak',
+    title: 'Consistency Key',
+    description: 'Logged academic activity for 7 consecutive days.',
+  },
+  {
     key: 'planner',
     title: 'Master Planner',
     description: 'Created a career plan for MS Abroad, TUM, or Internships.',
@@ -32,6 +37,7 @@ export interface AchievementState {
   hasPerfectAttendance: boolean;
   hasCareerPlan: boolean;
   hasPerfectSgpa: boolean;
+  has7DayStreak: boolean;
 }
 
 export function checkAchievements(
@@ -50,6 +56,10 @@ export function checkAchievements(
 
   if (state.hasPerfectAttendance && !existingKeys.includes('perfect-attendance')) {
     newAchievements.push('perfect-attendance');
+  }
+
+  if (state.has7DayStreak && !existingKeys.includes('7-day-streak')) {
+    newAchievements.push('7-day-streak');
   }
 
   if (state.hasCareerPlan && !existingKeys.includes('planner')) {

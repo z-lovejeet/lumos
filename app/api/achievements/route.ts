@@ -40,6 +40,9 @@ export async function GET() {
     let hasSgpaAbove8 = false;
     let hasPerfectSgpa = false;
     let hasPerfectAttendance = false;
+    let has7DayStreak = false;
+
+    const allAttendanceDates = new Set<string>();
 
     dbUser.semesters.forEach(sem => {
       let semCredits = 0;
@@ -52,6 +55,10 @@ export async function GET() {
           if (attended === sub.attendance.length) {
             hasPerfectAttendance = true;
           }
+          sub.attendance.forEach(a => {
+            // Store ISO date string (YYYY-MM-DD)
+            allAttendanceDates.add(new Date(a.date).toISOString().split('T')[0]);
+          });
         }
 
         // SGPA check
@@ -79,12 +86,38 @@ export async function GET() {
       if (sgpa === 10.0) hasPerfectSgpa = true;
     });
 
+    // Calculate 7-day streak
+    const sortedDates = Array.from(allAttendanceDates).sort();
+    let maxStreak = 0;
+    let currentStreak = 0;
+    let prevDate: Date | null = null;
+
+    for (const dStr of sortedDates) {
+      const d = new Date(dStr);
+      if (!prevDate) {
+        currentStreak = 1;
+      } else {
+        const diffTime = Math.abs(d.getTime() - prevDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays === 1) {
+          currentStreak++;
+        } else {
+          currentStreak = 1;
+        }
+      }
+      if (currentStreak > maxStreak) maxStreak = currentStreak;
+      prevDate = d;
+    }
+
+    if (maxStreak >= 7) has7DayStreak = true;
+
     const state: AchievementState = {
       hasSubjects,
       hasSgpaAbove8,
       hasPerfectAttendance,
       hasCareerPlan,
-      hasPerfectSgpa
+      hasPerfectSgpa,
+      has7DayStreak
     };
 
     const newKeys = checkAchievements(state, existingKeys);

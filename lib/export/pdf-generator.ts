@@ -62,6 +62,37 @@ export function generatePDFReport(
     currentY = doc.lastAutoTable.finalY + 15;
   });
 
+  // Grade Distribution
+  if (currentY > 240) {
+    doc.addPage();
+    currentY = 20;
+  }
+  
+  doc.setFontSize(14);
+  doc.text('Overall Grade Distribution', 14, currentY);
+
+  const gradeCounts: Record<string, number> = {};
+  semesters.forEach(sem => {
+    sem.subjects.forEach(sub => {
+      gradeCounts[sub.grade] = (gradeCounts[sub.grade] || 0) + 1;
+    });
+  });
+
+  const distTableData = Object.entries(gradeCounts)
+    .sort((a, b) => b[1] - a[1]) // Sort by count descending
+    .map(([grade, count]) => [grade, count.toString()]);
+
+  if (distTableData.length > 0) {
+    autoTable(doc, {
+      startY: currentY + 5,
+      head: [['Grade', 'Count']],
+      body: distTableData,
+      theme: 'grid',
+      headStyles: { fillColor: [59, 130, 246] },
+      margin: { left: 14 }
+    });
+  }
+
   // We have to cast output to any, since depending on environment, we want a buffer for Node
   return Buffer.from(doc.output('arraybuffer'));
 }
