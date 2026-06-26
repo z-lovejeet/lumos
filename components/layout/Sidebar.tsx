@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, BookOpen, Calculator, Target, CalendarDays, BrainCircuit, ScanLine, GraduationCap, Briefcase, Award, PenTool, ListChecks, Activity, Scale } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Calculator, Target, CalendarDays, BrainCircuit, ScanLine, GraduationCap, Briefcase, Award, PenTool, ListChecks, Activity, Scale, FileText } from 'lucide-react'
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -21,6 +21,7 @@ const navItems = [
   { name: 'Marking Schemes', href: '/marking-schemes', icon: ListChecks },
   { name: 'Career Center', href: '/career', icon: Briefcase },
   { name: 'Achievements', href: '/achievements', icon: Award },
+  { name: 'Export Center', href: '/export', icon: FileText },
 ]
 
 export function Sidebar() {

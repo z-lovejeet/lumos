@@ -19,6 +19,7 @@ import { calculateSGPA, SubjectForSGPA } from '@/lib/calculations/sgpa'
 import { predictGrade } from '@/lib/predictions/grade-predictor'
 import { calculateCGPA } from '@/lib/calculations/cgpa'
 import { detectRisks, RiskDetectorData } from '@/lib/alerts/risk-detector'
+import { predictPerformanceTrend } from '@/lib/predictions/trend-predictor'
 
 export const metadata = {
   title: 'Dashboard - AcademiQ',
@@ -262,7 +263,7 @@ export default async function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <div className="col-span-4 space-y-4">
-          <SGPATrendChart data={sgpaTrendData} />
+          <SGPATrendChart data={sgpaTrendData} prediction={predictPerformanceTrend(sgpaTrendData.map(d => d.sgpa))} />
           <SubjectComparisonChart data={subjectComparisonData} />
         </div>
         <div className="col-span-3 space-y-4">

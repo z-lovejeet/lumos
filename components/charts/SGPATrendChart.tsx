@@ -8,9 +8,10 @@ interface SGPATrendChartProps {
     semester: string;
     sgpa: number;
   }[];
+  prediction?: number | null;
 }
 
-export function SGPATrendChart({ data }: SGPATrendChartProps) {
+export function SGPATrendChart({ data, prediction }: SGPATrendChartProps) {
   if (!data || data.length === 0) {
     return (
       <Card>
@@ -27,9 +28,16 @@ export function SGPATrendChart({ data }: SGPATrendChartProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>SGPA Trend</CardTitle>
-        <CardDescription>Semester over semester performance</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <div>
+          <CardTitle>SGPA Trend</CardTitle>
+          <CardDescription>Semester over semester performance</CardDescription>
+        </div>
+        {prediction !== undefined && prediction !== null && (
+          <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+            Next Sem Prediction: {prediction.toFixed(2)}
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
