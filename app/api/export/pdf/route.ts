@@ -92,7 +92,7 @@ export async function POST(req: Request) {
 
     const pdfBuffer = generatePDFReport(dbUser.name || '', cgpa, exportSemesters);
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBuffer as any, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename="academiq-report.pdf"'

@@ -57,7 +57,7 @@ export async function GET() {
           }
           sub.attendance.forEach(a => {
             // Store ISO date string (YYYY-MM-DD)
-            allAttendanceDates.add(new Date(a.date).toISOString().split('T')[0]);
+            allAttendanceDates.add(new Date(a.classDate).toISOString().split('T')[0]);
           });
         }
 

@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Medal, Star, Award, GraduationCap, Target, Lock } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { Trophy, Medal, Star, Award, GraduationCap, Target, Lock, Flame } from 'lucide-react';
 
 interface AchievementDef {
   key: string;
@@ -22,7 +21,6 @@ export default function AchievementsPage() {
   const [definitions, setDefinitions] = useState<AchievementDef[]>([]);
   const [earned, setEarned] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     async function fetchAchievements() {
@@ -34,19 +32,6 @@ export default function AchievementsPage() {
         setDefinitions(data.definitions);
         setEarned(data.earned);
 
-        // Toast new achievements if any
-        if (data.newUnlocked && data.newUnlocked.length > 0) {
-          data.newUnlocked.forEach((key: string) => {
-            const def = data.definitions.find((d: any) => d.key === key);
-            if (def) {
-              toast({
-                title: "Achievement Unlocked! 🏆",
-                description: def.title,
-                variant: "default",
-              });
-            }
-          });
-        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -55,7 +40,7 @@ export default function AchievementsPage() {
     }
 
     fetchAchievements();
-  }, [toast]);
+  }, []);
 
   const getIcon = (key: string, isEarned: boolean) => {
     if (!isEarned) return <Lock className="h-6 w-6 text-slate-400" />;
@@ -66,6 +51,7 @@ export default function AchievementsPage() {
       case 'perfect-attendance': return <Star className="h-6 w-6 text-green-500" />;
       case 'planner': return <GraduationCap className="h-6 w-6 text-purple-500" />;
       case 'perfect-semester': return <Medal className="h-6 w-6 text-red-500" />;
+      case '7-day-streak': return <Flame className="h-6 w-6 text-orange-500" />;
       default: return <Award className="h-6 w-6 text-indigo-500" />;
     }
   };

@@ -91,7 +91,7 @@ export async function POST(req: Request) {
 
     const excelBuffer = generateExcelReport(dbUser.name || '', cgpa, exportSemesters);
 
-    return new NextResponse(excelBuffer, {
+    return new NextResponse(excelBuffer as any, {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'Content-Disposition': 'attachment; filename="academiq-report.xlsx"'
