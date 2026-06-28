@@ -1,6 +1,6 @@
 'use client';
 
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 interface SGPATrendChartProps {
@@ -42,36 +42,50 @@ export function SGPATrendChart({ data, prediction }: SGPATrendChartProps) {
       <CardContent>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted" />
+            <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorSgpa" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--chart-3)" stopOpacity={0.5} />
+                  <stop offset="95%" stopColor="var(--chart-3)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeOpacity={0.4} />
               <XAxis 
                 dataKey="semester" 
-                stroke="#888888" 
+                stroke="var(--muted-foreground)" 
                 fontSize={12} 
                 tickLine={false} 
                 axisLine={false} 
+                tickMargin={10}
               />
               <YAxis 
-                stroke="#888888" 
+                stroke="var(--muted-foreground)" 
                 fontSize={12} 
                 tickLine={false} 
                 axisLine={false} 
                 domain={[0, 10]} 
                 tickFormatter={(value) => value.toFixed(1)}
+                tickMargin={10}
               />
               <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--background))' }}
-                itemStyle={{ color: 'hsl(var(--foreground))' }}
+                contentStyle={{ 
+                  borderRadius: '12px', 
+                  border: '1px solid var(--border)', 
+                  backgroundColor: 'oklch(var(--background) / 0.8)',
+                  backdropFilter: 'blur(8px)'
+                }}
+                itemStyle={{ color: 'var(--foreground)', fontWeight: 500 }}
               />
-              <Line 
+              <Area 
                 type="monotone" 
                 dataKey="sgpa" 
                 stroke="var(--chart-3)" 
                 strokeWidth={3} 
-                activeDot={{ r: 6 }} 
-                dot={{ r: 4, fill: "var(--chart-3)" }}
+                fillOpacity={1}
+                fill="url(#colorSgpa)"
+                activeDot={{ r: 6, fill: "var(--background)", stroke: "var(--chart-3)", strokeWidth: 2 }} 
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       </CardContent>

@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { SGPATrendChart } from '../SGPATrendChart';
 import { CGPAProgressionChart } from '../CGPAProgressionChart';
-import { AttendanceHeatmap } from '../AttendanceHeatmap';
+import { SubjectAttendanceChart } from '../SubjectAttendanceChart';
 
 // Mock ResizeObserver for Recharts
 global.ResizeObserver = class ResizeObserver {
@@ -21,8 +21,8 @@ describe('Chart Components', () => {
     { semester: 'Sem 2', cgpa: 8.75 }
   ];
 
-  const dummyAttendance: any = [
-    { date: new Date('2023-01-01').toISOString(), status: 'attended', subjectName: 'Math' }
+  const dummyAttendance = [
+    { subject: 'Math', percentage: 80, attended: 40, conducted: 50 }
   ];
 
   it('SGPATrendChart renders without crashing', () => {
@@ -35,8 +35,8 @@ describe('Chart Components', () => {
     expect(container).toBeInTheDocument();
   });
 
-  it('AttendanceHeatmap renders without crashing', () => {
-    const { container } = render(<AttendanceHeatmap data={dummyAttendance} />);
+  it('SubjectAttendanceChart renders without crashing', () => {
+    const { container } = render(<SubjectAttendanceChart data={dummyAttendance} />);
     expect(container).toBeInTheDocument();
   });
 });

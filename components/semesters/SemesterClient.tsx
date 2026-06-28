@@ -9,6 +9,8 @@ import { deleteSemester } from '@/app/(app)/semesters/actions'
 
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { StaggerContainer } from '@/components/motion/StaggerContainer'
+import { AnimatedCard } from '@/components/motion/AnimatedCard'
 import {
   Card,
   CardContent,
@@ -80,54 +82,56 @@ export function SemesterClient({ initialSemesters }: SemesterClientProps) {
           </div>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {semesters.map((semester) => (
-            <Card key={semester.id} className={semester.status === 'active' ? "border-primary" : ""}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl font-bold">
-                  {semester.name}
-                </CardTitle>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="h-8 w-8 p-0 shrink-0 inline-flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground outline-none">
-                    <span className="sr-only">Open menu</span>
-                    <MoreVertical className="h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem 
-                      onClick={() => setEditingSemester(semester)}
-                    >
-                      <Pencil className="mr-2 h-4 w-4" />
-                      <span>Edit</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      className="text-destructive focus:text-destructive"
-                      onClick={() => handleDelete(semester.id)}
-                      disabled={isDeleting === semester.id}
-                    >
-                      <Trash className="mr-2 h-4 w-4" />
-                      <span>{isDeleting === semester.id ? 'Deleting...' : 'Delete'}</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm text-muted-foreground mt-2">
-                  {semester.startDate && format(new Date(semester.startDate), "MMM d, yyyy")} 
-                  {semester.startDate && semester.endDate && ' - '}
-                  {semester.endDate && format(new Date(semester.endDate), "MMM d, yyyy")}
-                </div>
-              </CardContent>
-              <CardFooter>
-                {semester.status === 'active' && (
-                  <Badge variant="default" className="w-full justify-center">Active Semester</Badge>
-                )}
-                {semester.status !== 'active' && (
-                  <Badge variant="secondary" className="w-full justify-center text-muted-foreground">Inactive</Badge>
-                )}
-              </CardFooter>
-            </Card>
+            <AnimatedCard key={semester.id} className="h-full">
+              <Card className={`h-full flex flex-col ${semester.status === 'active' ? "border-primary/50 shadow-sm bg-card/90 backdrop-blur-sm" : ""}`}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-xl font-bold">
+                    {semester.name}
+                  </CardTitle>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="h-8 w-8 p-0 shrink-0 inline-flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground outline-none">
+                      <span className="sr-only">Open menu</span>
+                      <MoreVertical className="h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[160px] glass">
+                      <DropdownMenuItem 
+                        onClick={() => setEditingSemester(semester)}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        <span>Edit</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        className="text-destructive focus:text-destructive"
+                        onClick={() => handleDelete(semester.id)}
+                        disabled={isDeleting === semester.id}
+                      >
+                        <Trash className="mr-2 h-4 w-4" />
+                        <span>{isDeleting === semester.id ? 'Deleting...' : 'Delete'}</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </CardHeader>
+                <CardContent className="flex-1">
+                  <div className="text-sm text-muted-foreground mt-2 font-medium">
+                    {semester.startDate && format(new Date(semester.startDate), "MMM d, yyyy")} 
+                    {semester.startDate && semester.endDate && ' - '}
+                    {semester.endDate && format(new Date(semester.endDate), "MMM d, yyyy")}
+                  </div>
+                </CardContent>
+                <CardFooter className="pt-4 mt-auto border-t border-border/40">
+                  {semester.status === 'active' && (
+                    <Badge variant="default" className="w-full justify-center bg-primary/10 text-primary hover:bg-primary/20 border-transparent transition-colors">Active Semester</Badge>
+                  )}
+                  {semester.status !== 'active' && (
+                    <Badge variant="secondary" className="w-full justify-center text-muted-foreground bg-muted/50 border-transparent">Inactive</Badge>
+                  )}
+                </CardFooter>
+              </Card>
+            </AnimatedCard>
           ))}
-        </div>
+        </StaggerContainer>
       )}
     </div>
   )

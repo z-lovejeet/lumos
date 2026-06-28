@@ -23,7 +23,7 @@ export async function Header() {
     : user?.email?.substring(0, 2).toUpperCase() || 'U'
 
   return (
-    <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6 lg:h-[60px]">
+    <header className="flex h-14 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur-md px-6 lg:h-[60px] sticky top-0 z-50">
       <MobileNav />
       <div className="w-full flex-1">
         {/* Search or breadcrumbs can go here */}

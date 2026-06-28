@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { User, Bot, Zap, BrainCircuit } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface MessageBubbleProps {
   role: 'user' | 'assistant';
@@ -13,7 +14,12 @@ export function MessageBubble({ role, content, source }: MessageBubbleProps) {
   const isUser = role === 'user';
 
   return (
-    <div className={cn("flex w-full mb-6", isUser ? "justify-end" : "justify-start")}>
+    <motion.div 
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className={cn("flex w-full mb-6", isUser ? "justify-end" : "justify-start")}
+    >
       <div className={cn(
         "flex max-w-[85%] rounded-2xl p-4 gap-3 shadow-sm",
         isUser ? "bg-primary text-primary-foreground ml-12" : "bg-card border mr-12"
@@ -50,6 +56,6 @@ export function MessageBubble({ role, content, source }: MessageBubbleProps) {
         )}
 
       </div>
-    </div>
+    </motion.div>
   );
 }

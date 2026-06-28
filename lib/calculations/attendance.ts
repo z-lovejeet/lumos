@@ -3,46 +3,39 @@ export function calculateAttendancePercent(attended: number, total: number): num
   return (attended / total) * 100;
 }
 
-export function predictAttendanceBuffer(attended: number, total: number, targetPercent: number = 75): { canMiss: number, needToAttend: number, status: 'safe' | 'danger' | 'critical' } {
-  const currentPercent = calculateAttendancePercent(attended, total);
+export function predictAttendanceBuffer(attended: number, delivered: number, totalInSemester: number, targetPercent: number = 75): { canMiss: number, needToAttend: number, status: 'safe' | 'danger' | 'critical' } {
+  if (totalInSemester === 0) return { canMiss: 0, needToAttend: 0, status: 'safe' };
+
+  const targetRatio = targetPercent / 100;
+  const requiredToAttend = Math.ceil(targetRatio * totalInSemester);
+  const stillNeedToAttend = Math.max(0, requiredToAttend - attended);
+  const classesLeft = Math.max(0, totalInSemester - delivered);
   
-  if (total === 0) return { canMiss: 0, needToAttend: 0, status: 'safe' };
-
-  const targetFraction = targetPercent / 100;
-
-  // If you attend next N classes, what happens?
-  // Current equation: (attended + needToAttend) / (total + needToAttend) = targetFraction
-  // attended + needToAttend = targetFraction * total + targetFraction * needToAttend
-  // needToAttend - targetFraction * needToAttend = targetFraction * total - attended
-  // needToAttend * (1 - targetFraction) = targetFraction * total - attended
-  // needToAttend = (targetFraction * total - attended) / (1 - targetFraction)
-
-  let needToAttend = 0;
-  if (currentPercent < targetPercent) {
-    needToAttend = Math.ceil((targetFraction * total - attended) / (1 - targetFraction));
+  if (stillNeedToAttend <= 0) {
+    return {
+      canMiss: classesLeft,
+      needToAttend: 0,
+      status: classesLeft > 0 ? 'safe' : 'safe'
+    };
+  }
+  
+  if (stillNeedToAttend > classesLeft) {
+    return {
+      canMiss: 0,
+      needToAttend: stillNeedToAttend,
+      status: 'critical'
+    };
   }
 
-  // How many can you miss and stay >= targetPercent?
-  // attended / (total + canMiss) = targetFraction
-  // attended = targetFraction * total + targetFraction * canMiss
-  // targetFraction * canMiss = attended - targetFraction * total
-  // canMiss = (attended - targetFraction * total) / targetFraction
-
-  let canMiss = 0;
-  if (currentPercent >= targetPercent) {
-    canMiss = Math.floor((attended - targetFraction * total) / targetFraction);
-  }
-
+  const missable = classesLeft - stillNeedToAttend;
   let status: 'safe' | 'danger' | 'critical' = 'safe';
-  if (currentPercent < targetPercent) {
-    status = 'critical';
-  } else if (canMiss <= 2) {
+  if (missable <= 2) {
     status = 'danger';
   }
 
   return {
-    canMiss: Math.max(0, canMiss),
-    needToAttend: Math.max(0, needToAttend),
+    canMiss: Math.max(0, missable),
+    needToAttend: Math.max(0, stillNeedToAttend),
     status
   };
 }

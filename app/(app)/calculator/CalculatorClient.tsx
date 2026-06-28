@@ -79,32 +79,32 @@ export function CalculatorClient({ semesters, gradeScale }: CalculatorClientProp
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-12 mt-6">
+    <div className="grid gap-6 md:grid-cols-12 mt-6 max-w-[90%] md:max-w-none mx-auto">
       <div className="md:col-span-4 space-y-6">
-        <Card className="bg-primary/5 border-primary/20">
+        <Card className="bg-primary/5 border-primary/20 text-center md:text-left">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-medium text-muted-foreground">Cumulative GPA</CardTitle>
+            <CardDescription>Across {computedSemesters.length} semesters</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-6xl font-bold">{cgpa.toFixed(2)}</div>
-            <p className="text-sm text-muted-foreground mt-2">Across {computedSemesters.length} semesters</p>
+            <div className="text-5xl md:text-6xl font-bold">{cgpa.toFixed(2)}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="text-center md:text-left">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-medium text-muted-foreground">Current SGPA</CardTitle>
             <CardDescription>{activeSemester.name}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-5xl font-bold">{currentComputedSemester?.sgpa.toFixed(2) || '0.00'}</div>
+            <div className="text-5xl md:text-6xl font-bold">{currentComputedSemester?.sgpa.toFixed(2) || '0.00'}</div>
           </CardContent>
         </Card>
       </div>
       
-      <div className="md:col-span-8">
-        <Card>
-          <CardHeader>
+      <div className="md:col-span-8 overflow-hidden">
+        <Card className="overflow-hidden">
+          <CardHeader className="text-center md:text-left">
             <CardTitle>Subject Breakdown</CardTitle>
             <CardDescription>
               Auto-calculated from your marks. Use the dropdowns to test manual overrides.

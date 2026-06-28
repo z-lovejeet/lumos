@@ -7,11 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { AlertCircle } from 'lucide-react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import { OverviewCards, DashboardMetrics } from '@/components/dashboard/OverviewCards'
 import { SGPATrendChart } from '@/components/charts/SGPATrendChart'
 import { CGPAProgressionChart } from '@/components/charts/CGPAProgressionChart'
-import { AttendanceHeatmap } from '@/components/charts/AttendanceHeatmap'
+import { SubjectAttendanceChart } from '@/components/charts/SubjectAttendanceChart'
 import { SubjectComparisonChart } from '@/components/charts/SubjectComparisonChart'
 import { GradeDistributionPie } from '@/components/charts/GradeDistributionPie'
 import { CreditWeightedChart } from '@/components/charts/CreditWeightedChart'
@@ -93,16 +94,7 @@ export default async function DashboardPage() {
   const creditWeightedData: any[] = []
   const gradeDistMap: Record<string, number> = {}
 
-  let upcomingExamsCount = 0;
-  let pendingAssignmentsCount = 0;
-  
-  // Create a map for the last 30 days attendance
-  const heatmapDataMap: Record<string, { total: number; attended: number }> = {};
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    heatmapDataMap[d.toISOString().split('T')[0]] = { total: 0, attended: 0 };
-  }
+  const subjectAttendanceData: any[] = [];
 
   activeSemester.subjects.forEach(sub => {
     let earnedMarks = 0;
@@ -111,13 +103,6 @@ export default async function DashboardPage() {
       if (m.obtainedMarks !== null) {
         earnedMarks += m.obtainedMarks;
         totalMarks += m.maxMarks;
-      } else {
-        // Pending evaluation
-        if (m.examDate && new Date(m.examDate) >= new Date()) {
-          upcomingExamsCount++;
-        } else if (m.componentName.toLowerCase().includes('assignment') || m.componentName.toLowerCase().includes('project')) {
-          pendingAssignmentsCount++;
-        }
       }
     })
     
@@ -136,16 +121,18 @@ export default async function DashboardPage() {
       strongestSub = { name: sub.name, score: prediction.predictedPercentage }
     }
 
-    sub.attendance.forEach(a => {
-      attendanceTotal++
-      if (a.attended) attendanceAttended++
-        
-      const dateStr = new Date(a.classDate).toISOString().split('T')[0];
-      if (heatmapDataMap[dateStr]) {
-        heatmapDataMap[dateStr].total++;
-        if (a.attended) heatmapDataMap[dateStr].attended++;
-      }
-    })
+    const conducted = sub.totalClassesConducted || 0;
+    const attended = sub.totalClassesAttended || 0;
+    
+    attendanceTotal += conducted;
+    attendanceAttended += attended;
+
+    subjectAttendanceData.push({
+      subject: sub.code || sub.name,
+      percentage: conducted > 0 ? Math.round((attended / conducted) * 100) : 100,
+      attended,
+      conducted
+    });
 
     subjectComparisonData.push({
       subject: sub.code,
@@ -198,27 +185,19 @@ export default async function DashboardPage() {
     cgpa: currentCgpa,
     creditsCompleted,
     attendancePercentage,
-    upcomingExamsCount,
-    pendingAssignmentsCount,
     weakestSubject: weakestSub.name,
     strongestSubject: strongestSub.name
   }
 
-  // Finalize Heatmap Data
-  const heatmapData = Object.keys(heatmapDataMap).sort().map(date => {
-    const { total, attended } = heatmapDataMap[date];
-    let status: 'attended' | 'missed' | 'none' = 'none';
-    if (total > 0) {
-      status = (attended / total) >= 0.5 ? 'attended' : 'missed'; // If attended 50%+ of classes that day, green
-    }
-    return { date, status };
-  });
+  // No longer building heatmap data
 
   const riskData: RiskDetectorData = {
     subjects: activeSemester.subjects.map(s => ({
       id: s.id,
       name: s.name,
-      attendancePercent: s.attendance.length > 0 ? (s.attendance.filter(a => a.attended).length / s.attendance.length) * 100 : 100,
+      attendancePercent: s.totalClassesConducted && s.totalClassesConducted > 0 
+        ? ((s.totalClassesAttended || 0) / s.totalClassesConducted) * 100 
+        : 100,
       marks: s.marks as any[],
       components: s.markingScheme ? s.markingScheme.components as any[] : []
     })),
@@ -226,23 +205,26 @@ export default async function DashboardPage() {
     sgpaTrend: sgpaTrendData.map(d => d.sgpa).reverse()
   };
   const risks = detectRisks(riskData);
+  
+  const attendanceRisks = risks.filter(r => r.type === 'attendance');
+  const otherRisks = risks.filter(r => r.type !== 'attendance');
 
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard Overview</h2>
+        <h2 className="text-3xl font-bold tracking-tight font-heading">Dashboard Overview</h2>
       </div>
 
       <OverviewCards metrics={metrics} />
 
-      {risks.length > 0 && (
+      {otherRisks.length > 0 && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold tracking-tight flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-destructive" /> 
             Active Risks
           </h3>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {risks.map(risk => (
+            {otherRisks.map(risk => (
               <Card key={risk.id} className={risk.severity === 'critical' ? 'border-destructive bg-destructive/5' : 'border-amber-500/50 bg-amber-500/5'}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex justify-between items-center">
@@ -261,25 +243,69 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4 space-y-4">
-          <SGPATrendChart data={sgpaTrendData} prediction={predictPerformanceTrend(sgpaTrendData.map(d => d.sgpa))} />
-          <SubjectComparisonChart data={subjectComparisonData} />
-        </div>
-        <div className="col-span-3 space-y-4">
-          <CGPAProgressionChart data={cgpaProgressionData} />
-          <GradeDistributionPie data={gradeDistData} />
-        </div>
-      </div>
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="flex flex-col sm:inline-flex sm:flex-row h-auto w-full sm:w-auto bg-muted/50 backdrop-blur-md border border-border/50 p-1 rounded-xl gap-1 sm:gap-0">
+          <TabsTrigger value="overview" className="w-full sm:w-auto rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">Overview</TabsTrigger>
+          <TabsTrigger value="subjects" className="w-full sm:w-auto rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">Subject Analysis</TabsTrigger>
+          <TabsTrigger value="attendance" className="w-full sm:w-auto rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">Attendance & Activity</TabsTrigger>
+        </TabsList>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4">
-          <AttendanceHeatmap data={heatmapData} />
-        </div>
-        <div className="col-span-3">
-          <CreditWeightedChart data={creditWeightedData} />
-        </div>
-      </div>
+        <TabsContent value="overview" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-500">
+          <div className="grid gap-6 lg:grid-cols-7">
+            <div className="lg:col-span-4 space-y-4">
+              <SGPATrendChart data={sgpaTrendData} prediction={predictPerformanceTrend(sgpaTrendData.map(d => d.sgpa))} />
+            </div>
+            <div className="lg:col-span-3 space-y-4">
+              <CGPAProgressionChart data={cgpaProgressionData} />
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="subjects" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-500">
+          <div className="grid gap-6 lg:grid-cols-7">
+            <div className="lg:col-span-4 space-y-4">
+              <SubjectComparisonChart data={subjectComparisonData} />
+            </div>
+            <div className="lg:col-span-3 space-y-4">
+              <GradeDistributionPie data={gradeDistData} />
+            </div>
+          </div>
+          <div className="grid gap-6">
+            <CreditWeightedChart data={creditWeightedData} />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="attendance" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-500">
+          {attendanceRisks.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold tracking-tight flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-amber-500" /> 
+                Attendance Alerts
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {attendanceRisks.map(risk => (
+                  <Card key={risk.id} className={risk.severity === 'critical' ? 'border-destructive bg-destructive/5' : 'border-amber-500/50 bg-amber-500/5'}>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base flex justify-between items-center">
+                        Attendance Risk
+                        <Badge variant={risk.severity === 'critical' ? 'destructive' : 'outline'} className={risk.severity === 'warning' ? 'text-amber-500 border-amber-500' : ''}>
+                          {risk.severity}
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm font-medium">{risk.message}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+          <div className="grid gap-6">
+            <SubjectAttendanceChart data={subjectAttendanceData} />
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

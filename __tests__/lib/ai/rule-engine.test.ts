@@ -15,7 +15,7 @@ describe('Rule Engine', () => {
           name: 'Data Structures',
           credits: 4,
           marks: [
-            { id: 'm1', componentName: 'Midterm', obtainedMarks: 40, maxMarks: 50 }
+            { componentName: 'Midterm', obtainedMarks: 40, maxMarks: 50 }
           ],
           components: [
             { name: 'Midterm', maxMarks: 50, weight: 50 },

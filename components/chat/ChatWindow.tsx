@@ -140,11 +140,19 @@ export function ChatWindow() {
             
             {isLoading && (
               <div className="flex w-full mb-6 justify-start">
-                <div className="bg-card border rounded-2xl p-4 shadow-sm flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <Loader2 size={16} className="animate-spin" />
+                <div className="flex max-w-[85%] rounded-2xl p-4 gap-3 shadow-sm bg-card border mr-12">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <Bot size={18} />
+                    </div>
                   </div>
-                  <span className="text-sm text-muted-foreground">Analyzing your data...</span>
+                  <div className="flex flex-col gap-1 w-full justify-center">
+                    <div className="flex space-x-1 mt-2">
+                      <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

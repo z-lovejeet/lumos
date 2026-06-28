@@ -3,10 +3,12 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, BookOpen, Calculator, Target, CalendarDays, BrainCircuit, ScanLine, GraduationCap, Briefcase, Award, PenTool, ListChecks, Activity, Scale, FileText } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Calculator, Target, CalendarDays, BrainCircuit, ScanLine, GraduationCap, Briefcase, Award, PenTool, ListChecks, Activity, Scale, FileText, Library } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Semesters', href: '/semesters', icon: Library },
   { name: 'Subjects', href: '/subjects', icon: BookOpen },
   { name: 'Semester Health', href: '/health', icon: Activity },
   { name: 'Compare Semesters', href: '/compare', icon: Scale },
@@ -28,7 +30,7 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="hidden border-r bg-zinc-50/50 dark:bg-zinc-900/50 md:block w-64 lg:w-72 shrink-0 h-screen sticky top-0">
+    <div className="hidden border-r border-border/40 bg-background/80 backdrop-blur-xl md:block w-64 lg:w-72 shrink-0 h-screen sticky top-0 z-40">
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-14 items-center border-b px-6 lg:h-[60px]">
           <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl tracking-tight">
@@ -45,12 +47,19 @@ export function Sidebar() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
-                    isActive ? "bg-muted text-primary" : "text-muted-foreground hover:bg-muted"
+                    "group relative flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+                    isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <item.icon className="h-4 w-4" />
-                  {item.name}
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-nav-pill"
+                      className="absolute inset-0 bg-primary/10 rounded-lg shadow-sm"
+                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    />
+                  )}
+                  <item.icon className="h-4 w-4 relative z-10" />
+                  <span className="relative z-10">{item.name}</span>
                 </Link>
               )
             })}

@@ -2,11 +2,11 @@ import { createClient } from '@/lib/supabase/server';
 import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { CalendarHeatmap } from '@/components/attendance/CalendarHeatmap';
 import { AttendanceStats } from '@/components/attendance/AttendanceStats';
 import { BufferCalc } from '@/components/attendance/BufferCalc';
 import { predictAttendanceBuffer } from '@/lib/calculations/attendance';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ManualAttendanceManager } from '@/components/attendance/ManualAttendanceManager';
 
 export default async function AttendancePage() {
   const supabase = await createClient();
@@ -20,11 +20,7 @@ export default async function AttendancePage() {
   const semester = await prisma.semester.findFirst({
     where: { userId: user.id, status: 'active' },
     include: {
-      subjects: {
-        include: {
-          attendance: true
-        }
-      }
+      subjects: true
     }
   });
 
@@ -44,30 +40,25 @@ export default async function AttendancePage() {
   // Aggregate attendance
   let totalClasses = 0;
   let attendedClasses = 0;
-  const allAttendance: any[] = [];
+  let totalInSemester = 0;
 
   const subjectStats = semester.subjects.map(sub => {
-    const subTotal = sub.attendance.length;
-    const subAttended = sub.attendance.filter(a => a.attended).length;
+    const subTotal = sub.totalClassesConducted || 0;
+    const subAttended = sub.totalClassesAttended || 0;
+    const subSemester = sub.totalClassesInSemester || 0;
     
     totalClasses += subTotal;
     attendedClasses += subAttended;
+    totalInSemester += subSemester;
 
-    sub.attendance.forEach(a => {
-      allAttendance.push({
-        id: a.id,
-        classDate: a.classDate.toISOString(),
-        attended: a.attended,
-        classType: a.classType,
-        subjectName: sub.name
-      });
-    });
-
-    const buffer = predictAttendanceBuffer(subAttended, subTotal, 75);
+    const buffer = predictAttendanceBuffer(subAttended, subTotal, subSemester, 75);
 
     return {
       id: sub.id,
       name: sub.name,
+      totalClassesConducted: subTotal,
+      totalClassesAttended: subAttended,
+      totalClassesInSemester: subSemester,
       total: subTotal,
       attended: subAttended,
       buffer
@@ -75,11 +66,11 @@ export default async function AttendancePage() {
   });
 
   const overallPercent = totalClasses === 0 ? 100 : (attendedClasses / totalClasses) * 100;
-  const overallBuffer = predictAttendanceBuffer(attendedClasses, totalClasses, 75);
+  const overallBuffer = predictAttendanceBuffer(attendedClasses, totalClasses, totalInSemester, 75);
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <PageHeader title="Attendance Tracker" description="Track your classes and maintain 75% minimum" />
+      <PageHeader title="Attendance Tracker" description="Update your attendance manually and calculate buffers" />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <AttendanceStats 
@@ -92,7 +83,7 @@ export default async function AttendancePage() {
           needToAttend={overallBuffer.needToAttend} 
           status={overallBuffer.status} 
         />
-        <Card>
+        <Card className="bg-card/95 backdrop-blur-xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)]">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Semester Summary</CardTitle>
           </CardHeader>
@@ -105,20 +96,20 @@ export default async function AttendancePage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4">
-          <CalendarHeatmap data={allAttendance} />
+      <div className="grid gap-4 lg:grid-cols-7">
+        <div className="lg:col-span-4">
+          <ManualAttendanceManager subjects={subjectStats} />
         </div>
-        <div className="col-span-3 space-y-4">
-          <Card className="h-full">
+        <div className="lg:col-span-3 space-y-4">
+          <Card className="h-full bg-card/95 backdrop-blur-xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)]">
             <CardHeader>
               <CardTitle>Subject Breakdowns</CardTitle>
-              <CardDescription>Per-subject attendance buffer</CardDescription>
+              <CardDescription>Overall 75% attendance buffer</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {subjectStats.map(sub => (
-                  <div key={sub.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
+                  <div key={sub.id} className="flex items-center justify-between border-b border-border/50 pb-2 last:border-0 last:pb-0">
                     <div>
                       <p className="font-medium">{sub.name}</p>
                       <p className="text-xs text-muted-foreground">
