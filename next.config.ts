@@ -1,6 +1,5 @@
 import type { NextConfig } from "next";
 import withPWAInit from "@ducanh2912/next-pwa";
-import { withSentryConfig } from "@sentry/nextjs";
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -35,17 +34,5 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Apply PWA first, then Sentry
-export default withSentryConfig(
-  withPWA(nextConfig),
-  {
-    silent: true,
-    org: "lumos",
-    project: "lumos-web",
-    widenClientFileUpload: true,
-    tunnelRoute: "/monitoring",
-    sourcemaps: {
-      disable: true,
-    },
-  }
-);
+// Apply PWA
+export default withPWA(nextConfig);
