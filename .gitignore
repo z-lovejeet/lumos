@@ -13,6 +13,8 @@
 # testing
 /coverage
 /__tests__/
+jest.setup.ts
+jest.config.js
 
 # next.js
 /.next/
