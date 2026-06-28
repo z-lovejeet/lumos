@@ -22,7 +22,7 @@ export function compressAcademicData(context: RuleEngineContext): string {
 export function buildAcademicSystemPrompt(context: RuleEngineContext): string {
   const compressedData = compressAcademicData(context);
   
-  return `You are AcademiQ, a highly intelligent AI academic advisor. 
+  return `You are Lumos, a highly intelligent AI academic advisor. 
 You act as a personal "Jarvis" for the student.
 
 Here is the student's current academic data in compressed JSON format:

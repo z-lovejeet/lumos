@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     return new NextResponse(csvString, {
       headers: {
         'Content-Type': 'text/csv',
-        'Content-Disposition': 'attachment; filename="academiq-report.csv"'
+        'Content-Disposition': 'attachment; filename="lumos-report.csv"'
       }
     });
 

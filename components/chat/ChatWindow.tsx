@@ -105,7 +105,7 @@ export function ChatWindow() {
       <div className="flex items-center justify-between p-4 border-b bg-card">
         <div>
           <h2 className="font-semibold text-lg flex items-center gap-2">
-            AcademiQ Copilot
+            Lumos Copilot
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">BETA</span>
           </h2>
           <p className="text-xs text-muted-foreground">AI Academic Assistant</p>
@@ -126,7 +126,7 @@ export function ChatWindow() {
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-2">
               <Bot size={32} />
             </div>
-            <h3 className="font-semibold text-foreground">Welcome to AcademiQ Copilot</h3>
+            <h3 className="font-semibold text-foreground">Welcome to Lumos Copilot</h3>
             <p className="text-sm">I can instantly analyze your grades, predict your SGPA, and recommend exactly what you need to study.</p>
             <div className="pt-8 w-full">
                <SuggestedQueries onSelect={sendMessage} />

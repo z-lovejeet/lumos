@@ -5,7 +5,7 @@ import defaultGradeScale from '@/data/default-grade-scale.json';
 import { CalculatorClient } from './CalculatorClient';
 
 export const metadata = {
-  title: 'SGPA / CGPA Calculator - AcademiQ',
+  title: 'SGPA / CGPA Calculator - Lumos',
   description: 'Calculate your academic performance metrics',
 };
 

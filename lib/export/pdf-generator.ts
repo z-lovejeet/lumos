@@ -23,7 +23,7 @@ export function generatePDFReport(
 
   // Header
   doc.setFontSize(20);
-  doc.text('AcademiQ Academic Report', 14, 22);
+  doc.text('Lumos Academic Report', 14, 22);
   
   doc.setFontSize(12);
   doc.text(`Name: ${userName || 'Student'}`, 14, 32);

@@ -6,7 +6,7 @@ import { calculateSGPA, SubjectForSGPA } from '@/lib/calculations/sgpa'
 import { predictGrade } from '@/lib/predictions/grade-predictor'
 
 export const metadata = {
-  title: 'Compare Semesters - AcademiQ',
+  title: 'Compare Semesters - Lumos',
   description: 'Side-by-side semester comparison',
 }
 

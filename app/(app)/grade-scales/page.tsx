@@ -3,7 +3,7 @@ import { GradeScaleClient } from '@/components/grade-scales/GradeScaleClient'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: 'Grade Scales - AcademiQ',
+  title: 'Grade Scales - Lumos',
   description: 'Manage your grade scales (e.g. 10-Point CGPA, 4.0 GPA)',
 }
 

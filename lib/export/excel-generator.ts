@@ -10,7 +10,7 @@ export function generateExcelReport(
 
   // Create Summary Sheet
   const summaryData = [
-    ['AcademiQ Academic Report'],
+    ['Lumos Academic Report'],
     [''],
     ['Name', userName || 'Student'],
     ['Current CGPA', cgpa.toFixed(2)],

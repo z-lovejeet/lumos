@@ -46,7 +46,7 @@ export function MobileNav() {
         <div className="mb-6 flex flex-col gap-1">
           <span className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <GraduationCap className="h-7 w-7 text-primary" />
-            AcademiQ
+            Lumos
           </span>
           <span className="text-sm text-muted-foreground font-medium">Your Academic Copilot</span>
         </div>

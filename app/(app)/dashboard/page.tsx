@@ -23,7 +23,7 @@ import { detectRisks, RiskDetectorData } from '@/lib/alerts/risk-detector'
 import { predictPerformanceTrend } from '@/lib/predictions/trend-predictor'
 
 export const metadata = {
-  title: 'Dashboard - AcademiQ',
+  title: 'Dashboard - Lumos',
   description: 'Your academic overview',
 }
 
@@ -64,7 +64,7 @@ export default async function DashboardPage() {
         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
         <Card className="border-dashed border-2 bg-muted/20">
           <CardHeader className="text-center pb-2">
-            <CardTitle className="text-2xl">Welcome to AcademiQ!</CardTitle>
+            <CardTitle className="text-2xl">Welcome to Lumos!</CardTitle>
             <CardDescription className="text-base">
               You haven't set up an active semester yet.
             </CardDescription>

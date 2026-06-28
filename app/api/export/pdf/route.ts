@@ -95,7 +95,7 @@ export async function POST(req: Request) {
     return new NextResponse(pdfBuffer as any, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': 'attachment; filename="academiq-report.pdf"'
+        'Content-Disposition': 'attachment; filename="lumos-report.pdf"'
       }
     });
 

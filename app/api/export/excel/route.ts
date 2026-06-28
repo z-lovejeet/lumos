@@ -94,7 +94,7 @@ export async function POST(req: Request) {
     return new NextResponse(excelBuffer as any, {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'Content-Disposition': 'attachment; filename="academiq-report.xlsx"'
+        'Content-Disposition': 'attachment; filename="lumos-report.xlsx"'
       }
     });
 

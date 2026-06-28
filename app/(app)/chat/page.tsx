@@ -1,7 +1,7 @@
 import { ChatWindow } from "@/components/chat/ChatWindow";
 
 export const metadata = {
-  title: "AI Copilot - AcademiQ",
+  title: "AI Copilot - Lumos",
   description: "Chat with your personal academic intelligence.",
 };
 

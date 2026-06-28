@@ -3,7 +3,7 @@ import { MarkingSchemeClient } from '@/components/marking-schemes/MarkingSchemeC
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: 'Marking Schemes - AcademiQ',
+  title: 'Marking Schemes - Lumos',
   description: 'Manage your grading structures and marking schemes',
 }
 

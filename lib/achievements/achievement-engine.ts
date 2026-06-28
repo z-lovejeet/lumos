@@ -2,7 +2,7 @@ export const ACHIEVEMENT_DEFINITIONS = [
   {
     key: 'first-subject',
     title: 'First Steps',
-    description: 'Added your first subject to AcademiQ.',
+    description: 'Added your first subject to Lumos.',
   },
   {
     key: 'high-achiever',

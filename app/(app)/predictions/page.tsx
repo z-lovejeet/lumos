@@ -5,7 +5,7 @@ import defaultGradeScale from '@/data/default-grade-scale.json';
 import { PredictionsClient } from './PredictionsClient';
 
 export const metadata = {
-  title: 'Grade Predictions - AcademiQ',
+  title: 'Grade Predictions - Lumos',
   description: 'AI-powered grade predictions for your subjects',
 };
 

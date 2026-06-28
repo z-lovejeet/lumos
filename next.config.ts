@@ -40,12 +40,12 @@ export default withSentryConfig(
   withPWA(nextConfig),
   {
     silent: true,
-    org: "academiq",
-    project: "academiq-web",
+    org: "lumos",
+    project: "lumos-web",
     widenClientFileUpload: true,
-    transpileClientSDK: true,
     tunnelRoute: "/monitoring",
-    hideSourceMaps: true,
-    disableLogger: true,
+    sourcemaps: {
+      disable: true,
+    },
   }
 );

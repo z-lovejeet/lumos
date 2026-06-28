@@ -6,7 +6,7 @@ import { analyzeSemesterHealth } from '@/lib/analysis/semester-health'
 import { RiskAlerts } from '@/components/dashboard/RiskAlerts'
 
 export const metadata = {
-  title: 'Semester Health Analysis - AcademiQ',
+  title: 'Semester Health Analysis - Lumos',
   description: 'AI-driven analysis of your semester performance',
 }
 

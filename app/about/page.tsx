@@ -18,13 +18,13 @@ export default function AboutPage() {
       <main className="flex-1 flex flex-col items-center py-12 px-6 max-w-5xl mx-auto">
         <div className="text-center space-y-4 mb-16">
           <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-4">
-            About AcademiQ
+            About Lumos
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
             Built for Ambitious Students.
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            AcademiQ was designed to take the guesswork out of academics. Stop manually calculating what you need on your finals—let the system optimize your entire semester strategy.
+            Lumos was designed to take the guesswork out of academics. Stop manually calculating what you need on your finals—let the system optimize your entire semester strategy.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function AboutPage() {
       </main>
 
       <footer className="w-full text-center py-6 text-sm text-muted-foreground">
-        © {new Date().getFullYear()} AcademiQ. All rights reserved.
+        © {new Date().getFullYear()} Lumos. All rights reserved.
       </footer>
     </div>
   );

@@ -14,10 +14,10 @@ async function main() {
 
   // Create a demo user for development
   const demoUser = await prisma.user.upsert({
-    where: { email: 'demo@academiq.app' },
+    where: { email: 'demo@lumos.app' },
     update: {},
     create: {
-      email: 'demo@academiq.app',
+      email: 'demo@lumos.app',
       name: 'Demo User',
       settings: { theme: 'system', notification: true },
     },
@@ -57,7 +57,7 @@ async function main() {
     }
   }
 
-  console.log('Seeding complete. Demo user created: demo@academiq.app')
+  console.log('Seeding complete. Demo user created: demo@lumos.app')
 }
 
 main()

@@ -3,7 +3,7 @@ import { SemesterClient } from '@/components/semesters/SemesterClient'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: 'Semesters - AcademiQ',
+  title: 'Semesters - Lumos',
   description: 'Manage your academic semesters',
 }
 

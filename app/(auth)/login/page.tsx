@@ -11,7 +11,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   return (
     <Card className="w-full">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold tracking-tight text-center">Sign in to AcademiQ</CardTitle>
+        <CardTitle className="text-2xl font-bold tracking-tight text-center">Sign in to Lumos</CardTitle>
         <CardDescription className="text-center">
           Enter your email below to log into your account
         </CardDescription>

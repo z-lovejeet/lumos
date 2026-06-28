@@ -9,13 +9,13 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading" });
 
 export const metadata: Metadata = {
-  title: "AcademiQ - AI Academic Operating System",
+  title: "Lumos - AI Academic Operating System",
   description: "Track academics, predict grades, optimize SGPA, and generate study strategies.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "AcademiQ",
+    title: "Lumos",
   },
   formatDetection: {
     telephone: false,

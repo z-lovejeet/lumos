@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
 export const metadata = {
-  title: 'Marks Entry - AcademiQ',
+  title: 'Marks Entry - Lumos',
   description: 'Enter marks for your active subjects',
 }
 

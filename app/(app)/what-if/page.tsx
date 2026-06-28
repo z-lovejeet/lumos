@@ -5,7 +5,7 @@ import defaultGradeScale from '@/data/default-grade-scale.json';
 import { SimulatorClient } from './SimulatorClient';
 
 export const metadata = {
-  title: 'What-If Simulator - AcademiQ',
+  title: 'What-If Simulator - Lumos',
   description: 'Simulate grades and see the impact on your SGPA/CGPA',
 };
 

@@ -151,7 +151,7 @@ export function ProfileClient({ user, stats }: ProfileClientProps) {
                 <CardTitle className="flex items-center gap-2">
                   <GraduationCap className="h-5 w-5 text-primary" /> Academic Identity
                 </CardTitle>
-                <CardDescription>Let AcademiQ know what and where you are studying.</CardDescription>
+                <CardDescription>Let Lumos know what and where you are studying.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid gap-6 md:grid-cols-2">

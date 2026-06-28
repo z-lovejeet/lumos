@@ -1,6 +1,6 @@
 {
-  "name": "AcademiQ",
-  "short_name": "AcademiQ",
+  "name": "Lumos",
+  "short_name": "Lumos",
   "description": "AI-Powered Academic Operating System",
   "start_url": "/dashboard",
   "display": "standalone",

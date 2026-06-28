@@ -5,7 +5,7 @@ import { SubjectClient } from '@/components/subjects/SubjectClient'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: 'Subjects - AcademiQ',
+  title: 'Subjects - Lumos',
   description: 'Manage your academic subjects and courses',
 }
 

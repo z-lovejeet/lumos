@@ -25,7 +25,7 @@ export default function ExportPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `academiq-report.${format === 'excel' ? 'xlsx' : format}`;
+      a.download = `lumos-report.${format === 'excel' ? 'xlsx' : format}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
