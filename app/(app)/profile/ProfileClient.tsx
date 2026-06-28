@@ -96,7 +96,7 @@ export function ProfileClient({ user, stats }: ProfileClientProps) {
                     </div>
                     <div>
                       <p className="text-sm font-medium leading-none">{ach.title}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs text-muted-foreground mt-1" suppressHydrationWarning>
                         {new Date(ach.earnedAt).toLocaleDateString()}
                       </p>
                     </div>
