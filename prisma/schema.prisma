@@ -11,6 +11,10 @@ model User {
   email          String          @unique
   name           String?
   avatarUrl      String?
+  university     String?
+  major          String?
+  graduationYear Int?
+  bio            String?         @db.Text
   settings       Json            @default("{}")
   semesters      Semester[]
   gradeScales    GradeScale[]

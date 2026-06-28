@@ -5,12 +5,14 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Menu } from 'lucide-react'
+import Link from 'next/link'
 
 import { MobileNav } from './MobileNav'
 
@@ -38,10 +40,13 @@ export async function Header() {
           <span className="sr-only">Toggle user menu</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <Link href="/profile">
+              <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
+            </Link>
+          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <form action="/auth/signout" method="post">
             <button className="w-full text-left" type="submit">
