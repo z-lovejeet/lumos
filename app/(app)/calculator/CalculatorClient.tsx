@@ -7,6 +7,10 @@ import { calculateSubjectPercentage, CalculationComponent } from '@/lib/calculat
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Save, Loader2 } from 'lucide-react';
+import { saveCGPA } from '../profile/actions';
+import { toast } from 'sonner';
 
 interface CalculatorClientProps {
   semesters: any[];
@@ -30,8 +34,21 @@ export function CalculatorClient({ semesters, gradeScale }: CalculatorClientProp
   // Active semester is either the one marked active, or the last one
   const activeSemester = semesters.find(s => s.status === 'active') || semesters[semesters.length - 1];
 
-  // Manual overrides mapping: { subjectId: gpaValue }
-  const [manualOverrides, setManualOverrides] = useState<Record<string, number>>({});
+  // Manual overrides mapping: { subjectId: gradeString }
+  const [manualOverrides, setManualOverrides] = useState<Record<string, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveCGPA = async (cgpaValue: number) => {
+    setIsSaving(true);
+    const result = await saveCGPA(cgpaValue);
+    setIsSaving(false);
+    
+    if (result?.error) {
+      toast.error(result.error);
+    } else {
+      toast.success('CGPA saved successfully!');
+    }
+  };
 
   // Compute SGPA for ALL semesters for CGPA calculation
   const computedSemesters = useMemo(() => {
@@ -39,7 +56,9 @@ export function CalculatorClient({ semesters, gradeScale }: CalculatorClientProp
       const subjectsForSgpa = sem.subjects.map((sub: any) => {
         // If this is the active semester and we have a manual override
         if (sem.id === activeSemester?.id && manualOverrides[sub.id] !== undefined) {
-          return { credits: sub.credits, gpaValue: manualOverrides[sub.id] };
+          const overrideGrade = manualOverrides[sub.id];
+          const overrideGpaValue = scaleRanges.find(g => g.grade === overrideGrade)?.gpaValue || 0;
+          return { credits: sub.credits, gpaValue: overrideGpaValue };
         }
 
         // Otherwise auto-calculate from marks
@@ -100,6 +119,16 @@ export function CalculatorClient({ semesters, gradeScale }: CalculatorClientProp
             <div className="text-5xl md:text-6xl font-bold">{currentComputedSemester?.sgpa.toFixed(2) || '0.00'}</div>
           </CardContent>
         </Card>
+
+        <Button 
+          className="w-full" 
+          variant="outline" 
+          onClick={() => handleSaveCGPA(cgpa)}
+          disabled={isSaving}
+        >
+          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+          Save CGPA to Profile
+        </Button>
       </div>
       
       <div className="md:col-span-8 overflow-hidden">
@@ -145,7 +174,7 @@ export function CalculatorClient({ semesters, gradeScale }: CalculatorClientProp
                       </TableCell>
                       <TableCell>
                         <Select 
-                          value={isOverridden ? manualOverrides[subject.id].toString() : "auto"}
+                          value={isOverridden ? manualOverrides[subject.id] : "auto"}
                           onValueChange={(val) => {
                             if (!val) return;
                             if (val === "auto") {
@@ -153,7 +182,7 @@ export function CalculatorClient({ semesters, gradeScale }: CalculatorClientProp
                               delete newOverrides[subject.id];
                               setManualOverrides(newOverrides);
                             } else {
-                              setManualOverrides({ ...manualOverrides, [subject.id]: parseFloat(val) });
+                              setManualOverrides({ ...manualOverrides, [subject.id]: val });
                             }
                           }}
                         >
@@ -163,8 +192,8 @@ export function CalculatorClient({ semesters, gradeScale }: CalculatorClientProp
                           <SelectContent>
                             <SelectItem value="auto">Auto ({autoGrade})</SelectItem>
                             {scaleRanges.map(g => (
-                              <SelectItem key={g.grade} value={g.gpaValue.toString()}>
-                                {g.grade} ({g.gpaValue})
+                              <SelectItem key={g.grade} value={g.grade}>
+                                {g.grade}
                               </SelectItem>
                             ))}
                           </SelectContent>
