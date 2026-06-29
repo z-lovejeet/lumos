@@ -51,7 +51,7 @@ export function CreditWeightedChart({ data }: CreditWeightedChartProps) {
                 fontSize={12} 
                 tickLine={false} 
                 axisLine={false} 
-                tickFormatter={(value) => value.length > 8 ? value.substring(0, 8) + '...' : value}
+                tickFormatter={(value) => value?.length > 8 ? value.substring(0, 8) + '...' : value || ''}
               />
               <YAxis 
                 type="number" 

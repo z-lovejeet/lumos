@@ -154,8 +154,8 @@ export default async function DashboardPage() {
         predictedSgpaSubjects.push({ credits: sub.credits, gpaValue: scaleItem.point });
         const grade = sub.savedGrade;
         gradeDistMap[grade] = (gradeDistMap[grade] || 0) + 1;
-        subjectComparisonData.push({ subject: sub.code, percentage: scaleItem.minPercentage });
-        creditWeightedData.push({ subject: sub.code, credits: sub.credits, percentage: scaleItem.minPercentage });
+        subjectComparisonData.push({ subject: sub.code || sub.name, percentage: scaleItem.minPercentage });
+        creditWeightedData.push({ subject: sub.code || sub.name, credits: sub.credits, percentage: scaleItem.minPercentage });
       }
     } else {
       predictedSgpaSubjects.push({ credits: sub.credits, percentage: prediction.predictedPercentage });
@@ -168,12 +168,12 @@ export default async function DashboardPage() {
       }
 
       subjectComparisonData.push({
-        subject: sub.code,
+        subject: sub.code || sub.name,
         percentage: Math.round(prediction.predictedPercentage)
       });
 
       creditWeightedData.push({
-        subject: sub.code,
+        subject: sub.code || sub.name,
         credits: sub.credits,
         percentage: Math.round(prediction.predictedPercentage)
       });
