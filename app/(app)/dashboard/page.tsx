@@ -148,6 +148,8 @@ export default async function DashboardPage() {
       conducted
     });
     
+    let subjectScore = 0;
+    
     if (sub.savedGrade) {
       const scaleItem = gradeScale.find((g: any) => g.grade === sub.savedGrade);
       if (scaleItem) {
@@ -156,17 +158,11 @@ export default async function DashboardPage() {
         gradeDistMap[grade] = (gradeDistMap[grade] || 0) + 1;
         subjectComparisonData.push({ subject: sub.code || sub.name, percentage: scaleItem.minPercentage });
         creditWeightedData.push({ subject: sub.code || sub.name, credits: sub.credits, percentage: scaleItem.minPercentage });
+        subjectScore = scaleItem.minPercentage;
       }
     } else {
       predictedSgpaSubjects.push({ credits: sub.credits, percentage: prediction.predictedPercentage });
       
-      if (prediction.predictedPercentage < weakestSub.score) {
-        weakestSub = { name: sub.name, score: prediction.predictedPercentage };
-      }
-      if (prediction.predictedPercentage > strongestSub.score) {
-        strongestSub = { name: sub.name, score: prediction.predictedPercentage };
-      }
-
       subjectComparisonData.push({
         subject: sub.code || sub.name,
         percentage: Math.round(prediction.predictedPercentage)
@@ -180,6 +176,15 @@ export default async function DashboardPage() {
 
       const grade = prediction.predictedGrade || 'N/A';
       gradeDistMap[grade] = (gradeDistMap[grade] || 0) + 1;
+      
+      subjectScore = prediction.predictedPercentage;
+    }
+
+    if (subjectScore < weakestSub.score) {
+      weakestSub = { name: sub.name, score: subjectScore };
+    }
+    if (subjectScore > strongestSub.score) {
+      strongestSub = { name: sub.name, score: subjectScore };
     }
   })
 
