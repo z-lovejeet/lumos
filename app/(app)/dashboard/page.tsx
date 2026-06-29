@@ -122,7 +122,8 @@ export default async function DashboardPage() {
   activeSemester.subjects.forEach(sub => {
     let earnedMarks = 0;
     let totalMarks = 0;
-    sub.marks.forEach(m => {
+    const safeMarks = Array.isArray(sub.marks) ? sub.marks : [];
+    safeMarks.forEach((m: any) => {
       if (m.obtainedMarks !== null) {
         earnedMarks += m.obtainedMarks;
         totalMarks += m.maxMarks;
@@ -133,7 +134,7 @@ export default async function DashboardPage() {
     currentSgpaSubjects.push({ credits: sub.credits, percentage: currentPct })
 
     let components = sub.markingScheme ? (sub.markingScheme.components as any) : []
-    const prediction = predictGrade(sub.marks.map((m: any) => ({ componentName: m.componentName, obtainedMarks: m.obtainedMarks || 0, maxMarks: m.maxMarks })), components, gradeScale)
+    const prediction = predictGrade(safeMarks.map((m: any) => ({ componentName: m.componentName, obtainedMarks: m.obtainedMarks || 0, maxMarks: m.maxMarks })), components, gradeScale)
     
     const conducted = sub.totalClassesConducted || 0;
     const attended = sub.totalClassesAttended || 0;
@@ -211,7 +212,8 @@ export default async function DashboardPage() {
         }
       } else {
         let components = sub.markingScheme ? (sub.markingScheme.components as any) : []
-        const prediction = predictGrade(sub.marks.map((m: any) => ({ componentName: m.componentName, obtainedMarks: m.obtainedMarks || 0, maxMarks: m.maxMarks })), components, gradeScale)
+        const safeMarks = Array.isArray(sub.marks) ? sub.marks : []
+        const prediction = predictGrade(safeMarks.map((m: any) => ({ componentName: m.componentName, obtainedMarks: m.obtainedMarks || 0, maxMarks: m.maxMarks })), components, gradeScale)
         semSgpaSubs.push({ credits: sub.credits, percentage: prediction.predictedPercentage })
       }
     })
@@ -248,7 +250,7 @@ export default async function DashboardPage() {
       attendancePercent: s.totalClassesConducted && s.totalClassesConducted > 0 
         ? ((s.totalClassesAttended || 0) / s.totalClassesConducted) * 100 
         : 100,
-      marks: s.marks as any[],
+      marks: (Array.isArray(s.marks) ? s.marks : []) as any[],
       components: s.markingScheme ? s.markingScheme.components as any[] : []
     })),
     gradeScale: gradeScale,
