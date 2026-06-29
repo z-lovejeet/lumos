@@ -133,17 +133,8 @@ export default async function DashboardPage() {
     currentSgpaSubjects.push({ credits: sub.credits, percentage: currentPct })
 
     let components = sub.markingScheme ? (sub.markingScheme.components as any) : []
-    const prediction = predictGrade(sub.marks.map(m => ({ componentName: m.componentName, obtainedMarks: m.obtainedMarks || 0, maxMarks: m.maxMarks })), components, gradeScale)
+    const prediction = predictGrade(sub.marks.map((m: any) => ({ componentName: m.componentName, obtainedMarks: m.obtainedMarks || 0, maxMarks: m.maxMarks })), components, gradeScale)
     
-    predictedSgpaSubjects.push({ credits: sub.credits, percentage: prediction.predictedPercentage })
-
-    if (prediction.predictedPercentage < weakestSub.score) {
-      weakestSub = { name: sub.name, score: prediction.predictedPercentage }
-    }
-    if (prediction.predictedPercentage > strongestSub.score) {
-      strongestSub = { name: sub.name, score: prediction.predictedPercentage }
-    }
-
     const conducted = sub.totalClassesConducted || 0;
     const attended = sub.totalClassesAttended || 0;
     
@@ -156,20 +147,40 @@ export default async function DashboardPage() {
       attended,
       conducted
     });
+    
+    if (sub.savedGrade) {
+      const scaleItem = gradeScale.find((g: any) => g.grade === sub.savedGrade);
+      if (scaleItem) {
+        predictedSgpaSubjects.push({ credits: sub.credits, gpaValue: scaleItem.point });
+        const grade = sub.savedGrade;
+        gradeDistMap[grade] = (gradeDistMap[grade] || 0) + 1;
+        subjectComparisonData.push({ subject: sub.code, percentage: scaleItem.minPercent });
+        creditWeightedData.push({ subject: sub.code, credits: sub.credits, percentage: scaleItem.minPercent });
+      }
+    } else {
+      predictedSgpaSubjects.push({ credits: sub.credits, percentage: prediction.predictedPercentage });
+      
+      if (prediction.predictedPercentage < weakestSub.score) {
+        weakestSub = { name: sub.name, score: prediction.predictedPercentage };
+      }
+      if (prediction.predictedPercentage > strongestSub.score) {
+        strongestSub = { name: sub.name, score: prediction.predictedPercentage };
+      }
 
-    subjectComparisonData.push({
-      subject: sub.code,
-      percentage: Math.round(prediction.predictedPercentage)
-    })
+      subjectComparisonData.push({
+        subject: sub.code,
+        percentage: Math.round(prediction.predictedPercentage)
+      });
 
-    creditWeightedData.push({
-      subject: sub.code,
-      credits: sub.credits,
-      percentage: Math.round(prediction.predictedPercentage)
-    })
+      creditWeightedData.push({
+        subject: sub.code,
+        credits: sub.credits,
+        percentage: Math.round(prediction.predictedPercentage)
+      });
 
-    const grade = prediction.predictedGrade || 'N/A'
-    gradeDistMap[grade] = (gradeDistMap[grade] || 0) + 1
+      const grade = prediction.predictedGrade || 'N/A';
+      gradeDistMap[grade] = (gradeDistMap[grade] || 0) + 1;
+    }
   })
 
   const gradeDistData = Object.keys(gradeDistMap).map(k => ({ grade: k, count: gradeDistMap[k] }))
@@ -190,12 +201,19 @@ export default async function DashboardPage() {
   
   let cgpaSemesters: any[] = []
 
-  allSemesters.forEach(sem => {
+  allSemesters.forEach((sem: any) => {
     let semSgpaSubs: SubjectForSGPA[] = []
-    sem.subjects.forEach(sub => {
-      let components = sub.markingScheme ? (sub.markingScheme.components as any) : []
-      const prediction = predictGrade(sub.marks.map(m => ({ componentName: m.componentName, obtainedMarks: m.obtainedMarks || 0, maxMarks: m.maxMarks })), components, gradeScale)
-      semSgpaSubs.push({ credits: sub.credits, percentage: prediction.predictedPercentage })
+    sem.subjects.forEach((sub: any) => {
+      if (sub.savedGrade) {
+        const scaleItem = gradeScale.find((g: any) => g.grade === sub.savedGrade);
+        if (scaleItem) {
+          semSgpaSubs.push({ credits: sub.credits, gpaValue: scaleItem.point });
+        }
+      } else {
+        let components = sub.markingScheme ? (sub.markingScheme.components as any) : []
+        const prediction = predictGrade(sub.marks.map((m: any) => ({ componentName: m.componentName, obtainedMarks: m.obtainedMarks || 0, maxMarks: m.maxMarks })), components, gradeScale)
+        semSgpaSubs.push({ credits: sub.credits, percentage: prediction.predictedPercentage })
+      }
     })
     const semSgpa = calculateSGPA(semSgpaSubs, gradeScale)
     sgpaTrendData.push({ semester: sem.name, sgpa: semSgpa })
