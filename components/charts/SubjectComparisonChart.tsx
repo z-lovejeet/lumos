@@ -1,7 +1,8 @@
 'use client';
 
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { CustomTooltip } from './CustomTooltip';
 
 interface SubjectComparisonChartProps {
   data: {
@@ -55,16 +56,7 @@ export function SubjectComparisonChart({ data }: SubjectComparisonChartProps) {
                 tickFormatter={(value) => `${value}%`}
                 tickMargin={10}
               />
-              <Tooltip 
-                contentStyle={{ 
-                  borderRadius: '12px', 
-                  border: '1px solid var(--border)', 
-                  backgroundColor: 'oklch(var(--background) / 0.8)',
-                  backdropFilter: 'blur(8px)'
-                }}
-                itemStyle={{ color: 'var(--foreground)', fontWeight: 500 }}
-                cursor={{ fill: 'var(--chart-4)', opacity: 0.1 }}
-              />
+              <Tooltip cursor={{ fill: 'hsl(var(--muted))', opacity: 0.2 }} content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: '12px' }} />
               <Bar 
                 name="Your Score"

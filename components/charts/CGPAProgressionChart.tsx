@@ -2,6 +2,7 @@
 
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { CustomTooltip } from './CustomTooltip';
 
 interface CGPAProgressionChartProps {
   data: {
@@ -57,10 +58,7 @@ export function CGPAProgressionChart({ data }: CGPAProgressionChartProps) {
                 domain={[0, 10]} 
                 tickFormatter={(value) => value.toFixed(1)}
               />
-              <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--background))' }}
-                itemStyle={{ color: 'hsl(var(--foreground))' }}
-              />
+              <Tooltip content={<CustomTooltip />} />
               <Area 
                 type="monotone" 
                 dataKey="cgpa" 

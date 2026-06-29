@@ -2,6 +2,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { CustomTooltip } from './CustomTooltip';
 
 interface GradeDistributionPieProps {
   data: {
@@ -74,11 +75,7 @@ export function GradeDistributionPie({ data }: GradeDistributionPieProps) {
                   />
                 ))}
               </Pie>
-              <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--background))' }}
-                itemStyle={{ color: 'hsl(var(--foreground))' }}
-                formatter={(value: any) => [`${value} Subjects`, 'Count']}
-              />
+              <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: '12px' }} />
             </PieChart>
           </ResponsiveContainer>

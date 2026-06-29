@@ -2,6 +2,7 @@
 
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { CustomTooltip } from './CustomTooltip';
 
 interface SGPATrendChartProps {
   data: {
@@ -67,15 +68,7 @@ export function SGPATrendChart({ data, prediction }: SGPATrendChartProps) {
                 tickFormatter={(value) => value.toFixed(1)}
                 tickMargin={10}
               />
-              <Tooltip 
-                contentStyle={{ 
-                  borderRadius: '12px', 
-                  border: '1px solid var(--border)', 
-                  backgroundColor: 'oklch(var(--background) / 0.8)',
-                  backdropFilter: 'blur(8px)'
-                }}
-                itemStyle={{ color: 'var(--foreground)', fontWeight: 500 }}
-              />
+              <Tooltip content={<CustomTooltip />} />
               <Area 
                 type="monotone" 
                 dataKey="sgpa" 

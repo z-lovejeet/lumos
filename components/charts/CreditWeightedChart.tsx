@@ -2,6 +2,7 @@
 
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ZAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { CustomTooltip } from './CustomTooltip';
 
 interface CreditWeightedChartProps {
   data: {
@@ -69,15 +70,7 @@ export function CreditWeightedChart({ data }: CreditWeightedChartProps) {
                 name="Credits" 
                 range={[200, 1500]} // Controls the min and max area of the circles
               />
-              <Tooltip 
-                cursor={{ strokeDasharray: '3 3' }}
-                contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--background))' }}
-                formatter={(value: any, name: any) => {
-                  if (name === 'Performance') return [`${value}%`, name];
-                  if (name === 'Credits') return [value, name];
-                  return [value, name];
-                }}
-              />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />} />
               <Scatter 
                 name="Subjects" 
                 data={data} 

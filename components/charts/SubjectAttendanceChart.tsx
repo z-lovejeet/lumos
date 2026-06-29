@@ -3,6 +3,7 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, ReferenceLine, Cell } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useTheme } from "next-themes"
+import { CustomTooltip } from "./CustomTooltip"
 
 interface SubjectAttendanceChartProps {
   data: {
@@ -42,21 +43,7 @@ export function SubjectAttendanceChart({ data }: SubjectAttendanceChartProps) {
                 tickFormatter={(value) => `${value}%`}
                 domain={[0, 100]}
               />
-              <Tooltip 
-                cursor={{ fill: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
-                contentStyle={{ 
-                  backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
-                  borderColor: isDark ? '#333' : '#e5e7eb',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
-                }}
-                formatter={(value: any, name: any, props: any) => {
-                  if (name === "percentage") {
-                    return [`${value}% (${props.payload.attended}/${props.payload.conducted})`, 'Attendance']
-                  }
-                  return [value, name]
-                }}
-              />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }} />
               <ReferenceLine y={75} stroke="currentColor" strokeDasharray="3 3" className="text-destructive/50" />
               <Bar dataKey="percentage" radius={[4, 4, 0, 0]} maxBarSize={60}>
                 {data.map((entry, index) => (
