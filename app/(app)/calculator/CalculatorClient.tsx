@@ -131,13 +131,30 @@ export function CalculatorClient({ semesters, gradeScale, savedSGPA, savedCGPA }
   const handleCalculateAndSaveSgpa = async () => {
     setDisplayedSgpa(liveSgpa);
     setIsSavingSgpa(true);
-    const result = await saveSGPA(liveSgpa);
+    
+    // Auto-calculate the new CGPA by injecting the new SGPA for the active semester
+    const updatedCgpaSemesters = computedSemestersForCgpa.map(sem => {
+      if (computedActiveSemester && sem.id === computedActiveSemester.id) {
+        return { ...sem, sgpa: liveSgpa };
+      }
+      return sem;
+    });
+    
+    const newLiveCgpa = calculateCGPA(updatedCgpaSemesters);
+    setDisplayedCgpa(newLiveCgpa);
+
+    // Save both to the database
+    const [sgpaResult, cgpaResult] = await Promise.all([
+      saveSGPA(liveSgpa),
+      saveCGPA(newLiveCgpa)
+    ]);
+    
     setIsSavingSgpa(false);
     
-    if (result?.error) {
-      toast.error(result.error);
+    if (sgpaResult?.error) {
+      toast.error(sgpaResult.error);
     } else {
-      toast.success('SGPA calculated and saved to profile successfully!');
+      toast.success('SGPA & CGPA updated and saved successfully!');
     }
   };
 
