@@ -97,7 +97,7 @@ export async function saveCGPA(cgpa: number) {
     return { error: 'Failed to save CGPA. Please try again.' };
   }
 }
-export async function saveSGPA(sgpa: number) {
+export async function saveSGPA(sgpa: number, manualOverrides?: Record<string, string>) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -126,6 +126,16 @@ export async function saveSGPA(sgpa: number) {
         }
       }
     });
+
+    if (manualOverrides && Object.keys(manualOverrides).length > 0) {
+      const updatePromises = Object.entries(manualOverrides).map(([subjectId, grade]) => {
+        return prisma.subject.update({
+          where: { id: subjectId },
+          data: { savedGrade: grade }
+        });
+      });
+      await Promise.all(updatePromises);
+    }
 
     revalidatePath('/calculator');
     revalidatePath('/profile');

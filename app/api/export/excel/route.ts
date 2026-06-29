@@ -3,6 +3,7 @@ import { generateExcelReport } from '@/lib/export/excel-generator';
 import { ExportSemester } from '@/lib/export/pdf-generator';
 import { createClient } from '@/lib/supabase/server';
 import prisma from '@/lib/prisma';
+import defaultGradeScale from '@/data/default-grade-scale.json';
 
 export async function POST(req: Request) {
   try {
@@ -23,6 +24,9 @@ export async function POST(req: Request) {
             }
           },
           orderBy: { number: 'asc' }
+        },
+        gradeScales: {
+          where: { isActive: true }
         }
       }
     });
@@ -41,27 +45,38 @@ export async function POST(req: Request) {
     let totalCreditsEarned = 0;
     let totalGradePoints = 0;
 
+    const rawGradeScale = (dbUser.gradeScales && dbUser.gradeScales.length > 0 && dbUser.gradeScales[0].grades) 
+      ? (dbUser.gradeScales[0].grades as any[]) 
+      : defaultGradeScale;
+
     const exportSemesters: ExportSemester[] = semestersToExport.map(sem => {
       let semCredits = 0;
       let semPoints = 0;
 
-      const subjects = sem.subjects.map(sub => {
-        let obtained = 0;
-        let max = 0;
-        sub.marks.forEach(m => {
-          obtained += m.obtainedMarks || 0;
-          max += m.maxMarks;
-        });
-
-        const percent = max > 0 ? (obtained / max) * 100 : 0;
+      const subjects = sem.subjects.map((sub: any) => {
         let grade = 'F';
         let point = 0;
-        if (percent >= 90) { grade = 'O'; point = 10; }
-        else if (percent >= 80) { grade = 'A+'; point = 9; }
-        else if (percent >= 70) { grade = 'A'; point = 8; }
-        else if (percent >= 60) { grade = 'B+'; point = 7; }
-        else if (percent >= 50) { grade = 'B'; point = 6; }
-        else if (percent >= 40) { grade = 'C'; point = 5; }
+
+        if (sub.savedGrade) {
+          grade = sub.savedGrade;
+          const scaleItem = rawGradeScale.find(g => g.grade === grade);
+          point = scaleItem ? scaleItem.point : 0;
+        } else {
+          let obtained = 0;
+          let max = 0;
+          sub.marks.forEach((m: any) => {
+            obtained += m.obtainedMarks || 0;
+            max += m.maxMarks;
+          });
+          const percent = max > 0 ? (obtained / max) * 100 : 0;
+          
+          const sortedScale = [...rawGradeScale].sort((a, b) => b.minPercent - a.minPercent);
+          const found = sortedScale.find(g => percent >= g.minPercent);
+          if (found) {
+            grade = found.grade;
+            point = found.point;
+          }
+        }
 
         semCredits += sub.credits;
         semPoints += (point * sub.credits);

@@ -59,6 +59,7 @@ model Subject {
   markingSchemeId String?
   markingScheme   MarkingScheme? @relation(fields: [markingSchemeId], references: [id])
   difficulty      String         @default("medium") // easy, medium, hard
+  savedGrade      String?        // Manually overridden or saved grade
   syllabusData    Json?
   marks                  Mark[]
   attendance             Attendance[]

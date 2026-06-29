@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import prisma from '@/lib/prisma';
+import defaultGradeScale from '@/data/default-grade-scale.json';
 
 export async function POST(req: Request) {
   try {
@@ -21,6 +22,9 @@ export async function POST(req: Request) {
             }
           },
           orderBy: { number: 'asc' }
+        },
+        gradeScales: {
+          where: { isActive: true }
         }
       }
     });
@@ -36,28 +40,36 @@ export async function POST(req: Request) {
       semestersToExport = dbUser.semesters.filter(sem => selectedSemesters.includes(sem.id));
     }
 
+    const rawGradeScale = (dbUser.gradeScales && dbUser.gradeScales.length > 0 && dbUser.gradeScales[0].grades) 
+      ? (dbUser.gradeScales[0].grades as any[]) 
+      : defaultGradeScale;
+
     // Generate CSV string
     const rows = [
       ['Semester', 'Course Code', 'Course Name', 'Credits', 'Grade']
     ];
 
     semestersToExport.forEach(sem => {
-      sem.subjects.forEach(sub => {
-        let obtained = 0;
-        let max = 0;
-        sub.marks.forEach(m => {
-          obtained += m.obtainedMarks || 0;
-          max += m.maxMarks;
-        });
-
-        const percent = max > 0 ? (obtained / max) * 100 : 0;
+      sem.subjects.forEach((sub: any) => {
         let grade = 'F';
-        if (percent >= 90) { grade = 'O'; }
-        else if (percent >= 80) { grade = 'A+'; }
-        else if (percent >= 70) { grade = 'A'; }
-        else if (percent >= 60) { grade = 'B+'; }
-        else if (percent >= 50) { grade = 'B'; }
-        else if (percent >= 40) { grade = 'C'; }
+
+        if (sub.savedGrade) {
+          grade = sub.savedGrade;
+        } else {
+          let obtained = 0;
+          let max = 0;
+          sub.marks.forEach((m: any) => {
+            obtained += m.obtainedMarks || 0;
+            max += m.maxMarks;
+          });
+          const percent = max > 0 ? (obtained / max) * 100 : 0;
+          
+          const sortedScale = [...rawGradeScale].sort((a, b) => b.minPercent - a.minPercent);
+          const found = sortedScale.find(g => percent >= g.minPercent);
+          if (found) {
+            grade = found.grade;
+          }
+        }
 
         // Sanitize commas in names for CSV
         const safeName = `"${sub.name.replace(/"/g, '""')}"`;

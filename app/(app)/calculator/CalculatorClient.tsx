@@ -145,7 +145,7 @@ export function CalculatorClient({ semesters, gradeScale, savedSGPA, savedCGPA }
 
     // Save both to the database
     const [sgpaResult, cgpaResult] = await Promise.all([
-      saveSGPA(liveSgpa),
+      saveSGPA(liveSgpa, manualSgpaOverrides),
       saveCGPA(newLiveCgpa)
     ]);
     
