@@ -21,6 +21,7 @@ import { predictGrade } from '@/lib/predictions/grade-predictor'
 import { calculateCGPA } from '@/lib/calculations/cgpa'
 import { detectRisks, RiskDetectorData } from '@/lib/alerts/risk-detector'
 import { predictPerformanceTrend } from '@/lib/predictions/trend-predictor'
+import defaultGradeScale from '@/data/default-grade-scale.json'
 
 export const metadata = {
   title: 'Dashboard - Lumos',
@@ -58,7 +59,9 @@ export default async function DashboardPage() {
       select: { settings: true }
     })
   ]);
-  const rawGradeScale = gradeScaleRecord ? (gradeScaleRecord.grades as any[]) : [];
+  const rawGradeScale = (gradeScaleRecord && gradeScaleRecord.grades) 
+    ? (gradeScaleRecord.grades as any[]) 
+    : defaultGradeScale;
   
   const gradeScale: any[] = rawGradeScale.map((g) => ({
     grade: g.grade,
