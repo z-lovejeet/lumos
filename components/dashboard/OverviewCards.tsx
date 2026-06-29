@@ -13,6 +13,7 @@ export interface DashboardMetrics {
   attendancePercentage: number;
   weakestSubject: string;
   strongestSubject: string;
+  isCgpaSaved?: boolean;
 }
 
 export function OverviewCards({ metrics }: { metrics: DashboardMetrics }) {
@@ -42,7 +43,7 @@ export function OverviewCards({ metrics }: { metrics: DashboardMetrics }) {
       value: metrics.cgpa,
       isNumber: true,
       decimals: 2,
-      description: 'Cumulative across all semesters',
+      description: metrics.isCgpaSaved ? 'Saved to Profile' : 'Cumulative across all semesters',
       icon: Award,
       color: 'text-violet-500',
       bgColor: 'bg-violet-500/10 dark:bg-violet-500/20'

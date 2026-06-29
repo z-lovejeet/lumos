@@ -35,8 +35,8 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
-  // Fetch all semesters and grade scale in parallel
-  const [allSemesters, gradeScaleRecord] = await Promise.all([
+  // Fetch all semesters, grade scale, and user settings in parallel
+  const [allSemesters, gradeScaleRecord, dbUser] = await Promise.all([
     prisma.semester.findMany({
       where: { userId: user.id },
       include: {
@@ -52,9 +52,14 @@ export default async function DashboardPage() {
     }),
     prisma.gradeScale.findFirst({
       where: { userId: user.id, isActive: true }
+    }),
+    prisma.user.findUnique({
+      where: { id: user.id },
+      select: { settings: true }
     })
   ]);
   const gradeScale = gradeScaleRecord ? (gradeScaleRecord.grades as any) : []
+  const userSettings = dbUser?.settings as any || {};
 
   const activeSemester = allSemesters.find(s => s.status === 'active')
 
@@ -178,11 +183,15 @@ export default async function DashboardPage() {
   })
 
   const currentCgpa = cgpaSemesters.length > 0 ? calculateCGPA(cgpaSemesters) : 0
+  const savedCGPA = userSettings.savedCGPA;
+  const isCgpaSaved = savedCGPA !== undefined && savedCGPA !== null;
+  const displayCgpa = isCgpaSaved ? savedCGPA : currentCgpa;
 
   const metrics: DashboardMetrics = {
     currentSgpa,
     predictedSgpa,
-    cgpa: currentCgpa,
+    cgpa: displayCgpa,
+    isCgpaSaved,
     creditsCompleted,
     attendancePercentage,
     weakestSubject: weakestSub.name,
