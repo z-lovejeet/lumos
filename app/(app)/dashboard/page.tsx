@@ -58,7 +58,22 @@ export default async function DashboardPage() {
       select: { settings: true }
     })
   ]);
-  const gradeScale = gradeScaleRecord ? (gradeScaleRecord.grades as any) : []
+  const rawGradeScale = gradeScaleRecord ? (gradeScaleRecord.grades as any[]) : [];
+  
+  const gradeScale: any[] = rawGradeScale.map((g) => ({
+    grade: g.grade,
+    minPercentage: g.minPercent,
+    maxPercentage: 100,
+    gpaValue: g.point
+  }));
+  gradeScale.sort((a, b) => b.minPercentage - a.minPercentage);
+  for (let i = 1; i < gradeScale.length; i++) {
+    gradeScale[i].maxPercentage = gradeScale[i - 1].minPercentage - 0.01;
+  }
+  if (gradeScale.length > 0) {
+    gradeScale[0].maxPercentage = 100;
+  }
+
   const userSettings = dbUser?.settings as any || {};
 
   const activeSemester = allSemesters.find(s => s.status === 'active')
