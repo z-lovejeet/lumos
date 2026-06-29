@@ -151,7 +151,7 @@ export default async function DashboardPage() {
     if (sub.savedGrade) {
       const scaleItem = gradeScale.find((g: any) => g.grade === sub.savedGrade);
       if (scaleItem) {
-        predictedSgpaSubjects.push({ credits: sub.credits, gpaValue: scaleItem.point });
+        predictedSgpaSubjects.push({ credits: sub.credits, gpaValue: scaleItem.gpaValue });
         const grade = sub.savedGrade;
         gradeDistMap[grade] = (gradeDistMap[grade] || 0) + 1;
         subjectComparisonData.push({ subject: sub.code || sub.name, percentage: scaleItem.minPercentage });
@@ -207,7 +207,7 @@ export default async function DashboardPage() {
       if (sub.savedGrade) {
         const scaleItem = gradeScale.find((g: any) => g.grade === sub.savedGrade);
         if (scaleItem) {
-          semSgpaSubs.push({ credits: sub.credits, gpaValue: scaleItem.point });
+          semSgpaSubs.push({ credits: sub.credits, gpaValue: scaleItem.gpaValue });
         }
       } else {
         let components = sub.markingScheme ? (sub.markingScheme.components as any) : []

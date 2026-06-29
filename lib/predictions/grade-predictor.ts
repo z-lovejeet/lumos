@@ -62,6 +62,30 @@ export function predictGrade(
     predictedPercentage = earnedWeight + (currentAverage * remainingWeight);
   }
 
+  // If no components are defined, fall back to raw marks percentage
+  if (totalWeight === 0) {
+    // Calculate from raw marks if available
+    let totalObtained = 0;
+    let totalMax = 0;
+    for (const mark of marks) {
+      if (mark.obtainedMarks !== null && mark.obtainedMarks !== undefined) {
+        totalObtained += mark.obtainedMarks;
+        totalMax += mark.maxMarks;
+      }
+    }
+    const rawPercent = totalMax > 0 ? (totalObtained / totalMax) * 100 : 0;
+    const pct = Math.round(rawPercent * 100) / 100;
+    return {
+      predictedPercentage: pct,
+      predictedGrade: getGradeFromPercentage(pct, gradeScale),
+      bestPossiblePercentage: pct,
+      bestPossibleGrade: getGradeFromPercentage(pct, gradeScale),
+      worstPossiblePercentage: pct,
+      worstPossibleGrade: getGradeFromPercentage(pct, gradeScale),
+      isFeasible: false
+    };
+  }
+
   // Scale back from weight to percentage out of 100
   const bestPercent = Math.min(100, (bestPossible / totalWeight) * 100);
   const worstPercent = Math.min(100, (worstPossible / totalWeight) * 100);
