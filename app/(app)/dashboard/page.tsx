@@ -156,8 +156,12 @@ export default async function DashboardPage() {
 
   const gradeDistData = Object.keys(gradeDistMap).map(k => ({ grade: k, count: gradeDistMap[k] }))
 
-  const currentSgpa = calculateSGPA(currentSgpaSubjects, gradeScale)
+  const calculatedCurrentSgpa = calculateSGPA(currentSgpaSubjects, gradeScale)
   const predictedSgpa = calculateSGPA(predictedSgpaSubjects, gradeScale)
+
+  const savedSGPA = userSettings.savedSGPA;
+  const isSgpaSaved = savedSGPA !== undefined && savedSGPA !== null;
+  const currentSgpa = isSgpaSaved ? savedSGPA : calculatedCurrentSgpa;
   
   const creditsCompleted = activeSemester.subjects.reduce((sum, s) => sum + s.credits, 0)
   const attendancePercentage = attendanceTotal > 0 ? (attendanceAttended / attendanceTotal) * 100 : 100
@@ -192,6 +196,7 @@ export default async function DashboardPage() {
     predictedSgpa,
     cgpa: displayCgpa,
     isCgpaSaved,
+    isSgpaSaved,
     creditsCompleted,
     attendancePercentage,
     weakestSubject: weakestSub.name,

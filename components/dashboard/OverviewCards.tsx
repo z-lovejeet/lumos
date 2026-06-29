@@ -14,6 +14,7 @@ export interface DashboardMetrics {
   weakestSubject: string;
   strongestSubject: string;
   isCgpaSaved?: boolean;
+  isSgpaSaved?: boolean;
 }
 
 export function OverviewCards({ metrics }: { metrics: DashboardMetrics }) {
@@ -23,7 +24,7 @@ export function OverviewCards({ metrics }: { metrics: DashboardMetrics }) {
       value: metrics.currentSgpa,
       isNumber: true,
       decimals: 2,
-      description: 'Calculated from entered marks',
+      description: metrics.isSgpaSaved ? 'Saved to Profile' : 'Calculated from entered marks',
       icon: Activity,
       color: 'text-blue-500',
       bgColor: 'bg-blue-500/10 dark:bg-blue-500/20'

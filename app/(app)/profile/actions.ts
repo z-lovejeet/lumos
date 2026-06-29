@@ -97,3 +97,42 @@ export async function saveCGPA(cgpa: number) {
     return { error: 'Failed to save CGPA. Please try again.' };
   }
 }
+export async function saveSGPA(sgpa: number) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user || !user.email) {
+      return { error: 'Unauthorized. Please log in.' };
+    }
+
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user.email },
+      select: { settings: true }
+    });
+
+    if (!dbUser) return { error: 'User not found' };
+
+    const settings = typeof dbUser.settings === 'object' && dbUser.settings !== null 
+      ? dbUser.settings 
+      : {};
+
+    await prisma.user.update({
+      where: { email: user.email },
+      data: {
+        settings: {
+          ...(settings as any),
+          savedSGPA: sgpa
+        }
+      }
+    });
+
+    revalidatePath('/calculator');
+    revalidatePath('/profile');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to save SGPA:', error);
+    return { error: 'Failed to save SGPA. Please try again.' };
+  }
+}

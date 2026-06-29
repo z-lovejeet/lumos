@@ -17,19 +17,26 @@ export default async function CalculatorPage() {
     redirect('/login');
   }
 
-  // Fetch all semesters for CGPA
-  const semesters = await prisma.semester.findMany({
-    where: { userId: user.id },
-    include: {
-      subjects: {
-        include: {
-          marks: true,
-          markingScheme: true
+  const [semesters, dbUser] = await Promise.all([
+    prisma.semester.findMany({
+      where: { userId: user.id },
+      include: {
+        subjects: {
+          include: {
+            marks: true,
+            markingScheme: true
+          }
         }
-      }
-    },
-    orderBy: { number: 'asc' }
-  });
+      },
+      orderBy: { number: 'asc' }
+    }),
+    prisma.user.findUnique({
+      where: { id: user.id },
+      select: { settings: true }
+    })
+  ]);
+
+  const userSettings = dbUser?.settings as any || {};
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -45,6 +52,8 @@ export default async function CalculatorPage() {
       <CalculatorClient 
         semesters={semesters} 
         gradeScale={defaultGradeScale as any} 
+        savedSGPA={userSettings.savedSGPA}
+        savedCGPA={userSettings.savedCGPA}
       />
     </div>
   );
