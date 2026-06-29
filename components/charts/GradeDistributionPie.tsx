@@ -19,6 +19,17 @@ const DEFAULT_COLORS = [
   'var(--chart-5)',
 ];
 
+const GRADE_COLORS: Record<string, string> = {
+  'O': '#10b981',   // emerald
+  'A+': '#3b82f6',  // blue
+  'A': '#6366f1',   // indigo
+  'B+': '#8b5cf6',  // violet
+  'B': '#d946ef',   // fuchsia
+  'C': '#f59e0b',   // amber
+  'F': '#ef4444',   // red
+  'N/A': '#64748b'  // slate
+};
+
 export function GradeDistributionPie({ data }: GradeDistributionPieProps) {
   if (!data || data.length === 0) {
     return (
@@ -59,7 +70,7 @@ export function GradeDistributionPie({ data }: GradeDistributionPieProps) {
                 {data.map((entry, index) => (
                   <Cell 
                     key={`cell-${index}`} 
-                    fill={entry.color || DEFAULT_COLORS[index % DEFAULT_COLORS.length]} 
+                    fill={entry.color || GRADE_COLORS[entry.grade] || DEFAULT_COLORS[index % DEFAULT_COLORS.length]} 
                   />
                 ))}
               </Pie>
