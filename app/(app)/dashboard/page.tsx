@@ -154,8 +154,8 @@ export default async function DashboardPage() {
         predictedSgpaSubjects.push({ credits: sub.credits, gpaValue: scaleItem.point });
         const grade = sub.savedGrade;
         gradeDistMap[grade] = (gradeDistMap[grade] || 0) + 1;
-        subjectComparisonData.push({ subject: sub.code, percentage: scaleItem.minPercent });
-        creditWeightedData.push({ subject: sub.code, credits: sub.credits, percentage: scaleItem.minPercent });
+        subjectComparisonData.push({ subject: sub.code, percentage: scaleItem.minPercentage });
+        creditWeightedData.push({ subject: sub.code, credits: sub.credits, percentage: scaleItem.minPercentage });
       }
     } else {
       predictedSgpaSubjects.push({ credits: sub.credits, percentage: prediction.predictedPercentage });
