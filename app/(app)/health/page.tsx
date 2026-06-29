@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { analyzeSemesterHealth } from '@/lib/analysis/semester-health'
 import { RiskAlerts } from '@/components/dashboard/RiskAlerts'
+import defaultGradeScale from '@/data/default-grade-scale.json'
 
 export const metadata = {
   title: 'Semester Health Analysis - Lumos',
@@ -36,7 +37,23 @@ export default async function HealthPage() {
     })
   ]);
 
-  const gradeScale = gradeScaleRecord ? (gradeScaleRecord.grades as any) : []
+  const rawGradeScale = (gradeScaleRecord && gradeScaleRecord.grades) 
+    ? (gradeScaleRecord.grades as any[]) 
+    : defaultGradeScale;
+
+  const gradeScale: any[] = rawGradeScale.map((g) => ({
+    grade: g.grade,
+    minPercentage: g.minPercent,
+    maxPercentage: 100,
+    gpaValue: g.point
+  }));
+  gradeScale.sort((a, b) => b.minPercentage - a.minPercentage);
+  for (let i = 1; i < gradeScale.length; i++) {
+    gradeScale[i].maxPercentage = gradeScale[i - 1].minPercentage - 0.01;
+  }
+  if (gradeScale.length > 0) {
+    gradeScale[0].maxPercentage = 100;
+  }
 
   if (!activeSemester) {
     return (
