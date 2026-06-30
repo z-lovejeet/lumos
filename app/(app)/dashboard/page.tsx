@@ -130,7 +130,6 @@ export default async function DashboardPage() {
     })
     
     let currentPct = totalMarks > 0 ? (earnedMarks / totalMarks) * 100 : 0
-    currentSgpaSubjects.push({ credits: sub.credits, percentage: currentPct })
 
     let components = sub.markingScheme ? (sub.markingScheme.components as any) : []
     const prediction = predictGrade(sub.marks.map((m: any) => ({ componentName: m.componentName, obtainedMarks: m.obtainedMarks || 0, maxMarks: m.maxMarks })), components, gradeScale)
@@ -153,6 +152,7 @@ export default async function DashboardPage() {
     if (sub.savedGrade) {
       const scaleItem = gradeScale.find((g: any) => g.grade === sub.savedGrade);
       if (scaleItem) {
+        currentSgpaSubjects.push({ credits: sub.credits, gpaValue: scaleItem.gpaValue });
         predictedSgpaSubjects.push({ credits: sub.credits, gpaValue: scaleItem.gpaValue });
         const grade = sub.savedGrade;
         gradeDistMap[grade] = (gradeDistMap[grade] || 0) + 1;
@@ -161,6 +161,7 @@ export default async function DashboardPage() {
         subjectScore = scaleItem.minPercentage;
       }
     } else {
+      currentSgpaSubjects.push({ credits: sub.credits, percentage: currentPct });
       predictedSgpaSubjects.push({ credits: sub.credits, percentage: prediction.predictedPercentage });
       
       subjectComparisonData.push({
@@ -193,9 +194,9 @@ export default async function DashboardPage() {
   const calculatedCurrentSgpa = calculateSGPA(currentSgpaSubjects, gradeScale)
   const predictedSgpa = calculateSGPA(predictedSgpaSubjects, gradeScale)
 
-  const savedSGPA = userSettings.savedSGPA;
-  const isSgpaSaved = savedSGPA !== undefined && savedSGPA !== null;
-  const currentSgpa = isSgpaSaved ? savedSGPA : calculatedCurrentSgpa;
+  // Directly use the calculated SGPA from the active semester's subjects.
+  // We ignore the global userSettings.savedSGPA because it is not semester-specific.
+  const currentSgpa = calculatedCurrentSgpa;
   
   const creditsCompleted = activeSemester.subjects.reduce((sum, s) => sum + s.credits, 0)
   const attendancePercentage = attendanceTotal > 0 ? (attendanceAttended / attendanceTotal) * 100 : 100
