@@ -168,7 +168,16 @@ export function SubjectForm({ subject, semesters, markingSchemes = [], onSuccess
               <FormItem>
                 <FormLabel>Credits</FormLabel>
                 <FormControl>
-                  <Input type="number" step="0.5" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                  <Input 
+                    type="number" 
+                    step="0.5" 
+                    {...field} 
+                    value={Number.isNaN(field.value) ? '' : field.value}
+                    onChange={e => {
+                      const parsed = parseFloat(e.target.value);
+                      field.onChange(Number.isNaN(parsed) ? '' : parsed);
+                    }} 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
