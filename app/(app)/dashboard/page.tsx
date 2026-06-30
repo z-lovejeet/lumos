@@ -197,6 +197,7 @@ export default async function DashboardPage() {
   // Directly use the calculated SGPA from the active semester's subjects.
   // We ignore the global userSettings.savedSGPA because it is not semester-specific.
   const currentSgpa = calculatedCurrentSgpa;
+  const isSgpaSaved = false;
   
   const creditsCompleted = activeSemester.subjects.reduce((sum, s) => sum + s.credits, 0)
   const attendancePercentage = attendanceTotal > 0 ? (attendanceAttended / attendanceTotal) * 100 : 100
