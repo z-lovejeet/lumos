@@ -61,7 +61,7 @@ export function MarksClient({ subjects }: MarksClientProps) {
               <Card key={subject.id} className="overflow-hidden">
                 <div className="h-2 w-full" style={{ backgroundColor: subject.colorCode || '#3b82f6' }} />
                 <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start gap-2">
+                  <div className="flex justify-between items-start gap-2 w-full min-w-0">
                     <div className="min-w-0 flex-1">
                       <CardTitle className="text-xl font-bold truncate">
                         {subject.code}
