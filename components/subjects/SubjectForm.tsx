@@ -76,17 +76,21 @@ export function SubjectForm({ subject, semesters, markingSchemes = [], onSuccess
 
       if (res?.error) {
         form.setError('root', { message: res.error })
+        setIsPending(false)
       } else {
         form.reset()
-        if (onSuccess) onSuccess()
-        else {
+        if (onSuccess) {
+          onSuccess()
+          setIsPending(false)
+        } else {
           router.push('/subjects')
           router.refresh()
+          // Intentionally NOT setting isPending(false) here. 
+          // The button will keep spinning until the page unmounts!
         }
       }
     } catch (error) {
       form.setError('root', { message: 'An unexpected error occurred' })
-    } finally {
       setIsPending(false)
     }
   }
