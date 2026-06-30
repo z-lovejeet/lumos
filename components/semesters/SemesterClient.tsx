@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
-import { CalendarDays, MoreVertical, Pencil, Trash } from 'lucide-react'
+import { CalendarDays, MoreVertical, Pencil, Trash, CheckCircle } from 'lucide-react'
 import { SemesterDialog } from './SemesterDialog'
 import { useAcademicStore, type Semester } from '@/stores/academic-store'
-import { deleteSemester } from '@/app/(app)/semesters/actions'
+import { deleteSemester, setActiveSemester } from '@/app/(app)/semesters/actions'
 
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/shared/EmptyState'
@@ -34,6 +34,7 @@ interface SemesterClientProps {
 export function SemesterClient({ initialSemesters }: SemesterClientProps) {
   const { semesters, setSemesters } = useAcademicStore()
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [isSettingActive, setIsSettingActive] = useState<string | null>(null)
   const [editingSemester, setEditingSemester] = useState<Semester | null>(null)
 
   useEffect(() => {
@@ -50,6 +51,15 @@ export function SemesterClient({ initialSemesters }: SemesterClientProps) {
       await deleteSemester(id)
     } finally {
       setIsDeleting(null)
+    }
+  }
+
+  const handleSetActive = async (id: string) => {
+    setIsSettingActive(id)
+    try {
+      await setActiveSemester(id)
+    } finally {
+      setIsSettingActive(null)
     }
   }
 
@@ -96,6 +106,15 @@ export function SemesterClient({ initialSemesters }: SemesterClientProps) {
                       <MoreVertical className="h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-[160px] glass">
+                      {semester.status !== 'active' && (
+                        <DropdownMenuItem 
+                          onClick={() => handleSetActive(semester.id)}
+                          disabled={isSettingActive === semester.id}
+                        >
+                          <CheckCircle className="mr-2 h-4 w-4" />
+                          <span>{isSettingActive === semester.id ? 'Setting...' : 'Set Active'}</span>
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem 
                         onClick={() => setEditingSemester(semester)}
                       >

@@ -43,15 +43,22 @@ export async function createSemester(formData: FormData) {
 
     const count = await prisma.semester.count({ where: { userId: user.id } })
 
-    const newSemester = await prisma.semester.create({
-      data: {
-        userId: user.id,
-        number: count + 1,
-        name: validatedData.name,
-        startDate: validatedData.startDate,
-        endDate: validatedData.endDate,
-      }
-    })
+    const [_, newSemester] = await prisma.$transaction([
+      prisma.semester.updateMany({
+        where: { userId: user.id },
+        data: { status: 'completed' }
+      }),
+      prisma.semester.create({
+        data: {
+          userId: user.id,
+          number: count + 1,
+          name: validatedData.name,
+          startDate: validatedData.startDate,
+          endDate: validatedData.endDate,
+          status: 'active'
+        }
+      })
+    ]);
 
     revalidatePath('/semesters')
     revalidatePath('/dashboard')
@@ -61,6 +68,46 @@ export async function createSemester(formData: FormData) {
       return { success: false, error: error.issues[0].message }
     }
     return { success: false, error: 'Failed to create semester' }
+  }
+}
+
+// Set a semester as active
+export async function setActiveSemester(id: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) {
+    throw new Error('Unauthorized')
+  }
+
+  try {
+    const existing = await prisma.semester.findUnique({ where: { id } })
+    if (!existing || existing.userId !== user.id) {
+      return { success: false, error: 'Semester not found or unauthorized' }
+    }
+
+    await prisma.$transaction([
+      prisma.semester.updateMany({
+        where: { userId: user.id },
+        data: { status: 'completed' }
+      }),
+      prisma.semester.update({
+        where: { id },
+        data: { status: 'active' }
+      })
+    ]);
+
+    revalidatePath('/dashboard')
+    revalidatePath('/semesters')
+    revalidatePath('/marks')
+    revalidatePath('/attendance')
+    revalidatePath('/health')
+    revalidatePath('/what-if')
+    revalidatePath('/calculator')
+
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: 'Failed to set active semester' }
   }
 }
 
