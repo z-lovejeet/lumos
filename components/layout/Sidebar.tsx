@@ -13,6 +13,7 @@ const navItems = [
   { name: 'Marks Entry', href: '/marks', icon: PenTool },
   { name: 'Semester Health', href: '/health', icon: Activity },
   { name: 'Compare Semesters', href: '/compare', icon: Scale },
+  { name: 'Target Grade', href: '/target-grade', icon: Target },
   { name: 'Calculator', href: '/calculator', icon: Calculator },
   { name: 'Predictions', href: '/predictions', icon: Target },
   { name: 'What-If Strategy', href: '/what-if', icon: Target },
