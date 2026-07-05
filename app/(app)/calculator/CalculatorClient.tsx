@@ -188,9 +188,9 @@ export function CalculatorClient({ semesters, gradeScale, savedSGPA, savedCGPA }
   return (
     <div className="mt-6">
       <Tabs defaultValue="sgpa" className="space-y-6">
-        <TabsList className="bg-muted/50 backdrop-blur-md border border-border/50 p-1 rounded-xl">
-          <TabsTrigger value="sgpa" className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all px-6">SGPA Calculator</TabsTrigger>
-          <TabsTrigger value="cgpa" className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all px-6">CGPA Calculator</TabsTrigger>
+        <TabsList className="bg-muted/50 backdrop-blur-md border border-border/50 p-1 rounded-xl w-full grid grid-cols-2 h-auto sm:inline-flex sm:w-auto">
+          <TabsTrigger value="sgpa" className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all px-2 sm:px-6 py-2 text-xs sm:text-sm">SGPA Calculator</TabsTrigger>
+          <TabsTrigger value="cgpa" className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all px-2 sm:px-6 py-2 text-xs sm:text-sm">CGPA Calculator</TabsTrigger>
         </TabsList>
 
         <TabsContent value="sgpa" className="space-y-6">
@@ -246,8 +246,8 @@ export function CalculatorClient({ semesters, gradeScale, savedSGPA, savedCGPA }
                       <CardDescription>Active semester. Auto-calculated from marks. Use dropdowns for manual overrides.</CardDescription>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <Table>
+                  <CardContent className="p-0 sm:p-6 overflow-x-auto">
+                    <Table className="min-w-[500px]">
                       <TableHeader>
                         <TableRow>
                           <TableHead>Subject</TableHead>
@@ -369,8 +369,8 @@ export function CalculatorClient({ semesters, gradeScale, savedSGPA, savedCGPA }
                       <div className="font-semibold text-lg">SGPA: {computedSem.sgpa.toFixed(2)}</div>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <Table>
+                  <CardContent className="p-0 sm:p-6 overflow-x-auto">
+                    <Table className="min-w-[500px]">
                       <TableHeader>
                         <TableRow>
                           <TableHead>Subject</TableHead>
