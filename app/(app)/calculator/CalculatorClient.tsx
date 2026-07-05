@@ -195,7 +195,7 @@ export function CalculatorClient({ semesters, gradeScale, savedSGPA, savedCGPA }
 
         <TabsContent value="sgpa" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-12">
-            <div className="md:col-span-4 space-y-6">
+            <div className="md:col-span-4 space-y-6 min-w-0">
               <div className="grid grid-cols-1 gap-4">
                 <Card className="bg-blue-500/5 border-blue-500/20 text-center md:text-left">
                   <CardHeader className="pb-2">
@@ -237,7 +237,7 @@ export function CalculatorClient({ semesters, gradeScale, savedSGPA, savedCGPA }
               </div>
             </div>
             
-            <div className="md:col-span-8">
+            <div className="md:col-span-8 min-w-0">
               {computedActiveSemester && (
                 <Card className="overflow-hidden">
                   <CardHeader className="text-center md:text-left flex flex-col md:flex-row md:items-center justify-between space-y-2 md:space-y-0">
@@ -316,7 +316,7 @@ export function CalculatorClient({ semesters, gradeScale, savedSGPA, savedCGPA }
 
         <TabsContent value="cgpa" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-12">
-            <div className="md:col-span-4 space-y-6">
+            <div className="md:col-span-4 space-y-6 min-w-0">
               <div className="grid grid-cols-1 gap-4">
                 <Card className="bg-violet-500/5 border-violet-500/20 text-center md:text-left">
                   <CardHeader className="pb-2">
@@ -358,7 +358,7 @@ export function CalculatorClient({ semesters, gradeScale, savedSGPA, savedCGPA }
               </div>
             </div>
             
-            <div className="md:col-span-8 space-y-6">
+            <div className="md:col-span-8 space-y-6 min-w-0">
               {computedSemestersForCgpa.map((computedSem) => (
                 <Card key={computedSem.id} className="overflow-hidden">
                   <CardHeader className="text-center md:text-left flex flex-col md:flex-row md:items-center justify-between space-y-2 md:space-y-0">
