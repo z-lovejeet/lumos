@@ -36,9 +36,11 @@ Lumos is fully responsive, functions as a Progressive Web App (PWA), and boasts 
 - 📊 **Dynamic Grade Tracking:** Track semesters, subjects, and specific marking schemes.
 - 🤖 **AI Academic Copilot:** A Gemini-powered AI chat that knows your entire academic history and advises you on strategy.
 - 🎯 **What-If Simulator:** Interactive sliders to see exactly how your final SGPA/CGPA changes based on hypothetical exam scores.
+- 🎯 **Target Grade Calculator:** Automatically reverse-engineers the exact marks required in upcoming assessments to secure a desired target grade.
+- 🧮 **Advanced GPA Engine:** Robust math engine for automated SGPA/CGPA calculations, intelligently handling credit-weighted distributions, margin-of-safety formulas, and manual user overrides.
 - 📈 **Predictive Analytics:** Trend analysis utilizing historical data to predict your future grades before exams happen.
 - 📑 **Smart OCR & Parsing:** Upload test papers or transcripts and let AI extract your marks and syllabus automatically.
-- 📱 **Progressive Web App (PWA):** Installable on iOS and Android straight from the browser for a native app experience.
+- 📱 **Progressive Web App (PWA) & Mobile First:** Installable on iOS and Android straight from the browser for a native app experience. Designed flawlessly for both mobile and desktop views.
 - 🌍 **Career & Pathway Mapping:** Track readiness for MS abroad or specific university requirements (e.g., TUM Germany) based on your exact credit distributions.
 - 📤 **Comprehensive Exports:** Export your entire academic profile to beautifully formatted PDF, Excel, or CSV reports.
 
